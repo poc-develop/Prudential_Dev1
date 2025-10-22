@@ -1,0 +1,23 @@
+<template>
+    <!-- <div class="slds-box slds-theme_default"> -->
+        <c-crm-global-expandable-section id="paymentMethord" label="Payment Methord">
+            <lightning-record-form 
+                record-id={policyPaymentMethodRecordId}
+                object-api-name={paymentMethordObjectApiName}
+                fields={paymentMethordFields}
+                columns="2"
+                mode="readonly">
+            </lightning-record-form>
+        </c-crm-global-expandable-section>
+
+        <c-crm-global-expandable-section id="accountSetupInformation" label="Account Setup Information">
+            <lightning-record-form 
+                record-id={financialAccountRecordId}
+                object-api-name={financialAccountObjectApiName}
+                fields={financialAccountFields}
+                columns="2"
+                mode="readonly">
+            </lightning-record-form>
+        </c-crm-global-expandable-section>
+    <!-- </div> -->
+</template>

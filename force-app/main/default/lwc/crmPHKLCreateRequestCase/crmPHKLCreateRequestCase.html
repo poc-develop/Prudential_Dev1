@@ -1,0 +1,368 @@
+<template>
+    <div class="container">
+        <div class="fixed-header">
+            <div class="slds-modal__header fixed-header">
+                <h2 class="slds-text-heading_medium slds-hyphenate">Create Request</h2>
+            </div>
+        </div>
+        
+        <div class="scrollable-content">
+            <div class="form-container">
+                <div lwc:if={isLoading}>
+                    <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-combobox
+                            name="RequestType"
+                            label="Request Type"
+                            placeholder="Select a request type"
+                            value={requestType}
+                            options={requestTypeOptions}
+                            onchange={handleRequestTypeChange}
+                            required
+                            data-field="requestType"
+                            >
+                        </lightning-combobox>
+                    </lightning-layout-item>
+                    
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-record-edit-form object-api-name="Case">
+                            <label class="slds-form-element__label slds-no-flex">Related Case</label>
+                            <lightning-input-field
+                                field-name="ParentId"
+                                variant="label-hidden"
+                                value={requestEnquiryCase}
+                                onchange={handleRequestEnquiryCaseChange}
+                                required
+                                data-field="requestEnquiryCase">
+                            </lightning-input-field>
+                        </lightning-record-edit-form>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-record-edit-form object-api-name="Case">
+                            <label class="slds-form-element__label slds-no-flex">Related Request</label>
+                            <lightning-input-field
+                                field-name="CRM_Glabal_RelatedRequest__c"
+                                variant="label-hidden"
+                                value={relatedRequest}
+                                onchange={handleRelatedRequestChange}
+                                data-field="relatedRequest">
+                            </lightning-input-field>
+                        </lightning-record-edit-form>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <div class="slds-form-element">
+                            <label class="slds-form-element__label">Copy To</label>
+                            <div class="slds-form-element__control">
+                                <div class="slds-combobox_container">
+                                    <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click" onclick={openModal}>
+                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                                            <!--- 一个假的输入框，只是为了显示 placeholder 和图标 -->
+                                            <input type="text" class="slds-input slds-combobox__input" placeholder="Enter copy to" />
+                                            <!--- 搜索图标 -->
+                                            <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" tabindex="-1">
+                                                <lightning-icon icon-name="utility:search" size="small"></lightning-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 显示已选用户的pill -->
+                                <div class="slds-input__pill-container">
+                                    <template for:each={selectedUsers} for:item="user">
+                                        <lightning-pill key={user.Id} name={user.Id} label={user.Name} onremove={removeUser}></lightning-pill>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-combobox
+                            name="Status"
+                            label="Status"
+                            placeholder="Select a status"
+                            value={status}
+                            options={statusOptions}
+                            disabled
+                            data-field="status"
+                            >
+                        </lightning-combobox>
+                    </lightning-layout-item>
+
+                    <!-- Locate Payment -->
+                    <template if:true={isShowLocatePaymentPart}>
+                        <lightning-layout-item size="12" padding="around-small">
+                            <span style="font-size: 14px;"><b>For Finance</b></span>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item size="6" padding="around-small">
+                            <lightning-input
+                                type="text"
+                                label="Policy Number"
+                                value={policyNumber}
+                                onchange={handlePolicyNumberChange}
+                                required={financeRequired}
+                                placeholder="Enter policy Number">
+                            </lightning-input>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item size="6" padding="around-small">
+                            <lightning-input
+                                type="text"
+                                label="Name of Assured"
+                                value={nameOfAssured}
+                                onchange={handleNameOfAssuredChange}
+                                required={financeRequired}
+                                placeholder="Enter name of assured">
+                            </lightning-input>
+                        </lightning-layout-item>
+                        
+                        <lightning-layout-item size="12" padding="around-small">
+                            <lightning-dual-listbox
+                                label="Refund Channel"
+                                source-label="Available"
+                                selected-label="Selected"
+                                value={refundChannel}
+                                options={refundChannelOptions}
+                                required={financeRequired}
+                                onchange={handleRefundChannelChange}></lightning-dual-listbox>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item size="6" padding="around-small">
+                            <lightning-input
+                                type="date"
+                                label="Refund Date"
+                                value={refundDate}
+                                required={financeRequired}
+                                onchange={handleRefundDateChange}>
+                            </lightning-input>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item size="6" padding="around-small">
+                            <lightning-input
+                                type="number"
+                                label="Amount"
+                                value={amount}
+                                required={financeRequired}
+                                onchange={handleAmountChange}
+                                placeholder="Enter amount">
+                            </lightning-input>
+                        </lightning-layout-item>
+                    </template>
+
+                    <!-- 1st Round Processing -->
+                    <lightning-layout-item size="12" padding="around-small">
+                        <span style="font-size: 14px;"><b>1st Round Processing</b></span>
+                    </lightning-layout-item>
+                    
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-record-edit-form object-api-name="Case">
+                            <label class="slds-form-element__label slds-no-flex">Case Recipent 1</label>
+                            <lightning-input-field
+                                field-name="CRM_Global_Recipient_1__c"
+                                variant="label-hidden"
+                                value={recipient1}
+                                onchange={handleRecipient1Change}
+                                required
+                                data-field="recipient1">
+                            </lightning-input-field>
+                        </lightning-record-edit-form>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input
+                            type="text"
+                            label="Recipient 1 Department"
+                            value={recipient1Department}
+                            onchange={handleRecipient1DepartmentChange}
+                            placeholder="Enter recipient 1 department"
+                            required={recipient1Required}
+                            data-field="recipient1Department">
+                        </lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input
+                            type="text"
+                            label="Case Recipient 1 (External)"
+                            value={recipient1External}
+                            onchange={handleRecipient1ExternalChange}
+                            placeholder="Enter recipient 1 external"
+                            data-field="recipient1External">
+                        </lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-textarea
+                            label="Request Summary 1"
+                            value={requestSummary1}
+                            onchange={handleRequestSummary1Change}
+                            placeholder="Enter request summary 1"
+                            rows="4"
+                            required={recipient1Required}
+                            data-field="requestSummary1">
+                        </lightning-textarea>
+                    </lightning-layout-item>
+                    
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input
+                            type="datetime"
+                            label="Due Date 1"
+                            value={dueDate1}
+                            onchange={handleDueDate1Change}
+                            required={recipient1Required}
+                            data-field="dueDate1">
+                        </lightning-input>
+                    </lightning-layout-item>
+                    
+                    <lightning-layout-item size="6" padding="around-small">
+                        <label class="slds-form-element__label slds-no-flex">Auto Proceed</label>
+                        <lightning-input
+                            type="checkbox"
+                            variant="label-hidden"
+                            value={autoProceed}
+                            onchange={handleAutoProceedChange}>
+                        </lightning-input>
+                    </lightning-layout-item>
+                    
+                    <!-- 2nd Round Processing -->
+                    <lightning-layout-item size="12" padding="around-small">
+                        <span style="font-size: 14px;"><b>2nd Round Processing</b></span>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-record-edit-form object-api-name="Case">
+                            <label class="slds-form-element__label slds-no-flex">Case Recipent 2</label>
+                            <lightning-input-field
+                                field-name="CRM_Global_Recipient_2__c"
+                                variant="label-hidden"
+                                value={recipient2}
+                                onchange={handleRecipient2Change}
+                                data-field="recipient2">
+                            </lightning-input-field>
+                        </lightning-record-edit-form>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input
+                            type="text"
+                            label="Recipient 2 Department"
+                            value={recipient2Department}
+                            onchange={handleRecipient2DepartmentChange}
+                            placeholder="Enter recipient 2 department"
+                            required={recipient2Required}
+                            data-field="recipient2Department">
+                        </lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input
+                            type="text"
+                            label="Case Recipient 2 (External)"
+                            value={recipient2External}
+                            onchange={handleRecipient2ExternalChange}
+                            placeholder="Enter recipient 2 external"
+                            data-field="recipient2External">
+                        </lightning-input>
+                    </lightning-layout-item>
+
+                    <lightning-layout-item size="12" padding="around-small">
+                        <lightning-textarea
+                            label="Request Summary 2"
+                            value={requestSummary2}
+                            onchange={handleRequestSummary2Change}
+                            placeholder="Enter request summary 2"
+                            rows="4"
+                            required={recipient2Required}
+                            data-field="requestSummary2">
+                        </lightning-textarea>
+                    </lightning-layout-item>
+                    
+                    <lightning-layout-item size="6" padding="around-small">
+                        <lightning-input
+                            type="datetime"
+                            label="Due Date 2"
+                            value={dueDate2}
+                            onchange={handleDueDate2Change}
+                            required={recipient2Required}
+                            data-field="dueDate2">
+                        </lightning-input>
+                    </lightning-layout-item>
+                    
+                </lightning-layout>
+            </div>
+        </div>
+
+        <div class="fixed-footer">
+            <footer class="slds-text-align_right form-footer">
+                <lightning-button
+                    variant="neutral"
+                    label="Cancel"
+                    onclick={handleCloseModal}
+                    disabled={isLoading}>
+                </lightning-button>
+                <lightning-button
+                    variant="brand"
+                    label="Create"
+                    onclick={createRequest}
+                    disabled={isLoading}>
+                </lightning-button>
+            </footer>
+        </div>
+
+        <!--- 模态框部分，用于搜索和选择用户 -->
+        <template if:true={isModalOpen}>
+            <!-- 遮罩层（模糊背景） -->
+            <div class="modal-backdrop">
+                <div class="slds-modal slds-fade-in-open">
+                    <!-- 关闭按钮 -->
+                    <lightning-button-icon 
+                        icon-name="utility:close" 
+                        variant="bare-inverse" 
+                        onclick={closeModal}
+                        class="modal-close-button"
+                        style="position: absolute; top: 0; right: 1rem; z-index: 10000;"
+                        alternative-text="Close Modal">
+                    </lightning-button-icon>
+
+                    <!-- 模态框内容 -->
+                    <div style="width: 95%; margin: 0 auto;">
+                        <header class="slds-modal__header">
+                            <h2>Search User</h2>
+                        </header>
+                        <div class="slds-modal__content" style="padding: 1rem;">
+                            <lightning-input 
+                                type="search" 
+                                placeholder="Enter user name"
+                                value={searchTerm}
+                                onchange={handleSearchChange}>
+                            </lightning-input>
+                            <div class="slds-m-top_medium">
+                                <template for:each={users} for:item="user">
+                                    <div key={user.Id} class="slds-m-bottom_x-small">
+                                        <lightning-input 
+                                            type="checkbox" 
+                                            label={user.Name}
+                                            data-id={user.Id}
+                                            checked={user.checked}
+                                            onchange={handleUserSelection}>
+                                        </lightning-input>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <lightning-button label="Cancel" onclick={closeModal}></lightning-button>
+                            <lightning-button label="Confirm" onclick={handleConfirm}></lightning-button>
+                        </footer>
+                    </div>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </div>
+        </template>
+    </div>
+</template>

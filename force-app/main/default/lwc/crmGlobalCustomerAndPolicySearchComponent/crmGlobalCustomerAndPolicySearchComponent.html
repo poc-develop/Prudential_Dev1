@@ -1,0 +1,80 @@
+<template>
+    <div class="slds-theme_default">
+        <template if:false={loaded}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+        <lightning-accordion allow-multiple-sections-open active-section-name="A" class="accordion">
+            <lightning-accordion-section name="A" label={label.SearchConditionLabel}>
+                <div onkeypress={handleEnter}>
+                    <lightning-layout multiple-rows="true">
+                        <template for:each={inputsUI} for:item="inputUI">
+                            <lightning-layout-item padding="around-small" size={inputUI.Size__c} data-id={inputUI.Id} key={inputUI.Index__c}>
+                                <!--voicebot -->  
+                                <template if:true={inputUI.IsInput__c}> 
+                                    <lightning-input 
+                                            label={inputUI.Label}
+                                            type={inputUI.Type__c}
+                                            name={inputUI.DeveloperName}
+                                            onblur={handleInputBlur}
+                                            placeholder={inputUI.Placeholder__c}
+                                            minlength={inputUI.MinLength__c}
+                                            message-when-too-short={inputUI.MessageShow}
+                                            value={inputUI.value}
+                                            class={inputUI.notValidated}
+                                        >
+                                    </lightning-input>
+                                </template> 
+                                <template if:true={inputUI.IsSelect__c}>
+                                    <lightning-select 
+                                            label={inputUI.Label}
+                                            name={inputUI.DeveloperName}
+                                            options={inputUI.options}
+                                            message-when-value-missing="Select one"
+                                            onchange={handleSelectChange}
+                                            placeholder={inputUI.Placeholder__c}
+                                            value={inputUI.value}
+                                            class={inputUI.notValidated}
+                                        >
+                                    </lightning-select>
+                                </template>
+                                <template if:true={inputUI.showWarning}>
+                                    <p style="color:red">{label.VoiceBotMismatchWarningLabel}</p>
+                                </template>
+                                <!--voicebot -->    
+                            </lightning-layout-item>
+                        </template>
+                    </lightning-layout>
+                    <div class="slds-m-vertical_medium slds-m-horizontal_small">
+                        <lightning-button name="search" class="slds-m-right_small" label={label.SearchLabel} title={label.SearchLabel} onclick={handleSearch}></lightning-button>
+                        <lightning-button name="reset" class="slds-m-right_small" label={label.ResetLabel} title={label.ResetLabel} onclick={handleReset}></lightning-button>
+                    <p class="slds-p-top_x-small"><lightning-formatted-text value="Tips: More search conditions included will assist to locate expected search result faster, esp. when no results returned" ></lightning-formatted-text></p>
+                    </div>
+                </div>
+            </lightning-accordion-section>
+        </lightning-accordion>
+        <template if:true={data}>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item padding="around-small">
+                    <div>
+                        <h2 class="slds-text-heading_small">{label.SearchByLabel}:</h2>
+                    </div>
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-small">
+                    <template for:each={searchParams} for:item="param">
+                        <lightning-badge key={param.id} label={param.label}></lightning-badge>
+                    </template>
+                </lightning-layout-item>
+            </lightning-layout>
+            <c-custom-datatable-component
+                key-field="Id"
+                data={data}
+                columns={columns}
+                hide-checkbox-column
+                sorted-by={sortedBy}
+                sorted-direction={sortedDirection}
+                onrowaction={callRowAction}
+                onsort={handleColumnSorting}
+            ></c-custom-datatable-component>
+        </template>
+    </div>
+</template>

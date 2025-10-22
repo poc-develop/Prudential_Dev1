@@ -1,0 +1,36 @@
+/* Force readonly form values to span full column width like Dynamic Forms */
+.underline-extended .slds-form-element__static {
+    border-bottom: 1px solid var(--slds-g-color-border-base-4, #dddbda) !important;
+    padding-bottom: 2px;
+    display: block !important;
+    width: 100% !important;
+    min-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure form control container takes full width */
+.underline-extended .slds-form-element__control {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+    display: block;
+}
+
+/* Target the truncate container inside static values */
+.underline-extended .slds-form-element__static .slds-truncate {
+    width: 100% !important;
+    display: block !important;
+    padding-right: 0 !important;
+    min-width: 100%;
+}
+
+/* Override grid layout constraints */
+.underline-extended .slds-grid .slds-form-element__static {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+}
+
+/* Target lightning-record-form specific classes */
+.underline-extended lightning-record-form .slds-form-element__static {
+    width: 100% !important;
+    display: block !important;
+}

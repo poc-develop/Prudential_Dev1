@@ -1,0 +1,688 @@
+<template>
+	<div class="slds-page-header">
+		<div class="slds-page-header__row">
+			<div class="slds-page-header__col-title Case-title">
+				<div class="slds-page-header__name">
+					<div class="slds-page-header__name-title">
+						<h1 class="page-title">
+							<span class="slds-page-header__title slds-truncate" title="New Case: Enquiry">
+								New Case: Enquiry
+							</span>
+						</h1>
+					</div>
+				</div>
+			</div>
+			<div class="slds-page-header__col-actions">
+				<div class="slds-page-header__actions">
+					<span class="slds-text-body_small slds-text-color_weak">* = Required Information</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div>
+		<lightning-record-edit-form object-api-name="Case" onsuccess={handleSuccess} onsubmit={handleSubmit} density="comfy">
+			<div class="slds-box slds-theme_default">
+				<div class="slds-text-heading_medium slds-m-bottom_medium">Case Information</div>
+				
+				<lightning-accordion active-section-name={defaultOpenSections} allow-multiple-sections-open="true">
+
+                    <!-- Case Details Section -->
+                    <lightning-accordion-section name="Case Details" label="Case Details">
+                        <div class="slds-grid slds-wrap slds-gutters_medium slds-var-p-around_medium">
+                            <!-- 左侧字段列 -->
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                <div class="slds-form slds-form_stacked">
+
+                                    <!-- Record Type -->
+                                     <div class="slds-form-element slds-m-bottom_medium">
+                                         <div class="slds-form-element__control">
+                                             <lightning-input-field field-name="RecordTypeId" value={recordTypeId} disabled></lightning-input-field>
+                                         </div>
+                                     </div>
+
+                                     <!-- Status -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="Status" data-id="Status" disabled></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Subject -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="Subject" data-id="Subject" value={Subject} required></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧字段列 -->
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                <div class="slds-form slds-form_stacked">
+                                    <!-- Case Origin -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="Origin" value={caseOrigin} disabled></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Case Owner -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="OwnerId" data-id="ownerId" disabled></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Priority -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="Priority" data-id="priority" disabled></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+
+                    <!-- Enquiry Details Section -->
+                    <lightning-accordion-section name="Enquiry Details" label="Enquiry Details">
+                        <div class="slds-grid slds-wrap slds-gutters_medium slds-var-p-around_medium">
+                            <!-- 左侧字段列 -->
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                <div class="slds-form slds-form_stacked">
+
+                                    <!-- Enquirer Name -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_EnquirerName__c" data-id="enquirerName" value={enquirerName} required></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Contact Email -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="ContactEmail" value={contactEmail} data-id="contactEmail" disabled></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Account Name -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="AccountId" data-id="accountId" value={accountId} disabled></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Client Code -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_ClientCode__c" value={clientCode} data-id="clientCode" disabled></lightning-input-field>
+                                            <!-- <lightning-input type="text" label="Client Code" disabled></lightning-input> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧字段列 -->
+                            <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                <div class="slds-form slds-form_stacked">
+                                    <!-- Contact No. -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_ContactNumber__c" value={contactNumber} data-id="contactNo" disabled></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!--  -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <lightning-input class="slds-hidden" type="text" label="hidden"></lightning-input>
+                                    </div>
+
+                                    <!-- ID Number -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input type="text" label="ID Number" value={IDNumber} data-id="IDNumber" disabled></lightning-input>
+                                        </div>
+                                    </div>
+
+                                    <!-- Agent Code -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_AgentCode__c" data-id="agentCode"></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slds-grid slds-wrap slds-gutters_medium slds-var-p-around_medium">
+                            <div class="slds-size_1-of-1 master-case-form">
+                                <!-- Enquiry Summary -->
+                                <lightning-input-field field-name="CRM_Global_EnquirySummary__c" data-id="enquirySummary" required></lightning-input-field>
+                            </div>
+                        </div>
+
+                        <!-- Walk-in -->
+                         <template if:true={walkIn}>
+                            <div class="slds-grid slds-wrap slds-gutters_medium slds-var-p-around_medium">
+                                <!-- 左侧字段列 -->
+                                <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                    <!-- Ticket Number -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_TicketNumber__c" data-id="ticketNumber"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cashier/Room Number -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_CounterNumber__c" data-id="counterNumber"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Start Time -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_WalkInStartTime__c" data-id="startTime"></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 右侧字段列 -->
+                                <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                    <!-- Location of The Centre -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_LocationOfTheCentre__c" data-id="locationOfTheCentre"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Accompany By -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_AccompanyBy__c" data-id="accompanyBy"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- End Time -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_WalkInEndTime__c" data-id="endTime"></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         </template>
+
+                         <!-- Letter -->
+                         <template if:true={letter}>
+                            <div class="slds-grid slds-wrap slds-gutters_medium slds-var-p-around_medium">
+                                <!-- 左侧字段列 -->
+                                <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                    <!-- Sender Name/Organization -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_LetterSender__c" data-id="letterSender"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Forwarded the Letter To -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_ForwardedTheLetterTo__c" data-id="forwardedTheLetterTo"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Channel of Receipt -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_ChannelOfReceipt__c" data-id="channelOfReceipt"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Log Number -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_LogNumber__c" data-id="logNumber"></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 右侧字段列 -->
+                                <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                    <!-- Recipient -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_LetterRecipient__c" data-id="letterRecipient"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Date of Receipt -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_DateOfReceipt__c" data-id="dateOfReceipt"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Document Type -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_DocumentType__c" data-id="documentType"></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         </template>
+
+                         <!-- Virtual Meeting -->
+                         <template if:true={virtualMeeting}>
+                            <div class="slds-grid slds-wrap slds-gutters_medium slds-var-p-around_medium">
+                                <!-- 左侧字段列 -->
+                                <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                    
+                                    <!-- Scheduled Time -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_ScheduledTime__c" data-id="scheduledTime"></lightning-input-field>
+                                        </div>
+                                    </div>
+
+                                    <!-- Attendance -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_VM_Attendance__c" data-id="attendance"></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 右侧字段列 -->
+                                <div class="slds-size_1-of-1 slds-large-size_1-of-2 master-case-form">
+                                    <!-- Meeting Link -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-input-field field-name="CRM_Global_VM_MeetingLink__c" data-id="meetingLink"></lightning-input-field>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                         </template>
+
+                    </lightning-accordion-section>
+                </lightning-accordion>
+
+                <div class="slds-text-align_right slds-m-bottom_medium">
+                    <lightning-button 
+                        label="New Child Case" 
+                        variant="brand-outline" 
+                        onclick={handleNewChildCase}
+                        class="slds-m-bottom_small">
+                    </lightning-button>
+                </div>
+
+                <!-- Child Cases Container -->
+                <template for:each={childCases} for:item="caseItem" for:index="childIndex">
+                    <div key={caseItem.id} class="case-container slds-m-bottom_large">
+                        <div class="slds-box slds-theme_default">
+
+                            <!-- Case Header -->
+                            <div class="slds-grid slds-grid_align-spread slds-m-bottom_medium">
+                                <div class="slds-grid slds-grid_align-center">
+                                    <span class="slds-text-heading_large slds-m-right_small">{caseItem.caseNumber}</span>
+                                    <h2 class="slds-text-heading_medium">Wrap Up</h2>
+                                </div>
+                                <div class="slds-grid slds-grid_align-end">
+                                    <lightning-button-icon 
+                                        icon-name="utility:delete" 
+                                        variant="bare" 
+                                        alternative-text="Delete Child Case"
+                                        onclick={handleDeleteCase}
+                                        data-case-id={caseItem.id}
+                                        class="delete-child-case-btn">
+                                    </lightning-button-icon>
+                                </div>
+                            </div>
+
+                            <div class="slds-grid slds-gutters slds-m-bottom_small">
+                                <div class="slds-col slds-size_1-of-3">
+                                    <!-- Enquirer Identity Selection -->
+                                    <div class="slds-form-element slds-m-bottom_medium">
+                                        <div class="slds-form-element__control">
+                                            <lightning-combobox
+                                                name="enquirerIdentity"
+                                                label="Enquirer Identity"
+                                                placeholder="Select Enquirer Identity"
+                                                options={enquirerIdentityOptions}
+                                                value={selectedEnquirerIdentity}
+                                                onchange={handleEnquirerIdentityChange}>
+                                            </lightning-combobox>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="slds-col slds-size_1-of-3 non-policy-col"></div>
+
+                                <div class="slds-col slds-size_1-of-3" style="padding-top: 1.5rem;">
+                                    <lightning-input 
+                                        type="checkbox" 
+                                        label="Non-Policy Related"
+                                        checked={caseItem.nonPolicy}
+                                        onchange={handleNonPolicyChange}
+                                        data-case-id={caseItem.id}>
+                                    </lightning-input>
+                                </div>
+                            </div>
+
+                            <!-- Child Case -->
+                            <div class="slds-table_container">
+                                <!-- grid-based layout replacing the table -->
+                                <!-- <div class="slds-p-around_x-small slds-border_bottom slds-m-bottom_x-small slds-grid slds-grid_align-spread">
+                                    <div class="slds-text-title_caps" style="width: 40%;">Child Case</div>
+                                    <div class="slds-text-title_caps" style="width: 40%;"></div>
+                                    <div class="slds-text-title_caps">Actions</div>
+                                </div> -->
+
+                                <!-- Policy block (spans two columns) -->
+                                <div class="wrap-up-section">
+                                    <div class="slds-text-heading_small slds-m-bottom_small wrap-up-header">Select Policy</div>
+                                    <!-- <div class="slds-box slds-theme_default"> -->
+                                        <div class="slds-truncate" title={caseItem.policy}>
+                                            <div style="float: left; margin-top: 2px;">
+                                                <span class="slds-text-title">Selected Policy: </span>
+                                                <!-- <lightning-button 
+                                                    variant="base"
+                                                    label="Policy Search"
+                                                    onclick={handleOpenPolicyModal}
+                                                    data-case-id={caseItem.id}>
+                                                </lightning-button> -->
+                                            </div>
+                                            
+                                            <!-- pill section + Non-Policy toggle row -->
+                                            <div class="slds-grid slds-gutters slds-m-top_x-small policy-row">
+                                                <div class="slds-col slds-size_4-of-5">
+                                                    <!-- <div class="pill-container"> -->
+                                                        <div class={caseItem.containerClass} data-case-id={caseItem.id}>
+                                                            <template for:each={caseItem.policyList} for:item="policy">
+                                                                <lightning-pill 
+                                                                    class="slds-m-right_x-small slds-m-bottom_x-small"
+                                                                    key={policy.id}
+                                                                    label={policy.name}
+                                                                    name={policy.id}
+                                                                    data-case-id={caseItem.id}
+                                                                    onremove={handleRemovePolicy}>
+                                                                    <lightning-icon icon-name="standard:product" alternative-text="Policy"></lightning-icon>
+                                                                </lightning-pill>
+                                                            </template>
+                                                        </div>
+                                                    <!-- </div> -->
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-5">
+                                                    <lightning-button 
+                                                        variant="base"
+                                                        label="Add New Policy"
+                                                        onclick={handleOpenPolicyModal}
+                                                        data-case-id={caseItem.id}
+                                                        disabled={caseItem.nonPolicy}>
+                                                    </lightning-button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Policy List DataTable -->
+                                            <div class="slds-m-top_small" style="clear: both; padding-top: 1rem; height: 400px;">
+                                                <lightning-datatable
+                                                    key-field="id"
+                                                    data={allPolicies}
+                                                    columns={policyColumns}
+                                                    max-row-selection={caseItem.policyMaxRowSelection}
+                                                    onrowselection={handlePolicyRowSelection}
+                                                    data-case-id={caseItem.id}>
+                                                </lightning-datatable>
+                                            </div>
+                                        </div>
+                                    <!-- </div> -->
+                                </div>
+
+
+                                <!-- Wrap Up Section -->
+                                <div class="wrap-up-section">
+                                    <div class="slds-text-heading_small slds-m-bottom_small wrap-up-header">Select Wrap Up</div>
+                            
+                                    <div class="reason-suggestion-container">
+                                        <div class="slds-grid slds-gutters slds-m-top_medium">
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <div class="slds-form-element">
+                                                    <div class="slds-form-element__control">
+                                                        <!-- 搜索框 -->
+                                                        <!-- <div class="search-container"> -->
+                                                            <lightning-input 
+                                                                type="text" 
+                                                                placeholder="Search Wrap Up Category and Item..."
+                                                                label="Search Wrap Up Category and Item"
+                                                                value={followUpSearchTerm}
+                                                                onchange={handleFollowUpSearch}
+                                                                class="follow-up-search" style="width: 97%;">
+                                                            </lightning-input>
+                                                        <!-- </div> -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Wrap Up dual-listbox -->
+                                    <div class="reason-suggestion-container">
+                                        <div class="slds-grid slds-gutters slds-m-top_medium">
+                                            <div class="slds-col slds-size_1-of-1">
+                                                <div class="slds-form-element">
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-dual-listbox name="WrapUpItem"
+                                                            source-label="Available Wrap Up Category and Item"
+                                                            selected-label="Selected Wrap Up"
+                                                            onchange={handleWrapUphange}
+                                                            options={filteredAvailableOptions}
+                                                            value={selectedWrapUpItem}
+                                                            data-case-id={caseItem.id}>
+                                                        </lightning-dual-listbox>
+                                                            <!-- onchange={handleReasonChange} -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Reason 和 Suggestion dual-listbox -->
+                                    <div class="reason-suggestion-container">
+                                        <div class="slds-grid slds-gutters slds-m-top_medium">
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <div class="slds-form-element">
+                                                    <!-- <label class="slds-form-element__label">Reason</label> -->
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-dual-listbox name="Reason"
+                                                            label="Reason"
+                                                            source-label="Available"
+                                                            selected-label="Selected"
+                                                            field-level-help="Select Reason"
+                                                            onchange={handleReasonChange}
+                                                            options={reasonOptions}
+                                                            value={selectedReason}
+                                                            data-case-id={caseItem.id}></lightning-dual-listbox>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-col slds-size_1-of-2">
+                                                <div class="slds-form-element">
+                                                    <!-- <label class="slds-form-element__label">Suggestion</label>
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-combobox
+                                                            name="suggestion"
+                                                            placeholder="Select Suggestion"
+                                                            options={suggestionOptions}
+                                                            value={selectedSuggestion}
+                                                            onchange={handleSuggestionChange}>
+                                                        </lightning-combobox>
+                                                    </div> -->
+
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-dual-listbox name="Suggestion"
+                                                            label="Suggestion"
+                                                            source-label="Available"
+                                                            selected-label="Selected"
+                                                            field-level-help="Select Suggestion"
+                                                            options={suggestionOptions}
+                                                            value={selectedSuggestion}></lightning-dual-listbox>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                    <!-- Follow Up Section -->
+                                <div class="wrap-up-section">
+                                    <div class="slds-text-heading_small slds-m-bottom_small wrap-up-header">Follow Up</div>
+
+                                    <!-- Follow-up row -->
+                                    <div class="slds-grid slds-gutters slds-m-bottom_small">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input 
+                                                type="checkbox" 
+                                                label="Active"
+                                                checked={caseItem.active}
+                                                onchange={handleActiveChange}
+                                                data-case-id={caseItem.id}>
+                                            </lightning-input>
+                                        </div>
+                                        <!-- <div class="slds-col slds-size_1-of-3">
+                                            <lightning-input 
+                                                type="checkbox" 
+                                                label="Require Follow Up"
+                                                checked={caseItem.needFollowUp}
+                                                onchange={handleFollowUpChange}
+                                                data-case-id={caseItem.id}>
+                                            </lightning-input>
+                                        </div> -->
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <lightning-input 
+                                                type="date" 
+                                                label="Next Follow Up Date"
+                                                onchange={handleNextFollowUpDateChange}
+                                                data-case-id={caseItem.id}>
+                                            </lightning-input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:true={isModalOpen}>
+                    <!-- 遮罩层（模糊背景） -->
+                    <div class="modal-backdrop">
+                        <div class="slds-modal slds-fade-in-open">
+                            <!-- 关闭按钮 -->
+                            <lightning-button-icon 
+                                icon-name="utility:close" 
+                                variant="border-filled" 
+                                onclick={handleCloseModal}
+                                class="modal-close-button"
+                                style="position: absolute; top: 0; right: 1rem; z-index: 10000;"
+                                alternative-text="Close Modal">
+                            </lightning-button-icon>
+
+                            <!-- 模态框内容 -->
+                            <div style="width: 95%; margin: 0 auto;">
+                                <header class="slds-modal__header">
+                                    <h2>Search Policy</h2>
+                                </header>
+                                <div class="slds-modal__content" style="padding: 1rem;">
+                                    <lightning-input 
+                                        type="search" 
+                                        placeholder="Enter policy name"
+                                        onchange={handlePolicySearch}>
+                                    </lightning-input>
+                                    <div class="slds-m-top_medium">
+                                        <template for:each={searchResults} for:item="result">
+                                            <div key={result.id} class="slds-m-bottom_x-small">
+                                                <lightning-input 
+                                                    type="checkbox" 
+                                                    label={result.name}
+                                                    name={result.id}
+                                                    checked={result.isSelected}
+                                                    onchange={handlePolicySelect}>
+                                                </lightning-input>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <lightning-button 
+                                        label="Confirm" 
+                                        onclick={handleConfirmPolicy}>
+                                    </lightning-button>
+                                </footer>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:true={isCaseOriginModalOpen}>
+                    <!-- 遮罩层（模糊背景） -->
+                    <div class="modal-backdrop">
+                        <div class="slds-modal slds-fade-in-open">
+                            <!-- 关闭按钮 -->
+                            <lightning-button-icon 
+                                icon-name="utility:close" 
+                                variant="border-filled" 
+                                onclick={handleCloseModal}
+                                class="modal-close-button"
+                                style="position: absolute; top: 0; right: 1rem; z-index: 10000;"
+                                alternative-text="Close Modal">
+                            </lightning-button-icon>
+
+                            <!-- 模态框内容 -->
+                            <div style="width: 95%; margin: 0 auto;">
+                                <header class="slds-modal__header">
+                                    <h2>Select Case Origin</h2>
+                                </header>
+                                <div class="slds-modal__content" style="padding: 1rem;padding-left: 2rem;">
+                                    <div class="custom-radio-list">
+                                        <template for:each={caseOriginOptions} for:item="opt">
+                                            <div key={opt.value} class="custom-radio-item">
+                                                <lightning-input type="radio"
+                                                    name="caseOrigin"
+                                                    label={opt.label}
+                                                    value={opt.value}
+                                                    checked={opt.isSelected}
+                                                    onchange={handleRadioChange}>
+                                                </lightning-input>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <footer class="slds-modal__footer">
+                                    <lightning-button 
+                                        label="Next" 
+                                        onclick={handleCaseOriginNext}>
+                                    </lightning-button>
+                                </footer>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+				<!-- 按钮区域 -->
+				<div class="slds-m-top_large slds-border_top slds-p-top_medium">
+					<div class="slds-align_absolute-center">
+						<lightning-button variant="neutral" label="Cancel" onclick={handleCancel} class="slds-m-right_small"></lightning-button>
+						<lightning-button variant="brand" label="Save"  onclick={handleSave}></lightning-button>
+					</div>
+				</div>
+			</div>
+		</lightning-record-edit-form>
+	</div>
+    <!-- pop the IVRS auth result -->
+     <!-- c__IVRSAuthResult=N -->
+    <c-crm-p-h-k-l-show-toast-i-v-r-s-result></c-crm-p-h-k-l-show-toast-i-v-r-s-result>
+</template>

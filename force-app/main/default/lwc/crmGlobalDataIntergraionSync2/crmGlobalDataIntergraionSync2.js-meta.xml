@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage">
+            <property 
+                name="componentId" 
+                type="String" 
+                required="true"
+                label="Component Id"
+                description="The unique identifier of this component, used for communication between data sync components" />
+            <property 
+                name="configName" 
+                type="String" 
+                required="true"
+                label="Data Integration Configuration Name"
+                description="DeveloperName of the CRM_Global_DataIntegration_Config__mdt record" />
+            <property name="buttonLabel" label="Button Label" type="String" default="Sync" />
+            <property 
+                name="autoTriggerOnLoad" 
+                type="Boolean" 
+                label="Auto Trigger on Page Load"
+                description="Trigger automatically when page loads" />
+            <property 
+                name="isVisible" 
+                type="Boolean" 
+                label="Is Visible"
+                description="For debugging purposes, will show the button and success/error message" />
+            <property 
+                name="targetComponentIds" 
+                type="String" 
+                label="Trigger other components (if needed) after success sync"
+                description="Split multiple component id by &quot;;&quot;" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

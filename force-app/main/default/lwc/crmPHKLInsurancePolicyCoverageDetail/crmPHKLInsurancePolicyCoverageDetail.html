@@ -1,0 +1,11 @@
+<template>
+    <div class="slds-box slds-theme_default underline-extended" style="border: none;padding-left: 10px;padding-top: unset;">
+        <template if:true={coverageRecordId}>
+            <lightning-record-form record-id={coverageRecordId} object-api-name="InsurancePolicyCoverage" fields={fields} columns="2" mode="readonly">
+            </lightning-record-form>
+        </template>
+        <template if:true={errorMessage}>
+            <lightning-formatted-text value={errorMessage}></lightning-formatted-text>
+        </template>
+    </div>
+</template>

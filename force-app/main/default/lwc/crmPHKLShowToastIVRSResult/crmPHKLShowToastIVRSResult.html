@@ -1,0 +1,31 @@
+<template>
+    <template lwc:if={isVisible}>
+        <div class="container">
+            <lightning-card variant="narrow" title="URL参数处理组件">
+                <div class="slds-p-around_medium">
+                    <p class="slds-text-heading_small slds-m-bottom_medium">
+                        此组件会从URL获取"c__IVRSAuthResult"参数值，并显示相应的提示信息
+                    </p>
+                    
+                    <div class="parameter-info">
+                        <p class="slds-text-title slds-m-bottom_small">支持的参数值及其含义：</p>
+                        <ul class="value-list">
+                            <li class="value-item success">Y - 成功 (显示Success Toast)</li>
+                            <li class="value-item warning">P - 警告 (显示Warning Toast)</li>
+                            <li class="value-item error">N - 错误 (显示Error Toast)</li>
+                            <li class="value-item warning">C - 取消 (显示Warning Toast)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="demo-section slds-m-top_large">
+                        <p class="slds-text-title">测试说明：</p>
+                        <p class="slds-m-top_x-small">
+                            在URL末尾添加参数进行测试，例如：<br>
+                            <code>?c__IVRSAuthResult=Y</code>
+                        </p>
+                    </div>
+                </div>
+            </lightning-card>
+        </div>
+    </template>
+</template>

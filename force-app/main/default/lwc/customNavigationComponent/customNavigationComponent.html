@@ -1,0 +1,13 @@
+<template>
+    <template if:false={disableLink}>
+        <a onclick={navigateHandler}>
+            {label}
+            <template if:true={showIcon}>
+                <lightning-icon icon-name="utility:info" size="x-small"></lightning-icon>
+            </template>
+        </a>
+    </template>
+    <template if:true={disableLink}>
+        {label}
+    </template>
+</template>

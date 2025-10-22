@@ -1,0 +1,51 @@
+.container {
+    padding: 12px;
+}
+
+.parameter-info {
+    background-color: #f3f3f3;
+    border-radius: 4px;
+    padding: 16px;
+    margin-top: 16px;
+}
+
+.value-list {
+    margin-top: 12px;
+    margin-left: 20px;
+}
+
+.value-item {
+    padding: 8px 12px;
+    margin: 6px 0;
+    border-left: 4px solid transparent;
+    border-radius: 3px;
+}
+
+.value-item.success {
+    border-left-color: #4bca81;
+    background-color: rgba(75, 202, 129, 0.1);
+}
+
+.value-item.warning {
+    border-left-color: #ffb75d;
+    background-color: rgba(255, 183, 93, 0.1);
+}
+
+.value-item.error {
+    border-left-color: #ea001e;
+    background-color: rgba(234, 0, 30, 0.1);
+}
+
+.demo-section {
+    border-top: 1px solid #dddbda;
+    padding-top: 16px;
+}
+
+code {
+    background-color: #f3f3f3;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    margin-top: 8px;
+    display: inline-block;
+}

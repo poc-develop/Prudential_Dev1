@@ -1,0 +1,121 @@
+<template>
+    <div class="health-alert-container">
+        <div class="alert-header">
+            <div class="header-left">
+                <div class="alert-icon-container">
+                    <lightning-icon 
+                        icon-name="utility:notification"
+                        size="small">
+                    </lightning-icon>
+                </div>
+                <span class="alert-count-text">{alertCountText}</span>
+            </div>
+            <div class="header-right">
+                <lightning-button 
+                    label="Create"
+                    variant="brand-outline" 
+                    class="slds-m-right_small"
+                    onclick={openTaskQuickAction}
+                    >
+                </lightning-button>
+                <lightning-button-icon
+                    icon-name="utility:refresh"
+                    variant="bare"
+                    size="small"
+                    onclick={handleRefresh}
+                    disabled={isLoading}
+                    alternative-text="Refresh alerts"
+                    class="refresh-button">
+                </lightning-button-icon>
+            </div>
+        </div>
+
+        <div if:true={isLoading} class="loading-container">
+            <lightning-spinner size="small" alternative-text="Loading alerts"></lightning-spinner> 
+        </div>
+         <template if:true={isConfirmationOpen}>
+            <div class="slds-backdrop slds-backdrop_open" onclick={handleBackdropClick}></div>
+            <div class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <div class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Confirm Dismissal</h2>
+                    </div>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p>Once you dismiss, the alert message will no longer be visible to other users. Do you confirm?</p>
+                    </div>
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={handleCancelDismiss}>Cancel</button>
+                        <button class="slds-button slds-button_destructive" onclick={handleConfirmDismiss}>Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <!-- Task List -->
+         <div class="alerts-section">
+            <template if:true={tasks}>
+                <div>
+                    <template for:each={tasks} for:item="task">
+                        <div class="alert-item" key={task.Id}>
+                            <!-- Collapsible Header -->
+                            <div class="alert-main-row"   data-taskid={task.Id}>
+                                <div class="alert-left">
+                                    <lightning-icon 
+                                        icon-name={task.chevronIcon} 
+                                        size="x-small" 
+                                        alternative-text={task.expandText}
+                                        class="slds-m-left_small slds-align-middle"
+                                        onclick={handleExpand}>
+                                    </lightning-icon>
+                                    <lightning-icon 
+                                        icon-name={task.icon} 
+                                        size="small" 
+                                        alternative-text="Task status">
+                                    </lightning-icon>
+                                    <span class="font-weight_bold">{task.Subject}</span>
+                                </div>
+                                <div class="alert-right">
+                                    <button
+                                        class="dismiss-text-button" 
+                                        onclick={handleDismissClick} 
+                                        data-taskid={task.Id}>
+                                        Dismiss
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Expanded Content -->
+                            <template if:true={task.expanded}>
+                                <div class="alert-details">
+                                     <div class="alert-description">
+                                        {task.Description}
+                                    </div>
+                                    <div if:true={task.ActivityDate} class="alert-due-date">
+                                        <span>Due: {task.ActivityDate}</span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            <!-- Error Handling -->
+            <template if:true={tasks.error}>
+                <div class="slds-text-color_error slds-m-around_medium">
+                    Error loading tasks: {tasks.error.message}
+                </div>
+            </template>
+
+            <!-- No Tasks Message -->
+            <template if:false={hasTasks}>
+                <template if:false={hasError}>
+                    <div class="no-alerts-container">
+                        <lightning-icon icon-name="utility:check" size="small" class="no-alerts-icon"></lightning-icon>
+                        <span class="no-alerts-text">No active alert messages</span>
+                    </div>
+                </template>
+                
+            </template>
+        </div>
+        
+    </div>
+</template>

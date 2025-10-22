@@ -1,0 +1,162 @@
+<template>
+    <lightning-card title="Upload Excel" icon-name="utility:upload">
+        <div class="slds-p-around_medium">
+            <div 
+                class="drop-area slds-p-around_x-large slds-text-align_center slds-box slds-box_x-small"
+                ondragover={handleDragOver}
+                ondragleave={handleDragLeave}
+                ondrop={handleDrop}
+            >
+                <lightning-icon icon-name="utility:upload" size="medium"></lightning-icon>
+                <p class="slds-m-top_small">Drag and drop Excel file here</p>
+                <p class="slds-text-color_weak slds-m-top_x-small">Support .xlsx, .xls and .csv formats</p>
+            </div>
+            
+            <div class="slds-m-top_medium">
+                <lightning-card>
+                    <h3 slot="title">File Info</h3>
+                    <div class="slds-p-around_small">
+                        <p if:true={fileInfo} class="slds-text-heading_small">{fileInfo}</p>
+
+                        <!-- 新增的下拉菜单和输入框 -->
+                        <div class="slds-m-top_medium">
+                            <lightning-combobox
+                                name="targetObject"
+                                label="Target Object"
+                                value={selectedTargetObject}
+                                placeholder="Select Target Object"
+                                options={targetObjectOptions}
+                                onchange={handleTargetObjectChange}
+                                class="slds-m-bottom_medium"
+                                required>
+                            </lightning-combobox>
+                        </div>
+
+                        <!-- 新增的下拉菜单和输入框 -->
+                        <div class="slds-m-top_medium">
+                            <lightning-combobox
+                                name="getChannels"
+                                label="Channel"
+                                value={selectedChannel}
+                                placeholder="Select Channel"
+                                options={channelOptions}
+                                onchange={handleChannelChange}
+                                class="slds-m-bottom_medium"
+                                required>
+                            </lightning-combobox>
+                        </div>
+
+                        <!-- 下拉菜单 -->
+                        <div class="slds-m-top_medium">
+                            <lightning-combobox
+                                name="callType"
+                                label="Call Type"
+                                value={selectedCallType}
+                                placeholder="Select Call Type"
+                                options={callTypeOptions}
+                                onchange={handleCallTypeChange}
+                                class="slds-m-bottom_medium"
+                                required>
+                            </lightning-combobox>
+                        </div>
+
+                        <div class="slds-m-top_medium">
+                            <lightning-combobox
+                                name="subType"
+                                label="Sub Type"
+                                value={selectedSubType}
+                                placeholder="Please select the sub type"
+                                options={subTypeOptions}
+                                onchange={handleSubTypeChange}
+                                class="slds-m-bottom_medium"
+                                required>
+                            </lightning-combobox>
+                        </div>
+                        
+                        <div class="slds-m-top_medium slds-grid slds-grid_align-center">
+                            <!-- <lightning-button 
+                                label="Preview Data" 
+                                onclick={previewExcelData}
+                                disabled={disableParseButton}
+                                variant="neutral"
+                                class="slds-col">
+                            </lightning-button> -->
+                            
+                            <lightning-button 
+                                label="Upload" 
+                                onclick={parseAndSaveExcel}
+                                disabled={disableParseButton}
+                                is-loading={isLoading}
+                                variant="brand"
+                                class="slds-col slds-m-left_x-small">
+                            </lightning-button>
+                            
+                            <!-- <lightning-button 
+                                label="Reset" 
+                                onclick={resetFileInfo}
+                                disabled={isLoading}
+                                variant="neutral"
+                                class="slds-col slds-m-left_x-small">
+                            </lightning-button> -->
+                        </div>
+                        
+                        <div if:true={isLoading} class="slds-m-top_medium slds-text-align_center">
+                            <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+                            <p class="slds-m-top_small">Processing, please wait...</p>
+                        </div>
+                        
+                        <div if:true={processingStats} class="slds-m-top_medium">
+                            <lightning-card>
+                                <h4 slot="title">Process result</h4>
+                                <div class="slds-p-around_small">
+                                    <p>{statsText}</p>
+                                    <p if:true={processingStats.recordIds} class="slds-m-top_small slds-text-color_weak">
+                                        Create {processingStats.successfulRecords} records
+                                    </p>
+                                </div>
+                            </lightning-card>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+        </div>
+
+        <!-- 数据预览模态框 -->
+        <template if:true={showPreviewModal}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closePreviewModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="Close"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Excel Data Preview</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                            <lightning-button
+                                label="Copy JSON"
+                                onclick={copyJsonToClipboard}
+                                variant="neutral"
+                                class="slds-m-right_small">
+                            </lightning-button>
+                        </div>
+                        
+                        <div class="json-preview-container">
+                            <pre class="json-preview">{formattedJson}</pre>
+                        </div>
+                        
+                        <div class="slds-m-top_small">
+                            <p class="slds-text-color_weak">Total Records: {previewRecordCount}</p>
+                            <p class="slds-text-color_weak">Showing first {maxPreviewRecords} records</p>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Close" onclick={closePreviewModal} variant="neutral"></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </lightning-card>
+</template>

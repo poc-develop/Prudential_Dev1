@@ -1,0 +1,533 @@
+.slds-required {
+	color: #c23934;
+}
+
+.slds-text-link {
+	color: #0176d3;
+	text-decoration: none;
+}
+
+.slds-text-link:hover {
+	text-decoration: underline;
+}
+
+.slds-page-header {
+	background: #f3f2f2;
+	border-bottom: 1px solid #dddbda;
+}
+
+.slds-page-header__title {
+	font-size: 1.5rem;
+	font-weight: 300;
+}
+
+/* 标题居中样式 */
+.page-title {
+	text-align: center;
+	width: 100%;
+}
+
+.slds-page-header__name-title {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+.slds-form-element__help {
+	margin-top: 0.25rem;
+}
+
+.slds-avatar_circle {
+	border-radius: 50%;
+}
+
+.slds-icon_container {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.slds-media_center {
+	align-items: center;
+}
+
+.slds-box {
+	border: 1px solid #dddbda;
+	border-radius: 0.25rem;
+	background: #ffffff;
+}
+
+.slds-border_top {
+	border-top: 1px solid #dddbda;
+}
+
+/* Hotline Group 特殊样式 */
+.hotline-group-container {
+	background-color: #fff3e0;
+	padding: 0.75rem;
+	border-radius: 0.25rem;
+	border: 1px solid #ffcc80;
+}
+
+.refresh-icon {
+	color: #666;
+	cursor: pointer;
+}
+
+.refresh-icon:hover {
+	color: #0176d3;
+}
+
+/* 字段间距优化 */
+.slds-form-element {
+	margin-bottom: 1rem;
+}
+
+.slds-form-element__control {
+	margin-top: 0.25rem;
+}
+
+/* 输入框样式优化 */
+lightning-input-field {
+	display: block;
+}
+
+.master-case-form {
+	padding: 0rem 1rem;
+}
+
+.Case-title {
+	text-align: center;
+    padding-left: 7rem;
+}
+
+
+/* 响应式布局优化 */
+@media (max-width: 768px) {
+	.slds-page-header__title {
+		font-size: 1.25rem;
+	}
+	
+	.slds-p-around_medium {
+		padding: 0.5rem;
+	}
+
+	.wrap-up-table-header,
+	.wrap-up-table-row {
+		font-size: 0.875rem;
+	}
+	
+	.wrap-up-header-text {
+		font-size: 0.625rem;
+	}
+}
+
+
+
+
+
+.case-container {
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    background-color: #ffffff;
+    margin-bottom: 1rem;
+}
+
+.case-container .slds-box {
+    border: none;
+    box-shadow: none;
+}
+
+/* 表格样式 */
+.slds-table {
+    border-collapse: collapse;
+}
+
+.slds-table th {
+    background-color: #f3f2f2;
+    font-weight: 600;
+    color: #514f4d;
+}
+
+.slds-table td {
+    vertical-align: middle;
+    padding: 0.5rem;
+}
+
+/* Policy行样式 */
+.slds-table tr:not(.wrap-up-row) {
+    background-color: #ffffff;
+    border-bottom: 1px solid #d8dde6;
+}
+
+/* Wrap-up行样式 */
+.wrap-up-row {
+    background-color: #f8f9fa;
+    border-left: 3px solid #0070d2;
+}
+
+.wrap-up-row td:first-child {
+    padding-left: 1.5rem;
+}
+
+/* 表格内的网格布局 */
+.slds-table .slds-grid {
+    margin: 0;
+}
+
+.slds-table .slds-col {
+    padding: 0 0.25rem;
+}
+
+.slds-table .slds-col:first-child {
+    padding-left: 0;
+}
+
+.slds-table .slds-col:last-child {
+    padding-right: 0;
+}
+
+.slds-text-link {
+    color: #0070d2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.slds-text-link:hover {
+    text-decoration: underline;
+}
+
+.slds-text-title {
+    font-weight: 600;
+    color: #514f4d;
+    font-size: 0.875rem;
+}
+
+.combobox {
+    margin-top: 0.3rem;
+}
+
+.item-label {
+    line-height: 40px;
+}
+
+/* 按钮样式 */
+.add-button {
+    --sds-c-button-color-background: #0070d2;
+    --sds-c-button-color-border: #0070d2;
+    --sds-c-button-color-text: #ffffff;
+    margin-top: 0.5rem;
+}
+
+.remove-button {
+    /* --sds-c-button-color-background: #dc3545; */
+    --sds-c-button-color-border: #dc3545;
+    --sds-c-button-color-text: #ffffff;
+    margin-top: 0.5rem;
+}
+
+lightning-button-icon[icon-name="utility:delete"] {
+    --sds-c-button-color-background: #dc3545;
+    --sds-c-button-color-border: #dc3545;
+    --sds-c-button-color-text: #ffffff;
+}
+
+/* 表单元素样式 */
+lightning-combobox {
+    margin-bottom: 0.25rem;
+}
+
+lightning-input[type="checkbox"] {
+    margin-top: 0.25rem;
+}
+
+/* 加载状态 */
+.slds-spinner_container {
+    position: relative;
+    z-index: 1000;
+} 
+
+.slds-pill_container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Pill Box 容器样式，支持换行与高亮 */
+.policy-row {
+    align-items: flex-start;
+}
+
+.pill-box {
+    border: 1px solid #e5e5e5;
+    background: #fafafa;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    min-height: 40px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.pill-box-active {
+    border-color: #0176d3;
+    background: #eaf3ff;
+    box-shadow: 0 0 0 1px #0176d3 inset;
+}
+
+.non-policy-col lightning-input {
+    margin-top: 0.25rem;
+}
+
+.slds-modal__content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* 自定义单选列表的间距 */
+.custom-radio-list .custom-radio-item {
+    margin-bottom: 0.5rem;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+    backdrop-filter: blur(4px); /* 模糊效果 */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.slds-modal {
+    position: relative;
+    width: 50%; /* 调整模态框宽度 */
+}
+
+.modal-close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10000;
+}
+
+
+/* Wrap Up 表格样式 */
+.wrap-up-section {
+	margin-top: 1.5rem;
+	padding: 1rem;
+	background-color: #f8f9fa;
+	border-radius: 0.25rem;
+	border: 1px solid #e9ecef;
+}
+
+.wrap-up-header {
+	color: #495057;
+	font-weight: 600;
+	margin-bottom: 1rem;
+}
+
+.wrap-up-table-header {
+	background-color: #e9ecef;
+	padding: 0.75rem 0;
+	border-radius: 0.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.wrap-up-header-text {
+	color: #495057;
+	font-weight: 600;
+	font-size: 0.75rem;
+}
+
+.wrap-up-table-row {
+	/* padding: 0.5rem 0; */
+	border-bottom: 1px solid #dee2e6;
+	align-items: center;
+}
+
+.wrap-up-table-row:last-child {
+	border-bottom: none;
+}
+
+/* 表格列宽度调整 */
+.wrap-up-table-row .slds-size_1-of-12 {
+	padding: 0 0.25rem;
+}
+
+.wrap-up-table-row .slds-size_3-of-12 {
+	padding: 0 0.5rem;
+}
+
+.wrap-up-table-row .slds-size_4-of-12 {
+	padding: 0 0.5rem;
+}
+
+/* 确保combobox在表格中正确显示 */
+.wrap-up-table-row lightning-combobox {
+	width: 100%;
+}
+
+.wrap-up-table-row lightning-input {
+	width: 100%;
+} 
+
+
+
+/* ==================================Follow Up Dual Listbox 样式================================== */
+
+.custom-dual-listbox {
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    background: #ffffff;
+    padding: 1rem;
+}
+
+.dual-listbox-container {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch; /* 让所有子元素高度一致 */
+}
+
+.listbox-section {
+    flex: 1;
+    min-width: 0; /* 允许flex项目收缩 */
+    display: flex;
+    flex-direction: column;
+}
+
+.listbox-header {
+    background-color: #f3f2f2;
+    padding: 0.5rem;
+    font-weight: 600;
+    color: #514f4d;
+    border-bottom: 1px solid #dddbda;
+    text-align: center;
+}
+
+.search-container {
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dddbda;
+}
+
+.follow-up-search {
+    width: 100%;
+}
+
+.listbox-content {
+    border: 1px solid #dddbda;
+    border-top: none;
+    max-height: 300px;
+    min-height: 300px; /* 确保最小高度 */
+    overflow-y: auto;
+    background: #ffffff;
+    flex: 1; /* 填充剩余空间 */
+}
+
+.listbox-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid #f3f2f2;
+}
+
+.listbox-item:last-child {
+    border-bottom: none;
+}
+
+.listbox-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0.5rem;
+    min-height: 300px; /* 与listbox-content的max-height保持一致 */
+}
+
+/* 确保长文本完全显示 */
+.follow-up-checkbox {
+    width: 100%;
+}
+
+.follow-up-checkbox .slds-form-element__label {
+    white-space: normal !important;
+    word-wrap: break-word;
+    word-break: break-word;
+    line-height: 1.4;
+    padding-right: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.pill-container {
+	width: 100%;
+	height: 120px; /* 默认高度 */
+	border: 1px solid #dddbda;
+	border-radius: 4px;
+	padding: 6px;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	background: #fafaf9;
+	transition: all 0.3s;
+	overflow-y: auto; /* 垂直滚动 */
+}
+
+.container-highlight {
+    border-color: #0070d2;
+    background-color: #f0f8ff;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .dual-listbox-container {
+        flex-direction: column;
+    }
+    
+    .listbox-actions {
+        flex-direction: row;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+    
+    .action-button {
+        min-width: 80px;
+    }
+}
+
+/* ==================================底部按钮固定================================== */
+
+/* 变量：可通过JS动态注入 */
+:host {
+	--nwd-footer-height: 56px; /* 底部按钮栏高度 */
+	--nwd-utility-bar-height: 56px; /* Salesforce Utility Bar 高度（默认56px，可在JS中覆盖） */
+}
+
+/* 页面底部固定操作栏 */
+.footer-action-bar {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: var(--nwd-utility-bar-height);
+	background: #fff;
+	border-top: 1px solid #dddbda;
+	height: var(--nwd-footer-height);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10;
+}
+
+.footer-action-bar__inner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* 为主内容添加底部留白，避免被固定按钮与Utility Bar遮挡 */
+.page-content {
+	padding-bottom: calc(var(--nwd-footer-height) + var(--nwd-utility-bar-height) + 16px);
+} 
+/* ==================================底部按钮固定================================== */

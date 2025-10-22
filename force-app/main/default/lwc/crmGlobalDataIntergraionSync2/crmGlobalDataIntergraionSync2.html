@@ -1,0 +1,41 @@
+<!--
+  @description       : 
+  @author            : Franco
+  @group             : 
+  @last modified on  : 2025-09-27
+  @last modified by  : Franco
+-->
+<template>
+    <template lwc:if={isVisible}>
+        <lightning-card>
+            <h3 slot="title">
+                {configName}
+            </h3>
+            <div class="slds-p-around_medium">
+                <lightning-button
+                    lwc:if={buttonLabel}
+                    label={buttonLabel}
+                    variant="neutral"
+                    icon-name="utility:refresh"
+                    onclick={handleClick}
+                    disabled={isLoading}
+                    class="slds-m-left_x-small"
+                ></lightning-button>
+                <div lwc:if={isLoading} class="slds-align_absolute-center">
+                    <lightning-spinner alternative-text="Syncing" size="medium"></lightning-spinner>
+                    <div class="slds-m-left_small">{label}...</div>
+                </div>
+
+                <div lwc:if={successMessage} class="slds-notify slds-notify_alert slds-theme_success">
+                    <lightning-icon icon-name="utility:success" size="small"></lightning-icon>
+                    <span class="slds-m-left_x-small">{successMessage}</span>
+                </div>
+
+                <div lwc:if={error} class="slds-notify slds-notify_alert slds-theme_error">
+                    <lightning-icon icon-name="utility:error" size="small"></lightning-icon>
+                    <span class="slds-m-left_x-small">{error}</span>
+                </div>
+            </div>
+        </lightning-card>
+    </template>
+</template>

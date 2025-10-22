@@ -1,0 +1,74 @@
+.drop-area {
+    border: 2px dashed #dddbda;
+    border-radius: 8px;
+    background-color: #fafaf9;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.drop-area:hover {
+    background-color: #f3f2f2;
+    border-color: #0176d3;
+}
+
+.dragover {
+    background-color: #eef4ff;
+    border-color: #0176d3;
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(1, 118, 211, 0.2);
+}
+
+.stats-success {
+    color: #2e844a;
+}
+
+.stats-warning {
+    color: #fe9339;
+}
+
+.stats-error {
+    color: #ea001e;
+}
+
+/* 预览模态框样式 */
+.json-preview-container {
+    max-height: 400px;
+    overflow: auto;
+    border: 1px solid #dddbda;
+    border-radius: 4px;
+    padding: 12px;
+    background-color: #fafaf9;
+    margin-bottom: 12px;
+}
+
+.json-preview {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* 模态框滚动条样式 */
+.json-preview-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.json-preview-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.json-preview-container::-webkit-scrollbar-thumb {
+    background: #c9c9c9;
+    border-radius: 4px;
+}
+
+.json-preview-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

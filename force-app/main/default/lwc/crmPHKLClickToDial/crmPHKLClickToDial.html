@@ -1,0 +1,6 @@
+<template>
+    <p><lightning-click-to-dial value = "23456789" onclick={handleClick} record-id="500D300000EthHIIAZ"></lightning-click-to-dial></p>
+    <template if:true={error}>
+        <p>Error loading phone number.</p>
+    </template>
+</template>
