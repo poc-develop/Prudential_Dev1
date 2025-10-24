@@ -2,9 +2,10 @@
  * @description       : Service class to handle the response from the CRM Global Data Integration process
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-20
+ * @last modified on  : 2025-10-21
  * @last modified by  : Franco
 **/
+@SuppressWarnings('PMD')
 public with sharing class CRMGlobalDataIntegrationRespService {
 
     /**
@@ -102,15 +103,18 @@ public with sharing class CRMGlobalDataIntegrationRespService {
         String datetimeFormat = configWrapper.config.Datetime_Format__c;
         if(datetimeFormat == null || datetimeFormat == 'YYYY-MM-dd HH:mm:ss') {
             String[] datetimeArr = valueStr.split(separator);
-            return Datetime.valueOf(datetimeArr[0] + ' ' + datetimeArr[1]);
+            String timePart = datetimeArr.size() > 1 ? datetimeArr[1] : '00:00:00';
+            return Datetime.valueOf(datetimeArr[0] + ' ' + timePart);
         } else if(datetimeFormat == 'MM/dd/YYYY HH:mm:ss') {
             String[] datetimeArr = valueStr.split(separator);
             String[] dateArr = datetimeArr[0].split('/');
-            return Datetime.valueOf(dateArr[2] + '-' + dateArr[0] + '-' + dateArr[1] + ' ' + datetimeArr[1]);
+            String timePart = datetimeArr.size() > 1 ? datetimeArr[1] : '00:00:00';
+            return Datetime.valueOf(dateArr[2] + '-' + dateArr[0] + '-' + dateArr[1] + ' ' + timePart);
         } else if(datetimeFormat == 'dd/MM/YYYY HH:mm:ss') {
             String[] datetimeArr = valueStr.split(separator);
             String[] dateArr = datetimeArr[0].split('/');
-            return Datetime.valueOf(dateArr[2] + '-' + dateArr[1] + '-' + dateArr[0] + ' ' + datetimeArr[1]);
+            String timePart = datetimeArr.size() > 1 ? datetimeArr[1] : '00:00:00';
+            return Datetime.valueOf(dateArr[2] + '-' + dateArr[1] + '-' + dateArr[0] + ' ' + timePart);
         }
         return null;
     }

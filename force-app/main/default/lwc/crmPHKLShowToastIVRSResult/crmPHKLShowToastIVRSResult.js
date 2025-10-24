@@ -39,12 +39,12 @@ export default class CrmPHKLShowToastIVRSResult extends LightningElement {
                 message = '';
                 break;
             case 'C':
-                variant = 'warning';
+                variant = 'success';
                 title = 'Corporate Case, PN & Phone Checked!';
                 message = '';
                 break;
             case 'AUTHENTICATION TIMEOUT':
-                variant = 'warning';
+                variant = 'error';
                 title = 'The authentication has timeout.';
                 message = '';
                 break;
