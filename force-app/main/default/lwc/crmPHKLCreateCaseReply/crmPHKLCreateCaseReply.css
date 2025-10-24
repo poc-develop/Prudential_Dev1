@@ -1,0 +1,20 @@
+/* Reply Modal Styles */
+
+.reply-container {
+    min-height: 200px;
+}
+
+lightning-textarea {
+    width: 100%;
+}
+
+/* Loading spinner overlay */
+lightning-spinner {
+    position: relative;
+    z-index: 9999;
+}
+
+
+.slds-textarea {
+    min-height: 150px;
+}
