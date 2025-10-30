@@ -1,6 +1,7 @@
 import { LightningElement,wire,api,track } from 'lwc';
 import { CloseActionScreenEvent } from 'lightning/actions';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import createCaseReply from '@salesforce/apex/CRMPHKLCreateCaseReplyController.createCaseReply';
 
 export default class CrmPHKLCreateCaseReply extends LightningElement {
     @api recordId;
@@ -28,31 +29,28 @@ export default class CrmPHKLCreateCaseReply extends LightningElement {
             this.showToast('Error', 'Please enter a reply', 'error');
             return;
         }
-
         this.isLoading = true;
-
-        try {
-            // 调用 Apex 方法创建 Case Comment
-            // const commentId = await createCaseComment({ 
-            //     caseId: this.recordId, 
-            //     commentBody: this.replyText 
-            // });
-
-            this.showToast('Success', 'Reply sent successfully', 'success');
-            
-            // 关闭模态框并返回回复内容
-            this.close();
-
-        } catch (error) {
+        createCaseReply({ caseId: this.recordId, replyText: this.replyText })
+        .then(result => {
+            if (result) {
+                this.showToast('Success', 'Reply sent successfully', 'success');
+            } else {
+                this.showToast('Error', 'Failed to send reply', 'error');
+            }
+        })
+        .catch(error => {
             console.error('Error saving reply:', error);
             this.showToast(
                 'Error', 
                 error.body?.message || 'An error occurred while sending the reply', 
                 'error'
             );
-        } finally {
+        })
+        .finally(() => {
+            this.close();
             this.isLoading = false;
-        }
+        });
+
     }
 
     // 显示 Toast 消息

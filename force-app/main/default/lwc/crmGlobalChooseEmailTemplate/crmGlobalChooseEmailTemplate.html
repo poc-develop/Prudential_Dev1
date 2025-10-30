@@ -1,0 +1,76 @@
+<template>
+    <div class="slds-theme_default">
+        <template lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+        <lightning-accordion allow-multiple-sections-open active-section-name="A" class="accordion">
+            <lightning-accordion-section name="A" label="Email Template">
+                <!-- 搜索框 -->
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item padding="around-small" size="8">
+                        <lightning-input 
+                            type="search"
+                            label="Search Lightning Email Templates"
+                            placeholder="Type to search templates..."
+                            value={searchKey}
+                            onchange={handleSearchChange}>
+                        </lightning-input>
+                        <template lwc:if={hasSearchResults}>
+                            <div class="slds-box " style="max-height: 500px; overflow-y: auto; margin-top: 5px;">
+                                <lightning-radio-group 
+                                    name="templateRadio"
+                                    label="Select Template"
+                                    options={templateOptions}
+                                    value={selectedTemplateId}
+                                    onchange={handleTemplateSelect}
+                                    type="radio">
+                                </lightning-radio-group>
+                            </div>
+                        </template>
+                    </lightning-layout-item>
+                    <template lwc:if={noTemplateFound}>
+                        {noTemplateFoundMessage}
+                    </template>
+                </lightning-layout>
+                
+                <!-- 显示选中的模板名称 -->
+                <template lwc:if={selectedTemplateName}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item padding="around-small" size="8">
+                            <div class="slds-text-heading_small slds-m-top_small">
+                                Selected: <strong>{selectedTemplateName}</strong>
+                            </div>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </template>
+                
+                <!-- Email Content -->
+                <lightning-layout>
+                    <lightning-layout-item padding="around-small" size="8">
+                        <lightning-textarea 
+                            name="emailContent" 
+                            label="Email Content" 
+                            placeholder="Select a template to load content..." 
+                            value={emailContent} 
+                            onchange={handleEmailContentChange}
+                            rows="10">
+                        </lightning-textarea>
+                    </lightning-layout-item>
+                </lightning-layout>
+                <lightning-layout>
+                    <lightning-layout-item padding="around-small" size="8">
+                        <div class="slds-m-top_medium">
+                            <lightning-button
+                                variant="brand"
+                                label="Send Note"
+                                onclick={handleSendNote}
+                                disabled={isSendButtonDisabled}
+                                class="slds-m-right_small"
+                            ></lightning-button>
+                        </div>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>

@@ -2,7 +2,7 @@
  * @description       : Utility class to handle template merge fields
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-09-28
+ * @last modified on  : 2025-10-23
  * @last modified by  : Franco
 **/
 public with sharing class CRMGlobalTemplateMergeFieldService {
@@ -77,27 +77,53 @@ public with sharing class CRMGlobalTemplateMergeFieldService {
      * @param fieldPath     : The field path to resolve (e.g. "Name" or "Contact.Name")
      * @return String       : The field value as a string, or null if not found
      */
+    // private static String resolveFieldValue(SObject record, String fieldPath) {
+    //     if (record == null || String.isBlank(fieldPath)) {
+    //         return null;
+    //     }
+        
+    //     if (fieldPath.contains('.')) {
+    //         // Handle RelationshipName.FieldName
+    //         List<String> parts = fieldPath.split('\\.');
+    //         String relationshipName = parts[0];
+    //         String fieldName = parts[1];
+            
+    //         SObject related = record.getSObject(relationshipName);
+    //         if (related != null) {
+    //             Object val = related.get(fieldName);
+    //             return convertToStringIfNotNull(val);
+    //         }
+    //         return null;
+    //     } else {
+    //         Object val = record.get(fieldPath);
+    //         return convertToStringIfNotNull(val);
+    //     }
+    // }
+
     private static String resolveFieldValue(SObject record, String fieldPath) {
         if (record == null || String.isBlank(fieldPath)) {
             return null;
         }
-        
-        if (fieldPath.contains('.')) {
-            // Handle RelationshipName.FieldName
-            List<String> parts = fieldPath.split('\\.');
-            String relationshipName = parts[0];
-            String fieldName = parts[1];
-            
-            SObject related = record.getSObject(relationshipName);
-            if (related != null) {
-                Object val = related.get(fieldName);
-                return convertToStringIfNotNull(val);
+
+        List<String> parts = fieldPath.split('\\.');
+        SObject currentRecord = record;
+        Object currentValue;
+
+        for (Integer i = 0; i < parts.size(); i++) {
+            String part = parts[i];
+
+            if (i == parts.size() - 1) {
+                currentValue = currentRecord.get(part);
+                return convertToStringIfNotNull(currentValue);
+            } else {
+                currentRecord = currentRecord.getSObject(part);
+                if (currentRecord == null) {
+                    return null;
+                }
             }
-            return null;
-        } else {
-            Object val = record.get(fieldPath);
-            return convertToStringIfNotNull(val);
         }
+
+        return null;
     }
 
     /**
