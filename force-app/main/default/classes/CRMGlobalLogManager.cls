@@ -164,6 +164,7 @@ public without sharing class CRMGlobalLogManager {
             Request_Body__c = req?.getBody(),
             Response_Body__c = res?.getBody(),
             Response_Status_Code__c = res?.getStatusCode(),
+            Transaction_ID__c = System.Request.getCurrent().getRequestId(),
             Type__c = 'Outbound'
         );
         return wsLog;

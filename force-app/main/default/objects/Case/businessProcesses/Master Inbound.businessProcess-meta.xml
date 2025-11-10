@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BusinessProcess xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Master Inbound</fullName>
+    <description>Master Inbound Case Support Process</description>
+    <isActive>true</isActive>
+    <values>
+        <fullName>Closed</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Completed</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Escalated</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Escalated Active</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Escalated Active %282%29</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Escalated Completed</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Escalated Completed %282%29</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Escalated Pending</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Escalated Pending %282%29</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>New</fullName>
+        <default>true</default>
+    </values>
+    <values>
+        <fullName>On Hold</fullName>
+        <default>false</default>
+    </values>
+    <values>
+        <fullName>Pending to Close</fullName>
+        <default>false</default>
+    </values>
+</BusinessProcess>

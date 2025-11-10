@@ -2,7 +2,7 @@
  * @description       : Controller for CRM Global Data Integration LWC
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-20
+ * @last modified on  : 2025-10-26
  * @last modified by  : Franco
 **/
 public with sharing class CRMGlobalDataIntegrationController {
@@ -21,7 +21,8 @@ public with sharing class CRMGlobalDataIntegrationController {
                 Parent_ExId_Field__c, Parent_Object__c, Success_Codes__c, Timeout__c, Boolean_True_Values__c, 
                 Date_Format__c, Datetime_Format__c, 
                     (SELECT Id, Target_Object__c, Target_ExId_Field__c, Target_Parent_Field__c, Field_Mappings__c,
-                            Response_Path__c, Target_Record_Type__c, Response_Composite_Keys__c, Include_Parent_Id_To_ExId_Field__c 
+                            Response_Path__c, Target_Record_Type__c, Response_Composite_Keys__c, Result_Filter__c, 
+                            Include_Parent_Id_To_ExId_Field__c, Include_Parent_ExtId_To_ExId_Field__c 
                     FROM DataIntegration_Target__r
                     WHERE Is_Active__c = true)
             FROM CRM_Global_DataIntegration_Config__mdt
@@ -56,6 +57,44 @@ public with sharing class CRMGlobalDataIntegrationController {
         return syncResult;
     }
 
+    /**
+     * @description Execute SOQL
+     * @param SOQL 
+     * @return `List<SObject>`
+     * @exception 
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<Id> executeSOQL(String query, Id contextId) {
+        List<Id> recordIds = new List<Id>();
+        
+        try {
+            // 1. Sanitize and prepare the query string
+            if (String.isNotBlank(query) && query.contains(':recordId')) {
+                if(contextId == null) {
+                    throw new AuraHandledException('Query uses :recordId, but no contextId was provided.');
+                }
+                // Securely bind the recordId variable by replacing the placeholder
+                query = query.replace(':recordId', '\'' + String.escapeSingleQuotes(contextId) + '\'');
+            }
+
+            // 2. Ensure query is not empty after potential modifications
+            if (String.isBlank(query)) {
+                throw new AuraHandledException('SOQL query is blank.');
+            }
+
+            // 3. Execute the dynamic query
+            for (SObject sObj : Database.query(query)) {
+                recordIds.add(sObj.Id);
+            }
+
+            return recordIds;
+
+        } catch (Exception e) {
+            // Surface any query or other exception back to the LWC
+            throw new AuraHandledException('SOQL Error: ' + e.getMessage());
+        }
+    }
+    
     /**
      * @description Sync with Integration With Config
      * @param recordId 

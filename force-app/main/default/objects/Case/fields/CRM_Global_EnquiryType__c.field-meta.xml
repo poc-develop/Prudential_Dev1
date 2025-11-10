@@ -26,6 +26,11 @@
                 <default>false</default>
                 <label>Underwriting</label>
             </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

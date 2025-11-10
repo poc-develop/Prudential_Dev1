@@ -62,16 +62,16 @@ public with sharing class CRMGlobalExcelParserController {
         ProcessingResult result = new ProcessingResult();
         
         try {
-            // 使用JSON.deserializeUntyped先检查数据结构
+            // use JSON.deserializeUntyped check data structure
             Map<String, Object> untypedMap = (Map<String, Object>) JSON.deserializeUntyped(recordsData);
             
-            // 手动构建ExcelDataWrapper对象
+            // set ExcelDataWrapper object
             ExcelDataWrapper wrapper = new ExcelDataWrapper();
             wrapper.fileName = (String) untypedMap.get('fileName');
             wrapper.uploadDate = (String) untypedMap.get('uploadDate');
             wrapper.totalSheets = (Integer) untypedMap.get('totalSheets');
             
-            // 处理records数组
+            // records array
             List<Object> recordsList = (List<Object>) untypedMap.get('records');
             wrapper.records = new List<ExcelRecord>();
             
@@ -83,7 +83,7 @@ public with sharing class CRMGlobalExcelParserController {
                     record.rowNumber = (Integer) recordMap.get('rowNumber');
                     record.originalData = (String) recordMap.get('originalData');
                     
-                    // 处理data字段
+                    // data fields
                     Map<String, Object> dataMap = (Map<String, Object>) recordMap.get('data');
                     record.data = new Map<String, Object>();
                     
@@ -103,17 +103,17 @@ public with sharing class CRMGlobalExcelParserController {
                 return result;
             }
             
-            // ============ 新增逻辑开始 ============
+            // ============ new logic begin ============
             List<Database.SaveResult> saveResults = saveJobWithRaw(fileName, callType, targetObject, wrapper.records, channel, subType);
             
-            // 统计处理结果
+            // count handler result
             for (Database.SaveResult sr : saveResults) {
                 if (sr.isSuccess()) {
                     result.successfulRecords++;
                     result.recordIds.add(sr.getId());
                 } else {
                     result.failedRecords++;
-                    // 记录错误信息（可选）
+                    // errro info (optional)
                     for(Database.Error err : sr.getErrors()) {
                         System.debug('Error: ' + err.getMessage());
                     }
@@ -121,7 +121,8 @@ public with sharing class CRMGlobalExcelParserController {
             }
             
         } catch (Exception e) {
-            throw new AuraHandledException('Process Excel data failed: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString());
+            CRMGlobalLogManager.addApexErrorLog('ParseExcelAndSaveRecords: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
+            throw new AuraHandledException('Parse Excel And Save Records Failed: ' + e.getMessage());
         }
         
         return result;
@@ -142,7 +143,7 @@ public with sharing class CRMGlobalExcelParserController {
         List<CRM_GLOBAL_Raw_Data_Staging__c> recordsToInsert = new List<CRM_GLOBAL_Raw_Data_Staging__c>();
         List<Database.SaveResult> saveResults = new List<Database.SaveResult>();
         try {
-            // 1. 创建CRM_GLOBAL_Data_Ingestion_Job__c主记录
+            // 1. create CRM_GLOBAL_Data_Ingestion_Job__c main record
             CRM_GLOBAL_Data_Ingestion_Job__c job = new CRM_GLOBAL_Data_Ingestion_Job__c();
             job.CRM_GLOBAL_SubmittedSource__c = fileName;
             job.CRM_Global_Call_Type__c = callType;
@@ -153,18 +154,18 @@ public with sharing class CRMGlobalExcelParserController {
             job.CRM_Global_Sub_Type_1__c = subType;
             job.CRM_Global_Channel__c = channel;
 
-            // 插入主记录
+            // insert main record
             insert job;
 
-            // 2. 创建CRM_GLOBAL_Raw_Data_Staging__c子记录
+            // 2. create CRM_GLOBAL_Raw_Data_Staging__c son record
             for (ExcelRecord excelRecord : wrapperRecords) {
                 CRM_GLOBAL_Raw_Data_Staging__c stagingRecord = new CRM_GLOBAL_Raw_Data_Staging__c();
-                stagingRecord.CRM_GLOBAL_DataIngestionJob__c = job.Id; // 关联到主记录
+                stagingRecord.CRM_GLOBAL_DataIngestionJob__c = job.Id;
                 stagingRecord.CRM_GLOBAL_RawJSONData__c = excelRecord.originalData;
-                stagingRecord.CRM_GLOBAL_ProcessingStatus__c = 'Pending'; // 设置默认状态
+                stagingRecord.CRM_GLOBAL_ProcessingStatus__c = 'Pending';
                 stagingRecord.CRM_GLOBAL_ProcessingAttempts__c = 0;
                 
-                // 可选：生成外部ID（使用文件名+工作表名+行号）
+                // optional: External Id
                 stagingRecord.CRM_GLOBAL_ExternalId__c = fileName + '_' + 
                                             excelRecord.sheetName + '_' + 
                                             excelRecord.rowNumber;
@@ -172,10 +173,11 @@ public with sharing class CRMGlobalExcelParserController {
                 recordsToInsert.add(stagingRecord);
             }
 
-            // 批量插入所有子记录
+            // batch insert all son records
             saveResults = Database.insert(recordsToInsert, false);
         } catch (Exception e) {
-            throw new AuraHandledException('Process Excel data failed: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString());
+            CRMGlobalLogManager.addApexErrorLog('SaveJobWithRaw: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
+            throw new AuraHandledException('Save Job With Raw Records Failed: ' + e.getMessage());
         }
         return saveResults;
     }

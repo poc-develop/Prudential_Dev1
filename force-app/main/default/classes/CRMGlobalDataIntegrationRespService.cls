@@ -2,7 +2,7 @@
  * @description       : Service class to handle the response from the CRM Global Data Integration process
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-21
+ * @last modified on  : 2025-10-25
  * @last modified by  : Franco
 **/
 @SuppressWarnings('PMD')
@@ -27,15 +27,18 @@ public with sharing class CRMGlobalDataIntegrationRespService {
                     return parseBooleanValue(configWrapper, value);
                 }
                 when DATE { 
-                    return parseDateValue(configWrapper, value); 
+                    return parseDateValue(configWrapper, value);
                 }
                 when DATETIME { 
-                    return parseDatetimeValue(configWrapper, value); 
+                    return parseDatetimeValue(configWrapper, value);
                 }
                 when INTEGER {
                     return Integer.valueOf(value);
                 }
                 when DOUBLE, CURRENCY, PERCENT {
+                    if(String.valueOf(value) == '') {
+                        return null;
+                    }
                     return Double.valueOf(value);
                 }
                 when else {
@@ -43,7 +46,7 @@ public with sharing class CRMGlobalDataIntegrationRespService {
                 }
             }
         } catch (Exception e) {
-            String errorMessage = 'Error converting value: ' + e.getMessage() + ' for field: ' + fieldDesc.getName();
+            String errorMessage = 'Error converting value: [' + String.valueOf(value) + '] for field: [' + fieldDesc.getName() + '] ' + e.getMessage();
             System.debug(LoggingLevel.ERROR, errorMessage);
             CRMGlobalLogManager.addApexErrorLog(errorMessage, e);
             return null;
@@ -78,6 +81,9 @@ public with sharing class CRMGlobalDataIntegrationRespService {
      * @return  `Date`
      */
     private static Date parseDateValue(CRMGlobalDataIntegrationConfigWrapper configWrapper, Object value) {
+        if (value == null || String.valueOf(value) == '') {
+            return null;
+        }
         String dateFormat = configWrapper.config.Date_Format__c;
         if(dateFormat == null || dateFormat == 'YYYY-MM-dd') {
             return Date.valueOf(String.valueOf(value));
@@ -98,6 +104,9 @@ public with sharing class CRMGlobalDataIntegrationRespService {
      * @return  `Datetime`
      */
     private static Datetime parseDatetimeValue(CRMGlobalDataIntegrationConfigWrapper configWrapper, Object value) {
+        if (value == null || String.valueOf(value) == '') {
+            return null;
+        }
         String valueStr = String.valueOf(value);
         String separator = valueStr.contains('T') ? 'T' : ' ';
         String datetimeFormat = configWrapper.config.Datetime_Format__c;

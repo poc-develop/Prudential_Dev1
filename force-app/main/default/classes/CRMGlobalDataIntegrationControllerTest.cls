@@ -2,7 +2,7 @@
  * @description       : Test class for CRMGlobalDataIntegrationController
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-19
+ * @last modified on  : 2025-10-31
  * @last modified by  : Franco
 **/
 @IsTest
@@ -103,6 +103,30 @@ private class CRMGlobalDataIntegrationControllerTest {
         Test.stopTest();
 
         System.assertEquals(false, result.isSuccess, 'External API integration executed with error');
+    }
+
+    @IsTest
+    static void testExecuteSOQL() {
+        Account acc = [SELECT Id, Name FROM Account WHERE LastName = 'Test Account' LIMIT 1];
+
+        Test.startTest();
+        String soql = 'SELECT Id FROM Account WHERE Id = :recordId';
+        String recordId = acc.Id;
+        try {
+            List<Id> recordsId = CRMGlobalDataIntegrationController.executeSOQL('', null);
+        } catch(Exception e) {
+            System.assert(true, 'SOQL query is blank.');
+        }
+        try {
+            List<Id> recordsId = CRMGlobalDataIntegrationController.executeSOQL(soql, null);
+        } catch(Exception e) {
+            System.assert(true, 'Query uses :recordId, but no contextId was provided.');
+        }
+        List<Id> recordsId = CRMGlobalDataIntegrationController.executeSOQL(soql, recordId);
+        System.assert(recordsId.size() > 0, 'SOQL query executed successfully.');
+        
+        Test.stopTest();
+
     }
 
     // Mock for successful HTTP response

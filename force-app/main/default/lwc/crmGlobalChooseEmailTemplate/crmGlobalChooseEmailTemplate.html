@@ -4,13 +4,13 @@
             <lightning-spinner alternative-text="Loading"></lightning-spinner>
         </template>
         <lightning-accordion allow-multiple-sections-open active-section-name="A" class="accordion">
-            <lightning-accordion-section name="A" label="Email Template">
-                <!-- 搜索框 -->
+            <lightning-accordion-section name="A" label="SMS Template">
+                <!-- Search Input -->
                 <lightning-layout multiple-rows="true">
                     <lightning-layout-item padding="around-small" size="8">
                         <lightning-input 
                             type="search"
-                            label="Search Lightning Email Templates"
+                            label="Search SMS Templates"
                             placeholder="Type to search templates..."
                             value={searchKey}
                             onchange={handleSearchChange}>
@@ -43,16 +43,33 @@
                         </lightning-layout-item>
                     </lightning-layout>
                 </template>
+
+                <!-- recipient number -->
+                <lightning-layout>
+                    <lightning-layout-item padding="around-small" size="8">
+                        <lightning-input type="text" label="Recipient Number" value={defualtAddress} onchange={handleAddressChange}></lightning-input>
+                    </lightning-layout-item>
+                </lightning-layout>
+
+                <!-- Policy No -->
+                <lightning-layout>
+                    <lightning-layout-item padding="around-small" size="8">
+                        <lightning-record-edit-form object-api-name="Case" record-id={currentRecordId}>
+                            <lightning-input-field field-name="CRM_Global_Policy__c" value={policyNo} onchange={handlePolicyNoChange}></lightning-input-field>
+                        </lightning-record-edit-form>
+                    </lightning-layout-item>
+                </lightning-layout>
                 
-                <!-- Email Content -->
+                <!-- Email Template Content -->
                 <lightning-layout>
                     <lightning-layout-item padding="around-small" size="8">
                         <lightning-textarea 
                             name="emailContent" 
-                            label="Email Content" 
+                            label="SMS Template Content" 
                             placeholder="Select a template to load content..." 
                             value={emailContent} 
                             onchange={handleEmailContentChange}
+                            readonly={isEmailContentEditable}
                             rows="10">
                         </lightning-textarea>
                     </lightning-layout-item>
@@ -62,7 +79,7 @@
                         <div class="slds-m-top_medium">
                             <lightning-button
                                 variant="brand"
-                                label="Send Note"
+                                label="Send SMS"
                                 onclick={handleSendNote}
                                 disabled={isSendButtonDisabled}
                                 class="slds-m-right_small"

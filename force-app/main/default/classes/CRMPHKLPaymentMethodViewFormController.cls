@@ -1,5 +1,5 @@
 public with sharing class CRMPHKLPaymentMethodViewFormController {
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled(cacheable=false)
     public static Map<String,String> policyMethodAndAccountId(Id insurancePolicyId) {
         if (insurancePolicyId == null) {
             return null;

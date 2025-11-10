@@ -6,9 +6,15 @@
  * @last modified by  : hank
 **/
 public without sharing class CRMPHKLBusinessHoursFlowService {
-     /**
-     * 计算从当前时间起N个工作日后的日期时间
-     * 供 Flow 调用
+    
+    // Test visible variable to allow test classes to override BusinessHours lookup
+    // Set to true in tests to simulate no BusinessHours scenario
+    @TestVisible
+    private static Boolean forceNoBusinessHours = false;
+    
+    /**
+     * Calculate date time after N business days from current time
+     * Invocable method for Flow
      */
     @InvocableMethod(
         label='Calculate Business Days' 
@@ -18,7 +24,7 @@ public without sharing class CRMPHKLBusinessHoursFlowService {
     public static List<BusinessHoursResult> calculateBusinessDays(List<BusinessHoursRequest> requests) {
         List<BusinessHoursResult> results = new List<BusinessHoursResult>();
         
-        // 获取默认 BusinessHours
+        // Get default BusinessHours
         BusinessHours bh = getDefaultBusinessHours();
         
         for (BusinessHoursRequest request : requests) {
@@ -26,12 +32,12 @@ public without sharing class CRMPHKLBusinessHoursFlowService {
             DateTime startDateTime = request.startDateTime != null ? request.startDateTime : System.now();
             Integer days = request.businessDays != null ? request.businessDays : 5;
             if (bh != null) {
-                // 计算工作日（假设每天8小时工作制）
+                // Calculate business days (assuming 8 hours per day)
                 Long milliseconds = Integer.valueOf(days) * 8 * 60 * 60 * 1000;
                 result.resultDateTime = BusinessHours.add(bh.Id, startDateTime, milliseconds);
                 result.isSuccess = true;
             } else {
-                // 如果没有配置 BusinessHours，使用自然日
+                // If BusinessHours is not configured, use calendar days
                 result.resultDateTime = startDateTime.addDays(days);
                 result.isSuccess = false;
                 result.errorMessage = 'No default BusinessHours found, using calendar days';
@@ -43,9 +49,15 @@ public without sharing class CRMPHKLBusinessHoursFlowService {
     }
     
     /**
-     * 获取默认 BusinessHours
+     * Get default BusinessHours
      */
+    @TestVisible
     private static BusinessHours getDefaultBusinessHours() {
+        // Allow test classes to force no BusinessHours scenario
+        if (Test.isRunningTest() && forceNoBusinessHours) {
+            return null;
+        }
+        
         List<BusinessHours> bhList = [
             SELECT Id, Name 
             FROM BusinessHours 
@@ -55,7 +67,7 @@ public without sharing class CRMPHKLBusinessHoursFlowService {
         return bhList.isEmpty() ? null : bhList[0];
     }
     
-    // ============ 内部类：请求和响应包装器 ============
+    // ============ Inner Classes: Request and Response Wrappers ============
     
     public class BusinessHoursRequest {
         @InvocableVariable(label='Start Date Time' description='Starting date time (default: now)' required=false)

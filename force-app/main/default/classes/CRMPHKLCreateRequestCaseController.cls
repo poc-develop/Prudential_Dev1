@@ -39,6 +39,18 @@ public with sharing class CRMPHKLCreateRequestCaseController {
         return [SELECT Id, Name, Email FROM User WHERE Name LIKE :searchTerm AND IsActive = true LIMIT 10];
     }
 
+    public static String searchQueue(String searchTerm) {
+        if (String.isBlank(searchTerm)) {
+            return '';
+        }
+        Group queue = [SELECT Id FROM Group where DeveloperName =: searchTerm LIMIT 1];
+        if (queue != null) {
+            return queue.Id;
+        } else {
+            return '';
+        }
+    }
+
     @AuraEnabled(cacheable=true)
     public static String getDueDatetime(String requestType, String caseStatus) {
         if (String.isBlank(requestType) || String.isBlank(caseStatus)) {
@@ -47,6 +59,61 @@ public with sharing class CRMPHKLCreateRequestCaseController {
         Datetime now = Datetime.now();
         Datetime dueDateTime = CRMGlobalCaseTATService.getTATDueDate(requestType, caseStatus, now);
         return dueDateTime != null ? dueDateTime.formatGMT('yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'') : '';
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static Map<String, String> getCurrentUser() {
+        Map<String, String> currentUserInfo = new Map<String, String>();
+        User currentUser = [SELECT Id, Name FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1];
+        currentUserInfo.put('userId', currentUser.Id);
+        currentUserInfo.put('userName', currentUser.Name);
+        return currentUserInfo;
+    }
+
+    /**
+     * 根据RequestType查询Custom Metadata获取Recipient信息
+     * @param requestType Request类型
+     * @return 包含recipient1, recipient1QueueName, recipient2, recipient2QueueName的Map
+     */
+    @AuraEnabled(cacheable=true)
+    public static Map<String, String> getRecipientsByRequestType(String requestType) {
+        Map<String, String> result = new Map<String, String>();
+        
+        if (String.isBlank(requestType)) {
+            return result;
+        }
+        
+        try {
+            List<CRM_Global_CaseTATSetting__mdt> settings = [
+                SELECT CRM_Global_Recipient_1_Queue_Label__c,
+                       CRM_Global_Recipient_1_Queue_Name__c,
+                       CRM_Global_Recipient_2_Queue_Label__c,
+                       CRM_Global_Recipient_2_Queue_Name__c
+                FROM CRM_Global_CaseTATSetting__mdt
+                WHERE CRM_Global_RequestType__c = :requestType
+                LIMIT 1
+            ];
+            
+            if (!settings.isEmpty()) {
+                CRM_Global_CaseTATSetting__mdt setting = settings[0];
+                if (String.isNotBlank(setting.CRM_Global_Recipient_1_Queue_Label__c)) {
+                    result.put('recipient1', setting.CRM_Global_Recipient_1_Queue_Label__c);
+                }
+                if (String.isNotBlank(setting.CRM_Global_Recipient_1_Queue_Name__c)) {
+                    result.put('recipient1QueueName', setting.CRM_Global_Recipient_1_Queue_Name__c);
+                }
+                if (String.isNotBlank(setting.CRM_Global_Recipient_2_Queue_Label__c)) {
+                    result.put('recipient2', setting.CRM_Global_Recipient_2_Queue_Label__c);
+                }
+                if (String.isNotBlank(setting.CRM_Global_Recipient_2_Queue_Name__c)) {
+                    result.put('recipient2QueueName', setting.CRM_Global_Recipient_2_Queue_Name__c);
+                }
+            }
+        } catch (Exception e) {
+            System.debug('Error querying Custom Metadata: ' + e.getMessage());
+        }
+        
+        return result;
     }
     
     /**
@@ -91,27 +158,97 @@ public with sharing class CRMPHKLCreateRequestCaseController {
             }else{
                 newCase.Status = 'New';
             }
+
+            if (requestData.saveAsDraft) {
+                newCase.Status = 'Draft';
+            }
             
             newCase.Priority = 'Medium';
             
             // 设置自定义字段（根据实际字段API名称调整）
             if (String.isNotBlank(requestData.requestType)) {
                 newCase.CRM_Global_RequestCaseType__c = requestData.requestType;
-                if (requestData.requestType == 'Locate Payment') {
+                // Locate Payment / Payout Status
+                if (requestData.requestType == 'Locate Payment' || requestData.requestType == 'Payout Status') {
                     if (String.isNotBlank(requestData.policyNumber)) {
                         newCase.CRM_Global_PolicyNumber__c = requestData.policyNumber;
                     }
                     if (String.isNotBlank(requestData.nameOfAssured)) {
                         newCase.CRM_Global_NameofAssured__c = requestData.nameOfAssured;
                     }
+                    if (String.isNotBlank(requestData.requestSummary)) {
+                        newCase.CRM_Global_RequestSummary__c = requestData.requestSummary;
+                    }
                     if (String.isNotBlank(requestData.refundChannel)) {
                         newCase.CRM_Global_RefundChannel__c = requestData.refundChannel;
+                    }
+                    if (String.isNotBlank(requestData.channelOthers)) {
+                        newCase.CRM_Global_ChannelOthers__c = requestData.channelOthers;
                     }
                     if (String.isNotBlank(requestData.amount)) {
                         newCase.CRM_Global_Amount__c = Decimal.valueOf(requestData.amount);
                     }
                     if (String.isNotBlank(requestData.refundDate)) {
                         newCase.CRM_Global_RefundDate__c = Date.valueOf(requestData.refundDate);
+                    }
+                }
+
+                // Issue Letter / Issue Email fields mapping
+                if (requestData.requestType == 'Issue Letter' || requestData.requestType == 'Issue Email') {
+                    if (String.isNotBlank(requestData.letterType)) {
+                        newCase.CRM_Global_LetterType__c = requestData.letterType;
+                    }
+                    if (String.isNotBlank(requestData.letterLanguage)) {
+                        newCase.CRM_Global_LetterLanguage__c = requestData.letterLanguage;
+                    }
+                    if (String.isNotBlank(requestData.undersignedName)) {
+                        newCase.CRM_Global_UndersignedName__c = requestData.undersignedName;
+                    }
+                    if (String.isNotBlank(requestData.undersignedTitle)) {
+                        newCase.CRM_Global_UndersignedTitle__c = requestData.undersignedTitle;
+                    }
+                    if (String.isNotBlank(requestData.deliveryMethod)) {
+                        newCase.CRM_Global_DeliveryMethod__c = requestData.deliveryMethod;
+                    }
+                    if (String.isNotBlank(requestData.reviewedBy)) {
+                        newCase.CRM_Global_ReviewedBy__c = requestData.reviewedBy;
+                    }
+                    if (String.isNotBlank(requestData.specificDeadline)) {
+                        newCase.CRM_Global_SpecificDeadline__c = Date.valueOf(requestData.specificDeadline);
+                    }
+                    if (String.isNotBlank(requestData.caseBackground)) {
+                        newCase.CRM_Global_CaseBackground__c = requestData.caseBackground;
+                    }
+                    if (String.isNotBlank(requestData.investigationResult)) {
+                        newCase.CRM_Global_InvestigationResult__c = requestData.investigationResult;
+                    }
+                    if (String.isNotBlank(requestData.pointToBeIncludedInLetters)) {
+                        newCase.CRM_Global_PointToBeIncludedInTheLetters__c = requestData.pointToBeIncludedInLetters;
+                    }
+                    if (String.isNotBlank(requestData.pointToBeIncludedInEmail)) {
+                        newCase.CRM_Global_PointToBeIncludedInTheEmail__c = requestData.pointToBeIncludedInEmail;
+                    }
+                    if (String.isNotBlank(requestData.emailAddress)) {
+                        newCase.CRM_Global_EmailAddress__c = requestData.emailAddress;
+                    }
+                }
+
+                // ACT Quotation / ACT Quotation & Client Letter
+                if (requestData.requestType == 'ACT Quotation' || requestData.requestType == 'ACT Quotation & Client Letter') {
+                    if (String.isNotBlank(requestData.followUpRequestNewRequest)) {
+                        newCase.CRM_Global_FollowUpRequestNewRequest__c = requestData.followUpRequestNewRequest;
+                    }
+                    if (String.isNotBlank(requestData.requestSummary)) {
+                        newCase.CRM_Global_RequestSummary__c = requestData.requestSummary;
+                    }
+                    if (String.isNotBlank(requestData.effectiveDate)) {
+                        newCase.CRM_Global_EffectiveDate__c = Date.valueOf(requestData.effectiveDate);
+                    }
+                    if (String.isNotBlank(requestData.policyNumber)) {
+                        newCase.CRM_Global_PolicyNumber__c = requestData.policyNumber;
+                    }
+                    if (String.isNotBlank(requestData.productPlan)) {
+                        newCase.CRM_Global_ProductPlan__c = requestData.productPlan;
                     }
                 }
             }
@@ -129,9 +266,14 @@ public with sharing class CRMPHKLCreateRequestCaseController {
             }
 
             if (String.isNotBlank(requestData.recipient1)) {
-                newCase.CRM_Global_Recipient_1__c = requestData.recipient1;
-                newCase.OwnerId = requestData.recipient1;
                 newCase.Status = '1st Round Processing';
+                newCase.CRM_Global_Case_Recipient_1_Text__c = requestData.recipient1;
+                if (requestData.requestType == 'Follow Up' || requestData.requestType == 'Chaser' || requestData.requestType == 'Request Approval'){
+                    newCase.CRM_Global_Case_Recipient_1_Id__c = requestData.recipient1QueueName;
+                }else {
+                    newCase.CRM_Global_Case_Recipient_1_Id__c = searchQueue(requestData.recipient1QueueName);
+                }
+                newCase.OwnerId = newCase.CRM_Global_Case_Recipient_1_Id__c;
             }
 
             if (String.isNotBlank(requestData.recipient1Department)) {
@@ -154,7 +296,12 @@ public with sharing class CRMPHKLCreateRequestCaseController {
             newCase.CRM_Global_AutoProceed__c = requestData.autoProceed;
             
             if (String.isNotBlank(requestData.recipient2)) {
-                newCase.CRM_Global_Recipient_2__c = requestData.recipient2;
+                newCase.CRM_Global_Case_Recipient_2_Text__c = requestData.recipient2;
+                if (requestData.requestType == 'Request Coupons'){
+                    newCase.CRM_Global_Case_Recipient_2_Id__c = requestData.recipient2QueueName;
+                }else {
+                    newCase.CRM_Global_Case_Recipient_2_Id__c = searchQueue(requestData.recipient2QueueName);
+                }
             }
 
             if (String.isNotBlank(requestData.recipient2Department)) {
@@ -254,20 +401,42 @@ public with sharing class CRMPHKLCreateRequestCaseController {
         @AuraEnabled public String status;
         @AuraEnabled public String copyTo;
         @AuraEnabled public String recipient1;
+        @AuraEnabled public String recipient1QueueName;
         @AuraEnabled public String recipient1Department;
         @AuraEnabled public String recipient1External;
         @AuraEnabled public String requestSummary1;
         @AuraEnabled public String dueDate1;
         @AuraEnabled public Boolean autoProceed;
+        @AuraEnabled public Boolean saveAsDraft;
         @AuraEnabled public String recipient2;
+        @AuraEnabled public String recipient2QueueName;
         @AuraEnabled public String recipient2Department;
         @AuraEnabled public String recipient2External;
         @AuraEnabled public String requestSummary2;
         @AuraEnabled public String dueDate2;
         @AuraEnabled public String policyNumber;
         @AuraEnabled public String nameOfAssured;
+        @AuraEnabled public String requestSummary;
         @AuraEnabled public String refundChannel;
+        @AuraEnabled public String channelOthers;
         @AuraEnabled public String refundDate;
         @AuraEnabled public String amount;
+        // Issue Letter / Issue Email fields
+        @AuraEnabled public String letterType;
+        @AuraEnabled public String letterLanguage;
+        @AuraEnabled public String undersignedName;
+        @AuraEnabled public String undersignedTitle;
+        @AuraEnabled public String deliveryMethod;
+        @AuraEnabled public String reviewedBy;
+        @AuraEnabled public String specificDeadline;
+        @AuraEnabled public String caseBackground;
+        @AuraEnabled public String investigationResult;
+        @AuraEnabled public String pointToBeIncludedInLetters;
+        @AuraEnabled public String pointToBeIncludedInEmail;
+        @AuraEnabled public String emailAddress;
+        // Request to ACT fields
+        @AuraEnabled public String followUpRequestNewRequest;
+        @AuraEnabled public String effectiveDate;
+        @AuraEnabled public String productPlan;
     }
 }

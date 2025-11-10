@@ -2,7 +2,7 @@
  * @description       : Wrapper class for CRM_Global_DataIntegration_Target__mdt
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-19
+ * @last modified on  : 2025-10-26
  * @last modified by  : Franco
 **/
 public with sharing class CRMGlobalDataIntegrationTargetWrapper {
@@ -10,11 +10,15 @@ public with sharing class CRMGlobalDataIntegrationTargetWrapper {
     private CRM_Global_DataIntegration_Config__mdt parentConfig;
     private CRM_Global_DataIntegration_Target__mdt target;
 
+    public SObject parentRecord;
     public String targetObject;
     public String targetExIdField;
     public String targetParentField;
     public String responsePath;
+    public String resultFilter;
     public Boolean includeParentIdToExIdField;
+    public Boolean includeParentExtIdToExIdField;
+    public String parentExtFieldName;
 
     public Schema.SObjectType targetSObjectType;
     public Map<String, Schema.SObjectField> targetFieldsMap;
@@ -37,7 +41,10 @@ public with sharing class CRMGlobalDataIntegrationTargetWrapper {
         this.targetExIdField = target.Target_ExId_Field__c;
         this.targetParentField = target.Target_Parent_Field__c;
         this.responsePath = target.Response_Path__c;
+        this.resultFilter = target.Result_Filter__c;
         this.includeParentIdToExIdField = target.Include_Parent_Id_To_ExId_Field__c;
+        this.includeParentExtIdToExIdField = target.Include_Parent_ExtId_To_ExId_Field__c;
+        this.parentExtFieldName = parentConfig?.Parent_ExId_Field__c;
         initAndValidateTarget(describe);
     }
 

@@ -15,6 +15,11 @@ public with sharing class CRMGlobalCaseCreationPageController {
     }
 
     @AuraEnabled(cacheable=true)
+    public static Case getEnquiryCase(String caseId) {
+        return [select Id,Origin,AccountId,Account.CRM_Global_IDNumber__pc,Account.FinServ__CustomerID__c,ParentId,Account.PersonContactId from Case where Id =: caseId limit 1];
+    }
+
+    @AuraEnabled(cacheable=true)
     public static List<InsurancePolicy> getPolicies(String accountId) {
         return [select Id
                         ,Name
@@ -46,6 +51,16 @@ public with sharing class CRMGlobalCaseCreationPageController {
         }
         return wrapUpCategoryAndItems;
     }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Case> getMasterCaseEnquiries(String masterCaseId){
+        return [select Id,CRM_Global_EnquiryCaseNumber__c,Origin,Status,Owner.Name,CreatedDate from Case where ParentId =: masterCaseId and Status = 'Active'];
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Case> getAllEnquiries(String masterCaseId,String accountId){
+        return [select Id,CRM_Global_EnquiryCaseNumber__c,Origin,Status,Owner.Name,CreatedDate from Case where AccountId =: accountId and ParentId !=: masterCaseId and Status = 'Active'];
+    }
     
     @AuraEnabled
     public static RequestResult save(String caseEntityString){
@@ -55,6 +70,8 @@ public with sharing class CRMGlobalCaseCreationPageController {
 
             // List<Case> childCases = new List<Case>();
             Map<Integer,Case> childCasesMap = new Map<Integer,Case>();
+            Map<Integer,CRM_Global_CaseAssociatedItem__c> wrapUpMap = new Map<Integer,CRM_Global_CaseAssociatedItem__c>();
+            List<CRM_Global_CaseAssociatedItem__c> wrapUps = new List<CRM_Global_CaseAssociatedItem__c>();
             List<CRM_Global_CaseAssociatedItem__c> wrapUpItems = new List<CRM_Global_CaseAssociatedItem__c>();
             Map<Integer,List<CRM_Global_CaseAssociatedItem__c>> wrapUpItemsMap = new Map<Integer,List<CRM_Global_CaseAssociatedItem__c>>();
             Integer index = 1;
@@ -73,6 +90,7 @@ public with sharing class CRMGlobalCaseCreationPageController {
                 AccountId = caseEntity.accountId,
                 CRM_Global_ContactNumber__c = caseEntity.contactNo,
                 CRM_Global_EnquirySummary__c = caseEntity.enquirySummary,
+                CRM_Global_FirstContactResolution__c = caseEntity.firstContactResolution,
                 // walk-in
                 CRM_Global_TicketNumber__c = caseEntity.ticketNumber,
                 CRM_Global_CounterNumber__c = caseEntity.counterNumber,
@@ -95,6 +113,9 @@ public with sharing class CRMGlobalCaseCreationPageController {
             );
             if(caseEntity.ignoreMaster == false) upsert masterCase;
 
+            // get Interaction Id
+            String interactionId = getInteractionId(caseEntity.caseOrigin,masterCase);
+
             // Child Case
             for(childCaseEntity child : caseEntity.childCases){
                 Case childCase = new Case(
@@ -112,7 +133,7 @@ public with sharing class CRMGlobalCaseCreationPageController {
                     CRM_Global_NonPolicyEnquiry__c = child.nonPolicy,
                     CRM_Global_NextFollowUpDate__c = child.nextFollowUpDate,
                     ParentId = masterCase.Id,
-                    // CRM_Global_Policy__c = policy.id
+                    CRM_Global_InquirerIdentity__c = child.inquirerIdentity,
                     // walk-in
                     CRM_Global_TicketNumber__c = caseEntity.ticketNumber,
                     CRM_Global_CounterNumber__c = caseEntity.counterNumber,
@@ -135,7 +156,15 @@ public with sharing class CRMGlobalCaseCreationPageController {
                 );
                 childCasesMap.put(index,childCase);
 
-                // 同一Case下的 Wrap up
+                // wrap up summary
+                CRM_Global_CaseAssociatedItem__c wrapUp = new CRM_Global_CaseAssociatedItem__c(
+                    RecordTypeId = Schema.SObjectType.CRM_Global_CaseAssociatedItem__c.getRecordTypeInfosByDeveloperName().get('Wrap_Up').getRecordTypeId(),
+                    CRM_Global_EnquirySummary__c = caseEntity.enquirySummary,
+                    CRM_Global_InteractionId__c = interactionId
+                );
+                wrapUpMap.put(index,wrapUp);
+
+                // 同一Case下的 Wrap up details
                 List<CRM_Global_CaseAssociatedItem__c> wrapUpItems2Case = new List<CRM_Global_CaseAssociatedItem__c>();
                 for(policyEntity policy : child.policyList){
                     for(String items : child.wrapUpItems){
@@ -151,12 +180,13 @@ public with sharing class CRMGlobalCaseCreationPageController {
                             }
                             
                         }
-                        CRM_Global_CaseAssociatedItem__c wrapUp = new CRM_Global_CaseAssociatedItem__c(
+                        CRM_Global_CaseAssociatedItem__c wrapUpItem = new CRM_Global_CaseAssociatedItem__c(
+                            RecordTypeId = Schema.SObjectType.CRM_Global_CaseAssociatedItem__c.getRecordTypeInfosByDeveloperName().get('Wrap_Up_Details').getRecordTypeId(),
                             CRM_Global_RelatedPolicy__c = policy.id,
                             CRM_Global_WrapUpCategory__c = category,
                             CRM_Global_WrapUpItem__c = item
                         );
-                        wrapUpItems2Case.add(wrapUp);
+                        wrapUpItems2Case.add(wrapUpItem);
                     }
                 }
                 wrapUpItemsMap.put(index,wrapUpItems2Case);
@@ -168,9 +198,18 @@ public with sharing class CRMGlobalCaseCreationPageController {
             System.debug('wrapUpItemsMap:'+JSON.serialize(wrapUpItemsMap));
 
             // wrap up records look up case
+            for(Integer i : wrapUpMap.keySet()){
+                CRM_Global_CaseAssociatedItem__c wrapUp = wrapUpMap.get(i);
+                wrapUp.CRM_Global_Case__c = childCasesMap.get(i).Id;
+                wrapUps.add(wrapUp);
+            }
+            insert wrapUps;
+
+            // wrap up details records look up case
             for(Integer i : wrapUpItemsMap.keySet()){
                 for(CRM_Global_CaseAssociatedItem__c wrapUp : wrapUpItemsMap.get(i)){
                     wrapUp.CRM_Global_Case__c = childCasesMap.get(i).Id;
+                    wrapUp.CRM_Global_WrapUp__c = wrapUpMap.get(i).Id;
                     wrapUpItems.add(wrapUp);
                 }
             }
@@ -180,17 +219,124 @@ public with sharing class CRMGlobalCaseCreationPageController {
             updateVoiceCall(masterCase.Id,caseEntity.enquirySummary);
 
             // New activity
-            createActivity(masterCase);
+            // createActivity(masterCase);
 
-            Map<String,String> dataMap = new Map<String,String>();
-            dataMap.put('caseId',masterCase.Id);
+            Map<String,Object> dataMap = new Map<String,Object>();
+            dataMap.put('masterCaseId',masterCase.Id);
+            dataMap.put('enquiryCases',childCasesMap.values());
             result.statusCode = '0';
             result.message = 'Succuss';
             result.data = dataMap;
         }catch(Exception ex){
             System.debug('Save error==>'+'Line:'+ex.getLineNumber() +'   ' + ex.getMessage());
             result.statusCode = '-1';
-            result.message = ex.getMessage()+'   '+ex.getLineNumber();
+            result.message = 'Save error==>'+' Line:'+ex.getMessage()+'   '+ex.getLineNumber();
+            result.data = null;
+        }
+        return result;
+    }
+
+    @AuraEnabled
+    public static RequestResult saveCaseWrapUp(String caseWrapUpEntityString){
+        RequestResult result = new RequestResult();
+        try{
+            CaseWrapUpEntity wrapUpEntity = (CaseWrapUpEntity)JSON.deserialize(caseWrapUpEntityString, CaseWrapUpEntity.class);
+
+            // List<Case> childCases = new List<Case>();
+            Map<Integer,Case> childCasesMap = new Map<Integer,Case>();
+            Map<Integer,CRM_Global_CaseAssociatedItem__c> wrapUpMap = new Map<Integer,CRM_Global_CaseAssociatedItem__c>();
+            List<CRM_Global_CaseAssociatedItem__c> wrapUps = new List<CRM_Global_CaseAssociatedItem__c>();
+            List<CRM_Global_CaseAssociatedItem__c> wrapUpItems = new List<CRM_Global_CaseAssociatedItem__c>();
+            Map<Integer,List<CRM_Global_CaseAssociatedItem__c>> wrapUpItemsMap = new Map<Integer,List<CRM_Global_CaseAssociatedItem__c>>();
+            List<Case> equiryCaseList = new List<Case>();
+            Integer index = 1;
+
+            // get Interaction Id
+            // String interactionId = getInteractionId('Call',masterCase);
+
+            childCaseEntity wrapUpDetails = wrapUpEntity.childCases[0];
+            // selected enquiry Case
+            for(selectedCaseEntity enquiryCase : wrapUpEntity.selectedCases){
+                // wrap up summary
+                CRM_Global_CaseAssociatedItem__c wrapUp = new CRM_Global_CaseAssociatedItem__c(
+                    RecordTypeId = Schema.SObjectType.CRM_Global_CaseAssociatedItem__c.getRecordTypeInfosByDeveloperName().get('Wrap_Up').getRecordTypeId(),
+                    CRM_Global_EnquirySummary__c = wrapUpEntity.enquirySummary,
+                    CRM_Global_Channel__c = wrapUpEntity.channel,
+                    CRM_Global_InteractionId__c = null,
+                    CRM_Global_Case__c = enquiryCase.id
+                );
+                wrapUpMap.put(index,wrapUp);
+
+                // 同一Case下的 Wrap up details
+                List<CRM_Global_CaseAssociatedItem__c> wrapUpItems2Case = new List<CRM_Global_CaseAssociatedItem__c>();
+                for(policyEntity policy : wrapUpDetails.policyList){
+                    for(String items : wrapUpDetails.wrapUpItems){
+
+                        String category;
+                        String item;
+                        if(items.indexOf(' > ') != -1){
+                            String[] wrapUpVal = items.split(' > ');
+
+                            if(wrapUpVal.size() >=2){
+                                category = wrapUpVal[0];
+                                item = wrapUpVal[1];
+                            }
+                            
+                        }
+                        CRM_Global_CaseAssociatedItem__c wrapUpItem = new CRM_Global_CaseAssociatedItem__c(
+                            RecordTypeId = Schema.SObjectType.CRM_Global_CaseAssociatedItem__c.getRecordTypeInfosByDeveloperName().get('Wrap_Up_Details').getRecordTypeId(),
+                            CRM_Global_RelatedPolicy__c = policy.id,
+                            CRM_Global_WrapUpCategory__c = category,
+                            CRM_Global_WrapUpItem__c = item,
+                            CRM_Global_Case__c = enquiryCase.id
+                        );
+                        wrapUpItems2Case.add(wrapUpItem);
+                    }
+                }
+                wrapUpItemsMap.put(index,wrapUpItems2Case);
+                index++;
+
+                // Update equiry cases status
+                Case equiryCase = new Case(
+                    Id = enquiryCase.id,
+                    Status = wrapUpDetails.active == true ? 'Active' : 'Completed'
+                );
+                equiryCaseList.add(equiryCase);
+            }
+            System.debug('childCasesMap:'+JSON.serialize(childCasesMap));
+            System.debug('wrapUpItemsMap:'+JSON.serialize(wrapUpItemsMap));
+
+            insert wrapUpMap.values();
+
+            // wrap up details records look up case
+            for(Integer i : wrapUpItemsMap.keySet()){
+                for(CRM_Global_CaseAssociatedItem__c wrapUp : wrapUpItemsMap.get(i)){
+                    // wrapUp.CRM_Global_Case__c = childCasesMap.get(i).Id;
+                    wrapUp.CRM_Global_WrapUp__c = wrapUpMap.get(i).Id;
+                    wrapUpItems.add(wrapUp);
+                }
+            }
+            insert wrapUpItems;
+
+            // Update equiry cases
+            update equiryCaseList;
+
+
+            // Update enquirySummary to Voice Call
+            // updateVoiceCall(masterCase.Id,wrapUpEntity.enquirySummary);
+
+            // New activity
+            // createActivity(masterCase);
+
+            Map<String,String> dataMap = new Map<String,String>();
+            // dataMap.put('caseId',masterCase.Id);
+            result.statusCode = '0';
+            result.message = 'Succuss';
+            result.data = dataMap;
+        }catch(Exception ex){
+            System.debug('Save error==>'+'Line:'+ex.getLineNumber() +'   ' + ex.getMessage());
+            result.statusCode = '-1';
+            result.message = 'Save error==>'+' Line:'+ex.getMessage()+'   '+ex.getLineNumber();
             result.data = null;
         }
         return result;
@@ -205,15 +351,41 @@ public with sharing class CRMGlobalCaseCreationPageController {
         }
     }
 
-    public static void createActivity(Case masterCase){
+    public static String createActivity(Case masterCase){
         Task activity = new Task(
             WhatId = masterCase.Id,
+            WhoId = masterCase.ContactId,
             RecordTypeId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('ClientAssociateTask').getRecordTypeId(),
             Status = 'Active',
             CRM_Global_CaseOrigin__c = masterCase.Origin,
             Subject = masterCase.Subject
         );
         insert activity;
+        return activity.Id;
+    }
+
+    public static String getInteractionId(String caseOrigin,Case masterCase) {
+        String interactionId;
+        switch on caseOrigin {
+            when 'Call' {
+                List<VoiceCall> vc = [select Id,CRM_Global_EnquirySummary__c from VoiceCall where RelatedRecordId =: masterCase.Id limit 1];
+                createActivity(masterCase);
+                interactionId = vc.size() > 0 ? vc[0].Id : null;
+            }
+            when 'Email' {
+                interactionId = null;
+            }
+            when 'Defer Chat' {
+                interactionId = null;
+            }   
+            when 'Walk-in','Letter','E-enquiry' {
+                interactionId = createActivity(masterCase);
+            }
+            when else  {
+                interactionId = null;
+            }
+        }
+        return interactionId;
     }
 
     public class CaseEntity{
@@ -233,8 +405,9 @@ public with sharing class CRMGlobalCaseCreationPageController {
 		@AuraEnabled public String IDNumber{set;get;}
 		@AuraEnabled public String agentCode{set;get;}
 		@AuraEnabled public String enquirySummary{set;get;}
+		@AuraEnabled public Boolean firstContactResolution{set;get;}
         // walk-in
-		@AuraEnabled public Decimal ticketNumber{set;get;}
+		@AuraEnabled public String ticketNumber{set;get;}
 		@AuraEnabled public String counterNumber{set;get;}
         @AuraEnabled public Datetime startTime{set;get;}
 		@AuraEnabled public String locationOfTheCentre{set;get;}
@@ -259,6 +432,7 @@ public with sharing class CRMGlobalCaseCreationPageController {
 	}
 
     public class childCaseEntity{
+        @AuraEnabled public String inquirerIdentity{set;get;}
         @AuraEnabled public Boolean active{set;get;}
 		@AuraEnabled public Boolean nonPolicy{set;get;}
 		@AuraEnabled public Date nextFollowUpDate{set;get;}
@@ -279,176 +453,17 @@ public with sharing class CRMGlobalCaseCreationPageController {
 		@AuraEnabled public Object data{set;get;}
 	}
 
+    public class selectedCaseEntity{
+		@AuraEnabled public String id{set;get;}
+		@AuraEnabled public String name{set;get;}
+	}
 
-
-
-
-    public class DependencyResult {
-        public String controllingFieldName;
-        public String dependentFieldName;
-        public Map<String, List<String>> dependencyMap;
-        
-        public DependencyResult(String ctrlField, String depField, Map<String, List<String>> depMap) {
-            this.controllingFieldName = ctrlField;
-            this.dependentFieldName = depField;
-            this.dependencyMap = depMap;
-        }
-    }
-    
-    public static DependencyResult getFieldDependency(String objectName, String dependentFieldName, String controllingFieldName) {
-        Map<String, List<String>> dependencyMap = new Map<String, List<String>>();
-        
-        try {
-            // 获取对象类型
-            Schema.SObjectType objType = Schema.getGlobalDescribe().get(objectName);
-            if (objType == null) {
-                throw new IllegalArgumentException('对象不存在: ' + objectName);
-            }
-            
-            // 获取字段映射
-            Map<String, Schema.SObjectField> fieldMap = objType.getDescribe().fields.getMap();
-            
-            // 获取依赖字段
-            Schema.SObjectField dependentField = fieldMap.get(dependentFieldName);
-            if (dependentField == null) {
-                throw new IllegalArgumentException('依赖字段不存在: ' + dependentFieldName);
-            }
-            
-            Schema.DescribeFieldResult dependentFieldDescribe = dependentField.getDescribe();
-            
-            // 获取控制字段
-            Schema.SObjectField controllingField = fieldMap.get(controllingFieldName);
-            if (controllingField == null) {
-                throw new IllegalArgumentException('控制字段不存在: ' + controllingFieldName);
-            }
-            
-            Schema.DescribeFieldResult controllingFieldDescribe = controllingField.getDescribe();
-            
-            // 获取picklist值
-            List<Schema.PicklistEntry> controllingEntries = controllingFieldDescribe.getPicklistValues();
-            List<Schema.PicklistEntry> dependentEntries = dependentFieldDescribe.getPicklistValues();
-            
-            // 使用JSON序列化来访问隐藏的validFor属性
-            String dependentEntriesJSON = JSON.serialize(dependentEntries);
-            List<Map<String, Object>> dependentEntriesMap = (List<Map<String, Object>>)JSON.deserializeUntyped(dependentEntriesJSON);
-            
-            // 初始化依赖映射
-            for (Schema.PicklistEntry ctrlEntry : controllingEntries) {
-                dependencyMap.put(ctrlEntry.getValue(), new List<String>());
-            }
-            
-            // 处理每个依赖字段条目
-            for (Integer i = 0; i < dependentEntries.size(); i++) {
-                Schema.PicklistEntry depEntry = dependentEntries[i];
-                Map<String, Object> depEntryMap = dependentEntriesMap[i];
-                
-                // 检查是否有validFor属性
-                if (depEntryMap.containsKey('validFor')) {
-                    String validFor = String.valueOf(depEntryMap.get('validFor')); // 确保转换为字符串
-                    
-                    if (validFor != null && validFor != '') {
-                        List<Integer> validIndexes = decodeValidFor(validFor);
-                        
-                        for (Integer index : validIndexes) {
-                            if (index < controllingEntries.size()) {
-                                String controllingValue = controllingEntries[index].getValue();
-                                // 确保值存在再添加
-                                if (dependencyMap.containsKey(controllingValue)) {
-                                    dependencyMap.get(controllingValue).add(depEntry.getValue());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            return new DependencyResult(controllingFieldName, dependentFieldName, dependencyMap);
-            
-        } catch (Exception e) {
-            System.debug('获取字段依赖关系时出错: ' + e.getMessage());
-            System.debug('堆栈跟踪: ' + e.getStackTraceString());
-            throw e;
-        }
-    }
-    
-    // 修复后的解码方法
-    private static List<Integer> decodeValidFor(String validFor) {
-        List<Integer> indexes = new List<Integer>();
-        
-        if (validFor == null || validFor == '') {
-            return indexes;
-        }
-        
-        try {
-            // Base64解码
-            Blob blobValue = EncodingUtil.base64Decode(validFor);
-            if (blobValue != null) {
-                // 将Blob转换为十六进制字符串
-                String hexString = EncodingUtil.convertToHex(blobValue);
-                
-                // 将十六进制字符串转换为二进制字符串
-                String binaryString = '';
-                for (Integer i = 0; i < hexString.length(); i++) {
-                    String hexChar = hexString.substring(i, i + 1).toLowerCase();
-                    String binaryNibble = hexCharToBinary(hexChar);
-                    binaryString += binaryNibble;
-                }
-                
-                System.debug('二进制字符串: ' + binaryString);
-                System.debug('二进制字符串长度: ' + binaryString.length());
-                
-                // 从右向左读取位（最低有效位优先）
-                for (Integer i = 0; i < binaryString.length(); i++) {
-                    // 注意：这里比较字符，不是整数
-                    String bit = binaryString.substring(binaryString.length() - 1 - i, binaryString.length() - i);
-                    if (bit == '1') { // 比较字符串和字符串
-                        indexes.add(i);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.debug('解码ValidFor时出错: ' + e.getMessage());
-        }
-        
-        return indexes;
-    }
-    
-    // 十六进制字符转4位二进制
-    private static String hexCharToBinary(String hexChar) {
-        Map<String, String> hexToBinMap = new Map<String, String>{
-            '0' => '0000', '1' => '0001', '2' => '0010', '3' => '0011',
-            '4' => '0100', '5' => '0101', '6' => '0110', '7' => '0111',
-            '8' => '1000', '9' => '1001', 'a' => '1010', 'b' => '1011',
-            'c' => '1100', 'd' => '1101', 'e' => '1110', 'f' => '1111'
-        };
-        
-        return hexToBinMap.get(hexChar.toLowerCase());
-    }
-    
-    // 格式化输出依赖关系
-    public static String formatDependencyResult(DependencyResult result) {
-        if (result == null || result.dependencyMap == null) {
-            return '无依赖关系数据';
-        }
-        
-        String output = '';
-        output += '控制字段: ' + result.controllingFieldName + '\n';
-        output += '依赖字段: ' + result.dependentFieldName + '\n';
-        output += '依赖关系:\n';
-        
-        Boolean hasDependencies = false;
-        for (String controllingValue : result.dependencyMap.keySet()) {
-            List<String> dependentValues = result.dependencyMap.get(controllingValue);
-            if (dependentValues != null && !dependentValues.isEmpty()) {
-                output += controllingValue + ' > ' + String.join(dependentValues, ', ') + '\n';
-                hasDependencies = true;
-            }
-        }
-        
-        if (!hasDependencies) {
-            output += '未找到依赖关系\n';
-        }
-        
-        return output;
+    public class CaseWrapUpEntity{
+        @AuraEnabled public String id{set;get;}
+        @AuraEnabled public String enquirySummary{set;get;}
+        @AuraEnabled public String channel{set;get;}
+        @AuraEnabled public String masterCaseStatus{set;get;}
+        @AuraEnabled public List<selectedCaseEntity> selectedCases{set;get;}
+        @AuraEnabled public List<childCaseEntity> childCases{set;get;}
     }
 }

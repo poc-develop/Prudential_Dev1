@@ -4,7 +4,7 @@ public with sharing class CRMPHKLInsurancePolicyCoverageController {
      * Returns the Id of the first InsurancePolicyCoverage record related to the given InsurancePolicy.
      * Ordering is by CreatedDate ascending to approximate the "first" created coverage.
      */
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled(cacheable=false)
     public static Id getFirstCoverageId(Id insurancePolicyId) {
         if (insurancePolicyId == null) {
             return null;
@@ -26,7 +26,7 @@ public with sharing class CRMPHKLInsurancePolicyCoverageController {
      * Returns the API names of fields included in the specified field set
      * on InsurancePolicyCoverage. Defaults to Insurance_Policy_Coverage_Detail_Fields if not provided.
      */
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled(cacheable=false)
     public static List<String> getDetailFieldsetFields(String fieldSetName) {
         List<String> fieldApiNames = new List<String>();
         

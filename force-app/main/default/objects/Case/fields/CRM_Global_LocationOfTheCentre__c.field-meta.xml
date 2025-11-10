@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRM_Global_LocationOfTheCentre__c</fullName>
+    <label>Location of The Centre</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Walk-In (PT)</fullName>
+                <default>false</default>
+                <label>Walk-In (PT)</label>
+            </value>
+            <value>
+                <fullName>Walk-In (PT-VIP)</fullName>
+                <default>false</default>
+                <label>Walk-In (PT-VIP)</label>
+            </value>
+            <value>
+                <fullName>Walk-In (PTB)</fullName>
+                <default>false</default>
+                <label>Walk-In (PTB)</label>
+            </value>
+            <value>
+                <fullName>Walk-In (LG2)</fullName>
+                <default>false</default>
+                <label>Walk-In (LG2)</label>
+            </value>
+            <value>
+                <fullName>Walk-In (LG5)</fullName>
+                <default>false</default>
+                <label>Walk-In (LG5)</label>
+            </value>
+            <value>
+                <fullName>Walk-In (MC1)</fullName>
+                <default>false</default>
+                <label>Walk-In (MC1)</label>
+            </value>
+            <value>
+                <fullName>Walk-In (MP1)</fullName>
+                <default>false</default>
+                <label>Walk-In (MP1)</label>
+            </value>
+            <value>
+                <fullName>Walk-In (HPB)</fullName>
+                <default>false</default>
+                <label>Walk-In (HPB)</label>
+            </value>
+            <value>
+                <fullName>Walk-In (MC2)</fullName>
+                <default>false</default>
+                <label>Walk-In (MC2)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -2,10 +2,10 @@
  * @description       : Wrapper class for CRM_Global_DataIntegration_Config__mdt
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-19
+ * @last modified on  : 2025-11-02
  * @last modified by  : Franco
 **/
-public with sharing class CRMGlobalDataIntegrationConfigWrapper {
+public without sharing class CRMGlobalDataIntegrationConfigWrapper {
 
     public CRM_Global_DataIntegration_Config__mdt config;
     public String recordId;
@@ -39,6 +39,7 @@ public with sharing class CRMGlobalDataIntegrationConfigWrapper {
         fields.addAll(CRMGlobalTemplateMergeFieldService.getMergeFieldsFromTemplate(config.Request_Body__c));
         fields.addAll(CRMGlobalTemplateMergeFieldService.getMergeFieldsFromTemplate(config.Request_Headers__c));
         fields.addAll(CRMGlobalTemplateMergeFieldService.getMergeFieldsFromTemplate(config.Request_Params__c));
+        collectMergeFieldsFromTargets(fields, config.DataIntegration_Target__r);
 
         String query = 'SELECT ' + String.join(new List<String>(fields), ', ')
                     + ' FROM ' + config.Parent_Object__c
@@ -52,9 +53,15 @@ public with sharing class CRMGlobalDataIntegrationConfigWrapper {
         } catch (QueryException e) {
             String message = 'Error querying parent record: ' + e.getMessage();
             message = message + '. Query: ' + query;
-            // add apex logging
             System.debug(LoggingLevel.ERROR, message);
             throw new CRMGlobalDataIntegrationException(message);
+        }
+    }
+
+    @TestVisible
+    private void collectMergeFieldsFromTargets(Set<String> fields, List<CRM_Global_DataIntegration_Target__mdt> targets) {
+        for(CRM_Global_DataIntegration_Target__mdt target : targets) {
+            fields.addAll(CRMGlobalTemplateMergeFieldService.getMergeFieldsFromTemplate(target.Field_Mappings__c));
         }
     }
 
@@ -72,6 +79,7 @@ public with sharing class CRMGlobalDataIntegrationConfigWrapper {
         for(CRM_Global_DataIntegration_Target__mdt target : targets) {
             Schema.DescribeSObjectResult describe = sObjectTypeMap.get(target.Target_Object__c);
             CRMGlobalDataIntegrationTargetWrapper targetWrapper = new CRMGlobalDataIntegrationTargetWrapper(config, target, describe);
+            targetWrapper.parentRecord = this.parentRecord;
             this.targetWrappers.add(targetWrapper);
         }
     }

@@ -86,7 +86,7 @@ public with sharing class CRMGlobalCustomerPolicySearchController {
                 continue;
             }
             if (searchParam.containsKey('matchingRule') && searchParam.get('matchingRule').equals('Partial Match')) {
-                String likeValue = value + '%';
+                String likeValue = '%' + value + '%';
                 if (searchTarget.contains('.')) {
                     String anotherObjectName = searchTarget.substringBefore('.');
                     String anotherObjectNameField = anotherObjectName;

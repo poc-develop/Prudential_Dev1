@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRM_Global_Master_Outbound_Compact_Layout</fullName>
+    <fields>CaseNumber</fields>
+    <label>Master Outbound Compact Layout</label>
+</CompactLayout>

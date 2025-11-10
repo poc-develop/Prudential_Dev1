@@ -11,6 +11,11 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
     public Integer jobLimitNumberPerExecute = 1;
 
     /**
+     * @description Raw Data Limit Number Of Per Execute.
+     */
+    public Integer rawDataLimitNumberPerExecute = 5000;
+
+    /**
      * @description Max Processing Attempts.
      */
     public Integer maxProcessingAttempts = 3;
@@ -62,9 +67,15 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
      * @method constructor
      * @description constructor
      * @param jobLimitNumber
+     * @param rawDataLimitNumber
      */
-    public CRMGlobalDataIngestionJobScheduler(Integer jobLimitNumber) {
-        jobLimitNumberPerExecute = jobLimitNumber;
+    public CRMGlobalDataIngestionJobScheduler(Integer jobLimitNumber, Integer rawDataLimitNumber) {
+        if (jobLimitNumber != null && jobLimitNumber > 0) {
+            jobLimitNumberPerExecute = jobLimitNumber;
+        }
+        if (rawDataLimitNumber != null && rawDataLimitNumber > 0) {
+            rawDataLimitNumberPerExecute = rawDataLimitNumber;
+        }
     }
 
 
@@ -142,6 +153,7 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
             updateJobStatus(jobIdToRawData.keySet());
 
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler execution failed: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Scheduler execution failed: ' + e.getMessage() + '#line:' + e.getLineNumber());
         }
     }
@@ -181,6 +193,7 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
                     CRM_Global_DataIngestionJob__r.CRM_Global_Call_Type__c
                     FROM CRM_Global_Raw_Data_Staging__c
                     WHERE CRM_Global_DataIngestionJob__c IN :processingJobs AND CRM_Global_ProcessingStatus__c = 'Pending'
+                    LIMIT :rawDataLimitNumberPerExecute
                 ]);
                 for (CRM_Global_Raw_Data_Staging__c rawRecord : rawDataMap.values()) {
                     Map<String, Object> rawMap = (Map<String, Object>) JSON.deserializeUntyped(rawRecord.CRM_Global_RawJSONData__c);
@@ -206,6 +219,7 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
                 }
             }
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler Prepare Ingestion Job And Raw Data failed: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Scheduler Prepare Ingestion Job And Raw Data failed: ' + e.getMessage() + '#line:' + e.getLineNumber());
         }
     }
@@ -234,6 +248,7 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
             // Upsert Master
             Database.upsert(accountIdToMasterCase.values(), false);
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler Prepare And Upsert Master Case failed: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Scheduler Prepare And Upsert Master Case failed: ' + e.getMessage() + '#line:' + e.getLineNumber());
         }
     }
@@ -301,6 +316,7 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
                 System.debug(LoggingLevel.INFO, 'Updated ' + rawsToUpdate.size() + ' raw record statuses.');
             }
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler Update Raw Data Status failed: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Scheduler Update Raw Data Status failed: ' + e.getMessage() + '#line:' + e.getLineNumber());
         }
     }
@@ -336,6 +352,7 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
                 rawDataIdList.addAll(rawDataIdListNew);
             }
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler Deduplicate Outbound Case: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Scheduler Deduplicate Outbound Case: ' + e.getMessage() + '#line:' + e.getLineNumber());
         }
     }
@@ -375,6 +392,7 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
                 System.debug(LoggingLevel.INFO, 'Upsert ' + outboundCaseList.size() + ' Outbound Case.');
             }
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler Upsert Related Case: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Scheduler Upsert Related Case: ' + e.getMessage() + '#line:' + e.getLineNumber());
         }
         return resultInserts;
@@ -433,6 +451,7 @@ public with sharing class CRMGlobalDataIngestionJobScheduler implements Schedula
             Database.update(jobStatusMap.values(), false);
 
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler Update Job Status failed: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Scheduler Update Job Status failed: ' + e.getMessage() + '#line:' + e.getLineNumber());
         }
     }

@@ -106,7 +106,7 @@ public with sharing class CRMGlobalDataIngestionJobTest {
     @IsTest
     private static void coverExecute(){
 
-        CRMGlobalDataIngestionJobScheduler scheduler = new CRMGlobalDataIngestionJobScheduler(2);
+        CRMGlobalDataIngestionJobScheduler scheduler = new CRMGlobalDataIngestionJobScheduler(2, 1000);
 
         System.Test.startTest();
         scheduler.beginExecuteJob();

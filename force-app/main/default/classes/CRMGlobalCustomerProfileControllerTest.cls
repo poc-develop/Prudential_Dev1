@@ -2,7 +2,7 @@
  * @description       : Test class for CRMGlobalCustomerProfileController
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-10
+ * @last modified on  : 2025-10-31
  * @last modified by  : Franco
 **/
 @IsTest
@@ -44,7 +44,7 @@ private class CRMGlobalCustomerProfileControllerTest {
         System.assertNotEquals(null, dummyId, 'Dummy account should be created');
         Account dummy = [SELECT Id, FinServ__CustomerID__c, LastName FROM Account WHERE Id = :dummyId];
         System.assertEquals(newCode, dummy.FinServ__CustomerID__c, 'Dummy account should have matching client code');
-        System.assertEquals('Dummy Account', dummy.LastName, 'Dummy account should have default last name');
+        System.assertEquals('-', dummy.LastName, 'Dummy account should have default last name');
     }
 
     @IsTest

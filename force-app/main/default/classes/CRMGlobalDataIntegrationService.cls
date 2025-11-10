@@ -2,11 +2,11 @@
  * @description       : Service for handling Data Integration
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-19
+ * @last modified on  : 2025-11-02
  * @last modified by  : Franco
 **/
 @SuppressWarnings('PMD')
-public with sharing class CRMGlobalDataIntegrationService {
+public without sharing class CRMGlobalDataIntegrationService {
 
     private static Map<String, SObjectType> sObjectTypeMap = Schema.getGlobalDescribe();
     
@@ -50,23 +50,20 @@ public with sharing class CRMGlobalDataIntegrationService {
             List<Map<String, Object>> recordsToProcess = processResponseData(targetSourceData);
 
             List<SObject> recordsToUpsert = new List<SObject>();
+            CRMGlobalLogManager.addApexInfoLog('Processing ' + recordsToProcess.size() + ' records for target object: ' + targetWrapper.targetObject);
+            if(targetWrapper.resultFilter != null) {
+                recordsToProcess = filterRecords(recordsToProcess, targetWrapper.resultFilter);
+                CRMGlobalLogManager.addApexInfoLog('Filtered result: ' + recordsToProcess.size() + ' records for target object: ' + targetWrapper.targetObject);
+            }
+            Boolean isToUpdateParentRecord = false;
             for (Map<String, Object> sourceRecord : recordsToProcess) {
-                SObject targetRecord = targetWrapper.targetSObjectType.newSObject();
-                
                 // Apply field mappings
-                for (String sourceField : targetWrapper.fieldMappings.keySet()) {
-                    String targetField = targetWrapper.fieldMappings.get(sourceField);
-                    Object value = CRMGlobalDataIntegrationRespService.getNestedValue(sourceRecord, sourceField);
-                    if (value != null) {
-                        Schema.DescribeFieldResult fieldDescribe = targetWrapper.targetFieldsMap.get(targetField.toLowerCase()).getDescribe();
-                        targetRecord.put(targetField, CRMGlobalDataIntegrationRespService.convertFieldValue(configWrapper, fieldDescribe, value));
-                    }
-                }
+                SObject targetRecord = convertSourceDataToTargetRecord(sourceRecord, targetWrapper, configWrapper);
 
                 // If the target object is the same as the parent object
                 // It means to crate/update the parnet record itself
                 if(targetWrapper.isToUpdateParent()) {
-                    // isToUpdateParent = true;
+                    isToUpdateParentRecord = true;
                     targetRecord.put('Id', configWrapper.recordId);
                     parentRecordToUpdate.add(targetRecord);
                     // Assume the response contains only one record for parent update
@@ -82,6 +79,9 @@ public with sharing class CRMGlobalDataIntegrationService {
 
                 extIdToChildRecordMap.put(String.valueOf(targetRecord.get(targetWrapper.targetExIdField)), targetRecord);
             }
+            if(isToUpdateParentRecord) {
+                continue;
+            }
 
             Map<String, List<SObject>> relatedRecords = prepareChildRecords(targetWrapper, extIdToChildRecordMap);
             relatedRecordsToInsert.addAll(relatedRecords.get('TO_INSERT'));
@@ -89,6 +89,39 @@ public with sharing class CRMGlobalDataIntegrationService {
         }
 
         performDML(parentRecordToUpdate, relatedRecordsToUpdate, relatedRecordsToInsert);
+    }
+
+    /**
+     * @description Converts source data to target record
+     * @param sourceData 
+     * @param targetWrapper 
+     * @param configWrapper 
+     * @return  `SObject`
+     */
+    private static SObject convertSourceDataToTargetRecord(Map<String, Object> sourceData, CRMGlobalDataIntegrationTargetWrapper targetWrapper, CRMGlobalDataIntegrationConfigWrapper configWrapper) {
+        SObject targetRecord = targetWrapper.targetSObjectType.newSObject();
+        CRMGlobalLogManager.addApexInfoLog('Starting applying field mappings for target object: ' + targetWrapper.targetObject);
+        for (String sourceField : targetWrapper.fieldMappings.keySet()) {
+            String[] sourceFieldArr = sourceField.split(':');
+            String sourceFieldName = sourceFieldArr[0];
+            String targetField = targetWrapper.fieldMappings.get(sourceField);
+            Schema.DescribeFieldResult fieldDescribe = targetWrapper.targetFieldsMap.get(targetField.toLowerCase()).getDescribe();
+            // Target Value: 1. get from merge field 2. get from source data 3. get from default value if null
+            Object targetValue = null;
+            if (CRMGlobalTemplateMergeFieldService.hasMergeFields(sourceField)) {
+                targetValue = CRMGlobalTemplateMergeFieldService.mergeTemplate(sourceField, configWrapper.parentRecord, false);
+            } else {
+                targetValue = CRMGlobalDataIntegrationRespService.getNestedValue(sourceData, sourceFieldName);
+            }
+            if (targetValue != null) {
+                targetRecord.put(targetField, CRMGlobalDataIntegrationRespService.convertFieldValue(configWrapper, fieldDescribe, targetValue));
+            } else if(sourceFieldArr.size() > 1) {
+                String defaultValue = sourceFieldArr[1];
+                targetRecord.put(targetField, CRMGlobalDataIntegrationRespService.convertFieldValue(configWrapper, fieldDescribe, defaultValue));
+            }
+        }
+        CRMGlobalLogManager.addApexInfoLog('Completed applying field mappings for target object: ' + targetWrapper.targetObject);
+        return targetRecord;
     }
 
     /**
@@ -103,18 +136,25 @@ public with sharing class CRMGlobalDataIntegrationService {
             List<Database.SaveResult> allSaveResults = new List<Database.SaveResult>();
             System.debug(LoggingLevel.INFO, '#parentRecordToUpdate size: '+parentRecordToUpdate.size());
             if (parentRecordToUpdate.size() > 0) {
+                CRMGlobalLogManager.addApexInfoLog('Updating ' + parentRecordToUpdate[0].getSObjectType() + ' record with Id: ' + parentRecordToUpdate[0].get('Id'));
                 allSaveResults.addAll(Database.update(parentRecordToUpdate, false, AccessLevel.SYSTEM_MODE));
             }
 
             System.debug(LoggingLevel.INFO, '#relatedRecordsToUpdate size: '+relatedRecordsToUpdate.size());
             if(relatedRecordsToUpdate.size() > 0) {
+                CRMGlobalLogManager.addApexInfoLog('Updating ' + relatedRecordsToUpdate[0].getSObjectType() + ' records');
                 allSaveResults.addAll(Database.update(relatedRecordsToUpdate, false, AccessLevel.SYSTEM_MODE));
             }
 
             System.debug(LoggingLevel.INFO, '#relatedRecordsToInsert size: '+relatedRecordsToInsert.size());
             if(relatedRecordsToInsert.size() > 0) {
+                CRMGlobalLogManager.addApexInfoLog('Inserting ' + relatedRecordsToInsert[0].getSObjectType() + ' records');
                 allSaveResults.addAll(Database.insert(relatedRecordsToInsert, false, AccessLevel.SYSTEM_MODE));
             }
+
+            system.debug('parentRecordToUpdate: ' + parentRecordToUpdate);
+            system.debug('relatedRecordsToUpdate: ' + relatedRecordsToUpdate);
+            system.debug('relatedRecordsToInsert: ' + relatedRecordsToInsert);
 
             Integer successCount = 0;
             Integer failureCount = 0;
@@ -125,7 +165,8 @@ public with sharing class CRMGlobalDataIntegrationService {
                 } else {
                     failureCount++;
                     for (Database.Error err : result.getErrors()) {
-                        System.debug(LoggingLevel.ERROR, ' Record insert/update error: ' + err.getMessage());
+                        CRMGlobalLogManager.addApexErrorLog('Record insert/update error: ' + err.getMessage(), null);
+                        System.debug(LoggingLevel.ERROR, 'Record insert/update error: ' + err.getMessage());
                     }
                 }
             }
@@ -163,12 +204,21 @@ public with sharing class CRMGlobalDataIntegrationService {
         // This is to determine whether to update or insert
         // Either use composite keys or field mapping to map the external id field
         // The composite keys will be used when both composite keys and field mapping are provided
-        String parentFieldName = targetWrapper.targetParentField;
+        // String parentFieldName = targetWrapper.targetParentField;
         String externalIdFieldName = targetWrapper.targetExIdField;
         Boolean isIncludeParentId = targetWrapper.includeParentIdToExIdField;
+        Boolean isIncludeParentExtId = targetWrapper.includeParentExtIdToExIdField;
+        String targetRecordType = targetWrapper.targetRecordTypeId;
+        SObject parentRecord = targetWrapper.parentRecord;
         List<String> compositeValues = new List<String>();
-        if (isIncludeParentId) {
-            compositeValues.add(String.valueOf(targetRecord.get(parentFieldName)));
+        if(isIncludeParentId) {
+            compositeValues.add(String.valueOf(parentRecord.get('Id')));
+        }
+        if(isIncludeParentExtId) {
+            compositeValues.add(String.valueOf(parentRecord.get(targetWrapper.parentExtFieldName)));
+        }
+        if(String.isNotBlank(targetRecordType) && !targetWrapper.isToUpdateParent() && externalIdFieldName != 'Name' && externalIdFieldName != 'FinServ__CustomerID__c') {
+            compositeValues.add(targetRecordType);
         }
         if(!targetWrapper.compositeKeyFields.isEmpty()) {
             for(String key : targetWrapper.compositeKeyFields) {
@@ -226,5 +276,43 @@ public with sharing class CRMGlobalDataIntegrationService {
         }
         
         return relatedRecords;
+    }
+
+    /**
+     * @description Filter Records
+     * @param recordsToProcess 
+     * @param filterJson 
+     * @return  `List<Map<String, Object>>`
+     */
+    @TestVisible
+    private static List<Map<String, Object>> filterRecords(List<Map<String, Object>> recordsToProcess, String filterJson) {
+        if (recordsToProcess == null || recordsToProcess.isEmpty() || String.isBlank(filterJson)) {
+            return new List<Map<String, Object>>();
+        }
+
+        Map<String, Object> filterMap = (Map<String, Object>) JSON.deserializeUntyped(filterJson);
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+
+        for (Map<String, Object> record : recordsToProcess) {
+            Boolean match = true;
+            for (String key : filterMap.keySet()) {
+                if (!record.containsKey(key) || record.get(key) == null) {
+                    match = false;
+                    break;
+                }
+
+                String recordVal = String.valueOf(record.get(key));
+                String filterVal = String.valueOf(filterMap.get(key));
+
+                if (recordVal != filterVal) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                result.add(record);
+            }
+        }
+        return result;
     }
 }

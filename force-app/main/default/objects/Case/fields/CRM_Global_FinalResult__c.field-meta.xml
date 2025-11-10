@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRM_Global_FinalResult__c</fullName>
+    <label>Final Result</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>SUC - Clear &amp; no f/u</fullName>
+                <default>false</default>
+                <label>SUC - Clear &amp; no f/u</label>
+            </value>
+            <value>
+                <fullName>SUC - CFI &amp; no f/u</fullName>
+                <default>false</default>
+                <label>SUC - CFI &amp; no f/u</label>
+            </value>
+            <value>
+                <fullName>PEND - Uncertain replies</fullName>
+                <default>false</default>
+                <label>PEND - Uncertain replies</label>
+            </value>
+            <value>
+                <fullName>PEND - Reschedule</fullName>
+                <default>false</default>
+                <label>PEND - Reschedule</label>
+            </value>
+            <value>
+                <fullName>FAIL - Refuse/unwilling to continue</fullName>
+                <default>false</default>
+                <label>FAIL - Refuse/unwilling to continue</label>
+            </value>
+            <value>
+                <fullName>FAIL - Uncertain replies</fullName>
+                <default>false</default>
+                <label>FAIL - Uncertain replies</label>
+            </value>
+            <value>
+                <fullName>FAIL - Unreached</fullName>
+                <default>false</default>
+                <label>FAIL - Unreached</label>
+            </value>
+            <value>
+                <fullName>FAIL - Invalid no.</fullName>
+                <default>false</default>
+                <label>FAIL - Invalid no.</label>
+            </value>
+            <value>
+                <fullName>OTH - No Need to call</fullName>
+                <default>false</default>
+                <label>OTH - No Need to call</label>
+            </value>
+            <value>
+                <fullName>OTH - GHO VC Letter</fullName>
+                <default>false</default>
+                <label>OTH - GHO VC Letter</label>
+            </value>
+            <value>
+                <fullName>OTH - COM PSC SUSP Simple</fullName>
+                <default>false</default>
+                <label>OTH - COM PSC SUSP Simple</label>
+            </value>
+            <value>
+                <fullName>OTH - COM PSC SUSP Full</fullName>
+                <default>false</default>
+                <label>OTH - COM PSC SUSP Full</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

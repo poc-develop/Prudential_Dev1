@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Master_Inbound_Compact_Layout</fullName>
+    <fields>Subject</fields>
+    <fields>CRM_Global_EnquiryCaseNumber__c</fields>
+    <fields>Status</fields>
+    <fields>CreatedDate</fields>
+    <label>Master Inbound Compact Layout</label>
+</CompactLayout>

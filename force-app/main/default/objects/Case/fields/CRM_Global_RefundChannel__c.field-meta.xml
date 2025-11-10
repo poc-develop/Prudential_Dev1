@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRM_Global_RefundChannel__c</fullName>
+    <label>Refund Channel</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>PPS</fullName>
+                <default>false</default>
+                <label>PPS</label>
+            </value>
+            <value>
+                <fullName>JETCO</fullName>
+                <default>false</default>
+                <label>JETCO</label>
+            </value>
+            <value>
+                <fullName>TT</fullName>
+                <default>false</default>
+                <label>TT</label>
+            </value>
+            <value>
+                <fullName>BOC CDM</fullName>
+                <default>false</default>
+                <label>BOC CDM</label>
+            </value>
+            <value>
+                <fullName>OCBC</fullName>
+                <default>false</default>
+                <label>OCBC</label>
+            </value>
+            <value>
+                <fullName>CITIC</fullName>
+                <default>false</default>
+                <label>CITIC</label>
+            </value>
+            <value>
+                <fullName>Credit Card</fullName>
+                <default>false</default>
+                <label>Credit Card</label>
+            </value>
+            <value>
+                <fullName>EPS</fullName>
+                <default>false</default>
+                <label>EPS</label>
+            </value>
+            <value>
+                <fullName>CUP card</fullName>
+                <default>false</default>
+                <label>CUP card</label>
+            </value>
+            <value>
+                <fullName>BOC Bill Payment</fullName>
+                <default>false</default>
+                <label>BOC Bill Payment</label>
+            </value>
+            <value>
+                <fullName>HSBC Bill Payment</fullName>
+                <default>false</default>
+                <label>HSBC Bill Payment</label>
+            </value>
+            <value>
+                <fullName>FPS</fullName>
+                <default>false</default>
+                <label>FPS</label>
+            </value>
+            <value>
+                <fullName>SCB OTC</fullName>
+                <default>false</default>
+                <label>SCB OTC</label>
+            </value>
+            <value>
+                <fullName>HKD Cheque</fullName>
+                <default>false</default>
+                <label>HKD Cheque</label>
+            </value>
+            <value>
+                <fullName>Local USD Cheque</fullName>
+                <default>false</default>
+                <label>Local USD Cheque</label>
+            </value>
+            <value>
+                <fullName>Oversea USD Cheque</fullName>
+                <default>false</default>
+                <label>Oversea USD Cheque</label>
+            </value>
+            <value>
+                <fullName>Others (pls specificy)</fullName>
+                <default>false</default>
+                <label>Others (pls specificy)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

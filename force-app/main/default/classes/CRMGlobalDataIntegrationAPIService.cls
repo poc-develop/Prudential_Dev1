@@ -2,7 +2,7 @@
  * @description       : Service to handle API callout for CRM Global Data Integration
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-20
+ * @last modified on  : 2025-10-30
  * @last modified by  : Franco
 **/
 public with sharing class CRMGlobalDataIntegrationAPIService {
@@ -179,17 +179,7 @@ public with sharing class CRMGlobalDataIntegrationAPIService {
         System.debug(LoggingLevel.INFO, 'Template with Values: ' + templateWithValues);
         Map<String, String> templateMap = (Map<String, String>) JSON.deserialize(
             templateWithValues, Map<String, String>.class
-        );
-        Map<String, String> templateMapNew = new Map<String, String>();
-        // Ignore those that haven't been merged yet 
-        if (templateMap != null && !templateMap.isEmpty()) {
-            for (String key : templateMap.keySet()) {
-                String value = templateMap.get(key);
-                if(!value.contains('{{{')) {
-                    templateMapNew.put(key, value);
-                }
-            }
-        }
-        return templateMapNew;
+        ); 
+        return templateMap;
     }
 }

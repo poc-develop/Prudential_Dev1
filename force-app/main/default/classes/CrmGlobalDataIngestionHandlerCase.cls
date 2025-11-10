@@ -118,8 +118,8 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
                 outboundCase.OwnerId = caseOwnerInfoToUser.containsKey(caseOwnerInfo) ? caseOwnerInfoToUser.get(caseOwnerInfo).Id : '';
                 outboundCase.AccountId = policyNoToPolicy.get(policyNo).NameInsuredId;
                 outboundCase.ParentId = accountIdToMasterCase.get(outboundCase.AccountId).Id;
-                outboundCase.Status = 'Active'; 
-                outboundCase.CRM_Global_PolicyNumber__c = policyNo; 
+                outboundCase.Status = 'Active';
+                outboundCase.CRM_Global_PolicyNumber__c = policyNo;
                 
                 outboundCase.CRM_Global_Outbound_Call_Type__c = raw.CRM_Global_DataIngestionJob__r.CRM_Global_Call_Type__c;
                 outboundCase.CRM_Global_Outbound_Channel__c = raw.CRM_Global_DataIngestionJob__r.CRM_Global_Channel__c;
@@ -141,6 +141,7 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
             }
 
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Error Handle Raw Data And Prepare Outbound Case records: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Error Handle Raw Data And Prepare Outbound Case records: ' + e.getMessage() + '#line:' + e.getLineNumber());
             throw e;
         }
@@ -172,6 +173,7 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
             }
 
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Error Validate Raw Data: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Error Validate Raw Data: ' + e.getMessage() + '#line:' + e.getLineNumber());
             throw e;
         }
@@ -217,6 +219,7 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
 
             return errorMessage;
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Error Check Raw Data Item: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Error Check Raw Data Item: ' + e.getMessage() + '#line:' + e.getLineNumber());
             throw e;
         }
@@ -293,6 +296,7 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
             //__________________________________________________________________________________________________________________
 
         } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Error Get TAT Due Date: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
             System.debug(LoggingLevel.ERROR, 'Error Get TAT Due Date: ' + e.getMessage() + '#line:' + e.getLineNumber());
             throw e;
         }

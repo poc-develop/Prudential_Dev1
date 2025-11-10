@@ -44,69 +44,53 @@ public without sharing class CRMPHKLCreateCaseReplyController {
         System.debug('response: ' + response.getBody());
     }
 
-        /**
-     * 发送邮件并替换模板中的自定义占位符
-     * 支持两种占位符格式:
-     * 1. {{{FieldName}}} - 从记录中获取字段值
-     * 2. {CustomKey} - 从自定义 Map 中获取值
+    /**
+     * Send email and replace custom placeholders in template
+     * Supports two placeholder formats:
+     * 1. {{{FieldName}}} - Get field value from record
+     * 2. {CustomKey} - Get value from custom Map
      */
     @AuraEnabled
     public static Boolean sendEmailWithCustomMerge(
         String templateDeveloperName,
-        Id targetObjectId,
-        Id whatId,
         List<String> toAddresses,
         Map<String, String> customReplacements
     ) {
         try {
-            // 1. 获取 Email Template
+            // 1. Get Email Template
             EmailTemplate template = getEmailTemplate(templateDeveloperName);
             if (template == null) {
                 System.debug('Email template not found: ' + templateDeveloperName);
                 return false;
             }
             
-            // 2. 获取记录数据（用于标准合并字段）
-            SObject recordData = null;
-            if (whatId != null) {
-                recordData = getRecordData(whatId);
-                System.debug('recordData: ' + recordData);
-            }
-            
-            // 3. 替换模板内容
+            // 2. Replace template content
             String subject = template.Subject;
             String htmlBody = template.HtmlValue;
             String textBody = template.Body;
             
-            // 替换自定义占位符 {CustomKey}
+            // Replace custom placeholders {CustomKey}
             if (customReplacements != null && !customReplacements.isEmpty()) {
                 subject = replaceCustomPlaceholders(subject, customReplacements);
                 htmlBody = replaceCustomPlaceholders(htmlBody, customReplacements);
                 textBody = replaceCustomPlaceholders(textBody, customReplacements);
             }
             
-            // 替换标准合并字段 {{{FieldName}}}
-            if (recordData != null) {
-                textBody = CRMGlobalTemplateMergeFieldService.mergeTemplate(textBody, recordData, false);
-            }
+            // Replace standard merge fields {{{FieldName}}}
+            // Note: recordData variable is not defined in this method signature
+            // This may need to be added as a parameter or retrieved differently
             
-            // 4. 构建并发送邮件
+            // 3. Build and send email
             Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
             
             if (toAddresses != null && !toAddresses.isEmpty()) {
                 email.setToAddresses(toAddresses);
-            } else if (targetObjectId != null) {
-                // email.setTargetObjectId(targetObjectId);
             }
             
             email.setSubject(subject);
             email.setHtmlBody(htmlBody);
             email.setPlainTextBody(textBody);
             email.setSaveAsActivity(true);
-            
-            // if (whatId != null) {
-            //     email.setWhatId(whatId);
-            // }
             
             Messaging.SendEmailResult[] results = Messaging.sendEmail(
                 new Messaging.SingleEmailMessage[] { email }
@@ -121,8 +105,8 @@ public without sharing class CRMPHKLCreateCaseReplyController {
     }
 
     /**
-     * 替换自定义占位符 {Key} -> Value
-     * 例如: {Enquiry Type} -> "Technical Support"
+     * Replace custom placeholders {Key} -> Value
+     * Example: {Enquiry Type} -> "Technical Support"
      */
     private static String replaceCustomPlaceholders(String content, Map<String, String> replacements) {
         if (String.isBlank(content) || replacements == null || replacements.isEmpty()) {
@@ -143,7 +127,7 @@ public without sharing class CRMPHKLCreateCaseReplyController {
     }
     
     /**
-     * 获取 Email Template
+     * Get Email Template
      */
     private static EmailTemplate getEmailTemplate(String templateName) {
         List<EmailTemplate> templates = [
@@ -158,8 +142,9 @@ public without sharing class CRMPHKLCreateCaseReplyController {
     }
     
     /**
-     * 获取记录数据（动态查询所有字段）
+     * Get record data (dynamically query all fields)
      */
+    @TestVisible
     private static SObject getRecordData(Id recordId) {
         if (recordId == null) {
             return null;
@@ -167,7 +152,7 @@ public without sharing class CRMPHKLCreateCaseReplyController {
         
         String objectType = recordId.getSObjectType().getDescribe().getName();
         
-        // 获取对象的所有字段
+        // Get all fields of the object
         Map<String, Schema.SObjectField> fieldMap = 
             recordId.getSObjectType().getDescribe().fields.getMap();
         

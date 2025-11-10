@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Enquiry_Outbound</fullName>
+    <active>true</active>
+    <businessProcess>Master Outbound</businessProcess>
+    <compactLayoutAssignment>CRM_Global_Master_Outbound_Compact_Layout</compactLayoutAssignment>
+    <label>Enquiry Outbound</label>
+    <picklistValues>
+        <picklist>CRM_Global_Call_Hotline__c</picklist>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_CaseChannel__c</picklist>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_ChannelOfReceipt__c</picklist>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_DeliveryMethod__c</picklist>
+        <values>
+            <fullName>Agent Delivery</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Email</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mail</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_DocumentType__c</picklist>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_EnquiryCase_Status__c</picklist>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_EnquiryType__c</picklist>
+        <values>
+            <fullName>Claims</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Others</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Underwriting</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_FinalResult__c</picklist>
+        <values>
+            <fullName>FAIL - Invalid no%2E</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FAIL - Refuse%2Funwilling to continue</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FAIL - Uncertain replies</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FAIL - Unreached</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>OTH - COM PSC SUSP Full</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>OTH - COM PSC SUSP Simple</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>OTH - GHO VC Letter</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>OTH - No Need to call</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PEND - Reschedule</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PEND - Uncertain replies</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SUC - CFI %26 no f%2Fu</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SUC - Clear %26 no f%2Fu</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_FollowUpRequestNewRequest__c</picklist>
+        <values>
+            <fullName>Follow-up</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>New</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_IdentifyValidationResult__c</picklist>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_InquirerIdentity__c</picklist>
+        <values>
+            <fullName>Agent</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Customer</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_LetterLanguage__c</picklist>
+        <values>
+            <fullName>Chinese</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>English</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_LetterType__c</picklist>
+        <values>
+            <fullName>Non-standard</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Standard</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_LocationOfTheCentre__c</picklist>
+        <values>
+            <fullName>Walk-In %28PT%29</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_Outbound_Channel__c</picklist>
+        <values>
+            <fullName>HongKong</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Macau</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_PendingReason__c</picklist>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_RefundChannel__c</picklist>
+        <values>
+            <fullName>BOC CDM</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CUP card</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Credit Card</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EPS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FPS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HKD Cheque</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HSBC Bill Payment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JETCO</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>OCBC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Others %28pls specificy%29</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Oversea USD Cheque</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PPS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TT</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_RequestCaseType__c</picklist>
+        <values>
+            <fullName>ACT Quotation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>ACT Quotation %26 Client Letter</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Bankruptcy Enquiry</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CFI</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Chaser</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Follow Up</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Locate Payment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Payout Status</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Reissue Document</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Request Approval</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Request Coupons</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Stop and Reissue Cheque</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Supervisor Assistance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TT Payment</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_SLAType__c</picklist>
+        <values>
+            <fullName>N</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>O</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_VM_Attendance__c</picklist>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_WorkGroup__c</picklist>
+        <values>
+            <fullName>Not Specified</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_WrapUpCategory__c</picklist>
+        <values>
+            <fullName>ICC%28PS%29%3ADDA%2C premium%2C payment%2C loan or refund</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_Global_WrapUpItem__c</picklist>
+        <values>
+            <fullName>DDA collection status%2Freject reason</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Others</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>CRM_PHKL_CaseLanguage__c</picklist>
+        <values>
+            <fullName>Cantonese</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>English</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mandarin</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Origin</picklist>
+        <values>
+            <fullName>Call</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Defer Chat</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>E-enquiry</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Email</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Letter</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Virtual Meeting</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Walk-in</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Priority</picklist>
+        <values>
+            <fullName>High</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Low</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Medium</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Reason</picklist>
+        <values>
+            <fullName>Complex functionality</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Existing problem</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Instructions not clear</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>New problem</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>User didn%27t attend training</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type</picklist>
+        <values>
+            <fullName>Feature Request</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Problem</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Question</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>genesysps__Conversation_Status__c</picklist>
+        <values>
+            <fullName>Active</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Completed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Disconnected</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Transferred</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

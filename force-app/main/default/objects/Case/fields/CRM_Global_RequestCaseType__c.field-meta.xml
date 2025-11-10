@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRM_Global_RequestCaseType__c</fullName>
+    <label>Request Case Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Follow Up</fullName>
+                <default>false</default>
+                <label>Follow Up</label>
+            </value>
+            <value>
+                <fullName>Chaser</fullName>
+                <default>false</default>
+                <label>Chaser</label>
+            </value>
+            <value>
+                <fullName>Supervisor Assistance</fullName>
+                <default>false</default>
+                <label>Supervisor Assistance</label>
+            </value>
+            <value>
+                <fullName>Request Approval</fullName>
+                <default>false</default>
+                <label>Request Approval</label>
+            </value>
+            <value>
+                <fullName>Locate Payment</fullName>
+                <default>false</default>
+                <label>Locate Payment</label>
+            </value>
+            <value>
+                <fullName>Stop and Reissue Cheque</fullName>
+                <default>false</default>
+                <label>Stop and Reissue Cheque</label>
+            </value>
+            <value>
+                <fullName>ACT Quotation</fullName>
+                <default>false</default>
+                <label>ACT Quotation</label>
+            </value>
+            <value>
+                <fullName>CFI</fullName>
+                <default>false</default>
+                <label>CFI</label>
+            </value>
+            <value>
+                <fullName>Request Coupons</fullName>
+                <default>false</default>
+                <label>Request Coupons</label>
+            </value>
+            <value>
+                <fullName>ACT Quotation &amp; Client Letter</fullName>
+                <default>false</default>
+                <label>ACT Quotation &amp; Client Letter</label>
+            </value>
+            <value>
+                <fullName>TT Payment</fullName>
+                <default>false</default>
+                <label>TT Payment</label>
+            </value>
+            <value>
+                <fullName>Bankruptcy Enquiry</fullName>
+                <default>false</default>
+                <label>Bankruptcy Enquiry</label>
+            </value>
+            <value>
+                <fullName>Reissue Document</fullName>
+                <default>false</default>
+                <label>Reissue Document</label>
+            </value>
+            <value>
+                <fullName>Payout Status</fullName>
+                <default>false</default>
+                <label>Payout Status</label>
+            </value>
+            <value>
+                <fullName>Issue Letter To Client</fullName>
+                <default>false</default>
+                <label>Issue Letter To Client</label>
+            </value>
+            <value>
+                <fullName>Issue Email To Client</fullName>
+                <default>false</default>
+                <label>Issue Email To Client</label>
+            </value>
+            <value>
+                <fullName>Assign Return Call</fullName>
+                <default>false</default>
+                <label>Assign Return Call</label>
+            </value>
+            <value>
+                <fullName>PA Request</fullName>
+                <default>false</default>
+                <label>PA Request</label>
+            </value>
+            <value>
+                <fullName>Claims Form / Enquiry</fullName>
+                <default>false</default>
+                <label>Claims Form / Enquiry</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
