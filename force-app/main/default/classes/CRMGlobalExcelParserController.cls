@@ -155,7 +155,9 @@ public with sharing class CRMGlobalExcelParserController {
             job.CRM_Global_Channel__c = channel;
 
             // insert main record
-            insert job;
+            if (Schema.sObjectType.CRM_GLOBAL_Data_Ingestion_Job__c.isCreateable()) {
+                insert job;
+            }
 
             // 2. create CRM_GLOBAL_Raw_Data_Staging__c son record
             for (ExcelRecord excelRecord : wrapperRecords) {

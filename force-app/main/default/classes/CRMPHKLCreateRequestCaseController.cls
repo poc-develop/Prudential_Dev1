@@ -159,9 +159,7 @@ public with sharing class CRMPHKLCreateRequestCaseController {
                 newCase.Status = 'New';
             }
 
-            if (requestData.saveAsDraft) {
-                newCase.Status = 'Draft';
-            }
+            
             
             newCase.Priority = 'Medium';
             
@@ -251,6 +249,35 @@ public with sharing class CRMPHKLCreateRequestCaseController {
                         newCase.CRM_Global_ProductPlan__c = requestData.productPlan;
                     }
                 }
+
+                // Stop Cheque
+                if (requestData.requestType == 'Stop and Reissue Cheque') {
+                    if (String.isNotBlank(requestData.policyNumber)) {
+                        newCase.CRM_Global_PolicyNumber__c = requestData.policyNumber;
+                    }
+                    if (String.isNotBlank(requestData.chequeNumber)) {
+                        newCase.CRM_Global_ChequeNumber__c =  requestData.chequeNumber;
+                    }
+                }
+
+                // PA Request
+                if (requestData.requestType == 'PA Request') {
+                    if (String.isNotBlank(requestData.policyNumber)) {
+                        newCase.CRM_Global_PolicyNumber__c = requestData.policyNumber;
+                    }
+                    if (String.isNotBlank(requestData.policyOwner)) {
+                        newCase.CRM_Global_PolicyOwnerText__c = requestData.policyOwner;
+                    }
+                    if (String.isNotBlank(requestData.requestSummary)) {
+                        newCase.CRM_Global_RequestSummary__c = requestData.requestSummary;
+                    }
+                    if (String.isNotBlank(requestData.caseSummaryAllegations)) {
+                        newCase.CRM_Global_CaseSummaryAllegations__c = requestData.caseSummaryAllegations;
+                    }
+                    if (String.isNotBlank(requestData.CDComplaintRefNo)) {
+                        newCase.CRM_Global_CDComplaintRefNo__c = requestData.CDComplaintRefNo;
+                    }
+                }
             }
 
             if (String.isNotBlank(requestData.requestEnquiryCase)) {
@@ -285,7 +312,11 @@ public with sharing class CRMPHKLCreateRequestCaseController {
             }
 
             if (String.isNotBlank(requestData.dueDate1)) {
-                newCase.CRM_Global_TAT_DueDate_1__c = (DateTime)JSON.deserialize(requestData.dueDate1, DateTime.class);
+                Datetime tatDueDate1 = parseIsoDatetime(requestData.dueDate1, 'Due Date 1');
+                if (tatDueDate1 != null) {
+                    // newCase.CRM_Global_TAT_DueDate_1__c = tatDueDate1;
+                    // System.debug('duedate1====>' + newCase.CRM_Global_TAT_DueDate_1__c);
+                }
             }
 
             if (String.isNotBlank(requestData.requestSummary1)) {
@@ -313,11 +344,23 @@ public with sharing class CRMPHKLCreateRequestCaseController {
             }
 
             if (String.isNotBlank(requestData.dueDate2)) {
-                newCase.CRM_Global_TAT_DueDate_2__c = (DateTime)JSON.deserialize(requestData.dueDate2, DateTime.class);
+                Datetime tatDueDate2 = parseIsoDatetime(requestData.dueDate2, 'Due Date 2');
+                if (tatDueDate2 != null) {
+                    // newCase.CRM_Global_TAT_DueDate_2__c = tatDueDate2;
+                }
             }
 
             if (String.isNotBlank(requestData.requestSummary2)) {
                 newCase.CRM_Global_RequestSummary_2__c = requestData.requestSummary2;
+            }
+            
+            if (requestData.saveAsDraft) {
+                newCase.Status = 'Draft';
+            }
+
+            Entitlement entitlement = CRMGlobalCaseEntitlementService.getRequestCaseEntitlement();
+            if (entitlement != null) {
+                newCase.EntitlementId = entitlement.Id;
             }
             
             // 插入Case记录
@@ -392,6 +435,25 @@ public with sharing class CRMPHKLCreateRequestCaseController {
     }
     
     /**
+     * Safely parse ISO 8601 datetime strings coming from the UI.
+     */
+    private static Datetime parseIsoDatetime(String rawValue, String fieldLabel) {
+        if (String.isBlank(rawValue)) {
+            return null;
+        }
+        String valueToParse = rawValue.trim();
+        if (valueToParse.startsWith('"') && valueToParse.endsWith('"') && valueToParse.length() >= 2) {
+            valueToParse = valueToParse.substring(1, valueToParse.length() - 1);
+        }
+        try {
+            String jsonValue = JSON.serialize(valueToParse);
+            return (Datetime)JSON.deserialize(jsonValue, Datetime.class);
+        } catch (Exception ex) {
+            throw new AuraHandledException(fieldLabel + ' is invalid: ' + ex.getMessage());
+        }
+    }
+
+    /**
      * 请求数据包装类
      */
     public class RequestDataWrapper {
@@ -415,6 +477,7 @@ public with sharing class CRMPHKLCreateRequestCaseController {
         @AuraEnabled public String requestSummary2;
         @AuraEnabled public String dueDate2;
         @AuraEnabled public String policyNumber;
+        @AuraEnabled public String chequeNumber;
         @AuraEnabled public String nameOfAssured;
         @AuraEnabled public String requestSummary;
         @AuraEnabled public String refundChannel;
@@ -438,5 +501,8 @@ public with sharing class CRMPHKLCreateRequestCaseController {
         @AuraEnabled public String followUpRequestNewRequest;
         @AuraEnabled public String effectiveDate;
         @AuraEnabled public String productPlan;
+        @AuraEnabled public String policyOwner;
+        @AuraEnabled public String caseSummaryAllegations;
+        @AuraEnabled public String CDComplaintRefNo;
     }
 }

@@ -94,6 +94,10 @@ public with sharing class CRMGlobalDataIngestionJobTest {
         public override void handleRawData() {
             System.debug('handleRawData called');
         }
+        public override Database.UpsertResult[] processTargetResult() {
+            System.debug('processTargetResult called');
+            return new List<Database.UpsertResult>();
+        }
         protected override String checkRawDataItem(String rawKey, String rawDataItem) {
             return super.checkRawDataItem(rawKey, rawDataItem);
         }

@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"name": "Prudential_Dev1 (当前)",
+			"path": "."
+		},
+		{
+			"name": "devpoc",
+			"path": "../devpoc"
+		}
+	],
+	"settings": {
+		"search.exclude": {
+			"**/node_modules": true,
+			"**/bower_components": true,
+			"**/.sfdx": true
+		}
+	}
+}
+

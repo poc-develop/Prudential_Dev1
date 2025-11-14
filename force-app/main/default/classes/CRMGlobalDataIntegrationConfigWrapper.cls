@@ -2,7 +2,7 @@
  * @description       : Wrapper class for CRM_Global_DataIntegration_Config__mdt
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-11-02
+ * @last modified on  : 2025-11-12
  * @last modified by  : Franco
 **/
 public without sharing class CRMGlobalDataIntegrationConfigWrapper {
@@ -62,6 +62,7 @@ public without sharing class CRMGlobalDataIntegrationConfigWrapper {
     private void collectMergeFieldsFromTargets(Set<String> fields, List<CRM_Global_DataIntegration_Target__mdt> targets) {
         for(CRM_Global_DataIntegration_Target__mdt target : targets) {
             fields.addAll(CRMGlobalTemplateMergeFieldService.getMergeFieldsFromTemplate(target.Field_Mappings__c));
+            fields.addAll(CRMGlobalTemplateMergeFieldService.getMergeFieldsFromTemplate(target.Result_Filter__c));
         }
     }
 

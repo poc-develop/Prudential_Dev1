@@ -2,7 +2,7 @@
  * @description       : Service class to handle the response from the CRM Global Data Integration process
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-25
+ * @last modified on  : 2025-11-08
  * @last modified by  : Franco
 **/
 @SuppressWarnings('PMD')
@@ -33,13 +33,10 @@ public with sharing class CRMGlobalDataIntegrationRespService {
                     return parseDatetimeValue(configWrapper, value);
                 }
                 when INTEGER {
-                    return Integer.valueOf(value);
+                    return String.valueOf(value) == '' ? null : Integer.valueOf(value);
                 }
                 when DOUBLE, CURRENCY, PERCENT {
-                    if(String.valueOf(value) == '') {
-                        return null;
-                    }
-                    return Double.valueOf(value);
+                    return String.valueOf(value) == '' ? null : Double.valueOf(value);
                 }
                 when else {
                     return String.valueOf(value);
@@ -60,7 +57,7 @@ public with sharing class CRMGlobalDataIntegrationRespService {
      * @return  `Boolean`
      */
     private static Boolean parseBooleanValue(CRMGlobalDataIntegrationConfigWrapper configWrapper, Object value) {
-        if (value == null) {
+        if (value == null || String.valueOf(value) == '') {
             return false;
         }
         String booleanTrueValues = configWrapper.config.Boolean_True_Values__c;

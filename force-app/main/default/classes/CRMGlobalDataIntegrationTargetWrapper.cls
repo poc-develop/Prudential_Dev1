@@ -2,7 +2,7 @@
  * @description       : Wrapper class for CRM_Global_DataIntegration_Target__mdt
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-26
+ * @last modified on  : 2025-11-10
  * @last modified by  : Franco
 **/
 public with sharing class CRMGlobalDataIntegrationTargetWrapper {
@@ -19,6 +19,7 @@ public with sharing class CRMGlobalDataIntegrationTargetWrapper {
     public Boolean includeParentIdToExIdField;
     public Boolean includeParentExtIdToExIdField;
     public String parentExtFieldName;
+    public Boolean isDeleteExistingData;
 
     public Schema.SObjectType targetSObjectType;
     public Map<String, Schema.SObjectField> targetFieldsMap;
@@ -45,6 +46,7 @@ public with sharing class CRMGlobalDataIntegrationTargetWrapper {
         this.includeParentIdToExIdField = target.Include_Parent_Id_To_ExId_Field__c;
         this.includeParentExtIdToExIdField = target.Include_Parent_ExtId_To_ExId_Field__c;
         this.parentExtFieldName = parentConfig?.Parent_ExId_Field__c;
+        this.isDeleteExistingData = target.Delete_Existing_Data__c;
         initAndValidateTarget(describe);
     }
 

@@ -63,8 +63,8 @@ public with sharing class CRMGlobalCustomerPolicySearchController {
         Map<String, SearchObject> returningObjectTypeNameSearchObjectMap = new Map<String, SearchObject>();
         Map<String, SearchObject> developerNameSearchObjectMap = new Map<String, SearchObject>();
         Map<Id, Account> participantIdPolicyOwnerMap = new Map<Id, Account>();
-        Map<String, SearchCondition__mdt> developerNameSearchConditionMap = new Map<String, SearchCondition__mdt>();
-        Map<String, PolicySearchResultColumn__mdt> developerNameResultColumnMap = new Map<String, PolicySearchResultColumn__mdt>();
+        Map<String, CRM_Global_SearchCondition__mdt> developerNameSearchConditionMap = new Map<String, CRM_Global_SearchCondition__mdt>();
+        Map<String, CRM_Global_PolicySearchResultColumn__mdt> developerNameResultColumnMap = new Map<String, CRM_Global_PolicySearchResultColumn__mdt>();
         List<InsurancePolicy> participantQueryResultList = new List<InsurancePolicy>();
 
         // Boolean searchVehicleRegistrationNumber = false;
@@ -156,7 +156,7 @@ public with sharing class CRMGlobalCustomerPolicySearchController {
         if (needExecuteNextQuery) {
             insurancePolicyParticipantQueryFieldSet.addAll(insurancePolicyParticipantQueryBasicFieldSet);
             List<String> insurancePolicyParticipantQueryFieldList = new List<String>();
-            for (SearchCondition__mdt next : CRMGlobalSearchResultColumnController.getSearchConditionMdtList()) {
+            for (CRM_Global_SearchCondition__mdt next : CRMGlobalSearchResultColumnController.getSearchConditionMdtList()) {
                 developerNameSearchConditionMap.put(next.DeveloperName, next);
                 if (next.ExecutionLanguage__c.equals('SOQL') && String.isNotBlank(next.SearchTarget__c)) {
                     for (String fieldNameString : next.SearchTarget__c.split(',')) {
@@ -172,7 +172,7 @@ public with sharing class CRMGlobalCustomerPolicySearchController {
                     }
                 }
             }
-            for (PolicySearchResultColumn__mdt next : CRMGlobalSearchResultColumnController.getPolicySearchResultColumnMdtList()) {
+            for (CRM_Global_PolicySearchResultColumn__mdt next : CRMGlobalSearchResultColumnController.getPolicySearchResultColumnMdtList()) {
                 developerNameResultColumnMap.put(next.DeveloperName, next);
                 if (String.isNotBlank(next.FieldName__c)) {
                     for (String fieldNameString : next.FieldName__c.split(',')) {
@@ -412,13 +412,13 @@ public with sharing class CRMGlobalCustomerPolicySearchController {
         Map<Id, String> insurancePolicyIdAssetNameMap,
         Map<Id, Account> participantIdPolicyOwnerMap,
         Map<String, SearchObject> developerNameSearchObjectMap,
-        Map<String, SearchCondition__mdt> developerNameSearchConditionMap,
-        Map<String, PolicySearchResultColumn__mdt> developerNameResultColumnMap
+        Map<String, CRM_Global_SearchCondition__mdt> developerNameSearchConditionMap,
+        Map<String, CRM_Global_PolicySearchResultColumn__mdt> developerNameResultColumnMap
     ) {
         List<Object> resultList = new List<Object>();
         Map<String, String> resultColumnDeveloperNameToFieldName = new Map<String, String>();
 
-        for (PolicySearchResultColumn__mdt next : developerNameResultColumnMap.values()) {
+        for (CRM_Global_PolicySearchResultColumn__mdt next : developerNameResultColumnMap.values()) {
             resultColumnDeveloperNameToFieldName.put(next.DeveloperName, next.FieldName__c);
         }
         System.debug('[encapsulateResult] queryResult.size()=' + queryResult.size());
@@ -504,7 +504,7 @@ public with sharing class CRMGlobalCustomerPolicySearchController {
                 if (searchObjectResultMap.get(developerName) != null) {
                     resultItem.put(fieldNameCombination, searchObjectResultMap.get(developerName));
                 } else {
-                    SearchCondition__mdt searchCondition = developerNameSearchConditionMap.get(developerName);
+                    CRM_Global_SearchCondition__mdt searchCondition = developerNameSearchConditionMap.get(developerName);
                     if (searchCondition != null && searchCondition.ExecutionLanguage__c != null && searchCondition.ExecutionLanguage__c.equals('SOSL')) {
                         for (String returningField : searchCondition.ReturningFields__c.split(',')) {
                             String returningFieldTrim = returningField.trim();

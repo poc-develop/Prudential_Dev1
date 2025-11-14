@@ -12,7 +12,7 @@
         <valueSetDefinition>
             <sorted>false</sorted>
             <value>
-                <fullName>Claims</fullName>
+                <fullName>CL</fullName>
                 <default>false</default>
                 <label>Claims</label>
             </value>
@@ -22,12 +22,12 @@
                 <label>PA</label>
             </value>
             <value>
-                <fullName>Underwriting</fullName>
+                <fullName>UW</fullName>
                 <default>false</default>
                 <label>Underwriting</label>
             </value>
             <value>
-                <fullName>Others</fullName>
+                <fullName>O</fullName>
                 <default>false</default>
                 <label>Others</label>
             </value>

@@ -2,7 +2,7 @@
  * @description       : Service for handling Data Integration
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-11-02
+ * @last modified on  : 2025-11-13
  * @last modified by  : Franco
 **/
 @SuppressWarnings('PMD')
@@ -44,6 +44,8 @@ public without sharing class CRMGlobalDataIntegrationService {
         List<SObject> relatedRecordsToInsert = new List<SObject>();
         // Related records to update
         List<SObject> relatedRecordsToUpdate = new List<SObject>();
+        // Related records to delete
+        List<SObject> relatedRecordsToDelete = new List<SObject>();
 
         for (CRMGlobalDataIntegrationTargetWrapper targetWrapper : configWrapper.targetWrappers) {
             Object targetSourceData = CRMGlobalDataIntegrationRespService.getNestedValue(responseData, targetWrapper.responsePath);
@@ -52,7 +54,11 @@ public without sharing class CRMGlobalDataIntegrationService {
             List<SObject> recordsToUpsert = new List<SObject>();
             CRMGlobalLogManager.addApexInfoLog('Processing ' + recordsToProcess.size() + ' records for target object: ' + targetWrapper.targetObject);
             if(targetWrapper.resultFilter != null) {
-                recordsToProcess = filterRecords(recordsToProcess, targetWrapper.resultFilter);
+                String filterJson = targetWrapper.resultFilter;
+                if (CRMGlobalTemplateMergeFieldService.hasMergeFields(filterJson)) {
+                    filterJson = CRMGlobalTemplateMergeFieldService.mergeTemplate(filterJson, configWrapper.parentRecord, false);
+                }
+                recordsToProcess = filterRecords(recordsToProcess, filterJson);
                 CRMGlobalLogManager.addApexInfoLog('Filtered result: ' + recordsToProcess.size() + ' records for target object: ' + targetWrapper.targetObject);
             }
             Boolean isToUpdateParentRecord = false;
@@ -73,11 +79,20 @@ public without sharing class CRMGlobalDataIntegrationService {
                 
                 // Otherwise, it means to crate/update the child records
                 populateParentRelationshipField(targetWrapper, configWrapper, targetRecord);
-                populateExternalIdField(targetWrapper, sourceRecord, targetRecord);
 
+                if(targetWrapper.targetRecordTypeId != null) {
+                    targetRecord.put('RecordTypeId', targetWrapper.targetRecordTypeId);
+                }
+
+                // external id equals Id means always insert
+                if('Id'.equalsIgnoreCase(targetWrapper.targetExIdField)) {
+                    relatedRecordsToInsert.add(targetRecord);
+                } else {
+                    populateExternalIdField(targetWrapper, sourceRecord, targetRecord);
+                    extIdToChildRecordMap.put(String.valueOf(targetRecord.get(targetWrapper.targetExIdField)), targetRecord);
+                }
+                
                 System.debug(LoggingLevel.INFO, '#targetRecord -> ' + targetRecord);
-
-                extIdToChildRecordMap.put(String.valueOf(targetRecord.get(targetWrapper.targetExIdField)), targetRecord);
             }
             if(isToUpdateParentRecord) {
                 continue;
@@ -86,8 +101,18 @@ public without sharing class CRMGlobalDataIntegrationService {
             Map<String, List<SObject>> relatedRecords = prepareChildRecords(targetWrapper, extIdToChildRecordMap);
             relatedRecordsToInsert.addAll(relatedRecords.get('TO_INSERT'));
             relatedRecordsToUpdate.addAll(relatedRecords.get('TO_UPDATE'));
+
+            // Delete existing data if needed
+            if(!targetWrapper.isToUpdateParent() && targetWrapper.isDeleteExistingData) {
+                String deleteQuery = 'SELECT Id FROM ' + targetWrapper.targetObject + ' WHERE ' + targetWrapper.targetParentField + ' = \'' + configWrapper.recordId + '\'';
+                if(String.isNotBlank(targetWrapper.targetRecordTypeId)) {
+                    deleteQuery += ' AND RecordTypeId = \'' + targetWrapper.targetRecordTypeId + '\'';
+                }
+                relatedRecordsToDelete.addAll(Database.query(deleteQuery, AccessLevel.SYSTEM_MODE));
+            }
         }
 
+        deleteExistingData(relatedRecordsToDelete);
         performDML(parentRecordToUpdate, relatedRecordsToUpdate, relatedRecordsToInsert);
     }
 
@@ -100,13 +125,16 @@ public without sharing class CRMGlobalDataIntegrationService {
      */
     private static SObject convertSourceDataToTargetRecord(Map<String, Object> sourceData, CRMGlobalDataIntegrationTargetWrapper targetWrapper, CRMGlobalDataIntegrationConfigWrapper configWrapper) {
         SObject targetRecord = targetWrapper.targetSObjectType.newSObject();
-        CRMGlobalLogManager.addApexInfoLog('Starting applying field mappings for target object: ' + targetWrapper.targetObject);
         for (String sourceField : targetWrapper.fieldMappings.keySet()) {
             String[] sourceFieldArr = sourceField.split(':');
             String sourceFieldName = sourceFieldArr[0];
             String targetField = targetWrapper.fieldMappings.get(sourceField);
             Schema.DescribeFieldResult fieldDescribe = targetWrapper.targetFieldsMap.get(targetField.toLowerCase()).getDescribe();
-            // Target Value: 1. get from merge field 2. get from source data 3. get from default value if null
+            // Target Value Logic:
+            // 1. get from merge field
+            // 2. get from source data
+            // 3. get from default value if null
+            // 4. set to null if no default value
             Object targetValue = null;
             if (CRMGlobalTemplateMergeFieldService.hasMergeFields(sourceField)) {
                 targetValue = CRMGlobalTemplateMergeFieldService.mergeTemplate(sourceField, configWrapper.parentRecord, false);
@@ -118,10 +146,18 @@ public without sharing class CRMGlobalDataIntegrationService {
             } else if(sourceFieldArr.size() > 1) {
                 String defaultValue = sourceFieldArr[1];
                 targetRecord.put(targetField, CRMGlobalDataIntegrationRespService.convertFieldValue(configWrapper, fieldDescribe, defaultValue));
+            } else {
+                targetRecord.put(targetField, CRMGlobalDataIntegrationRespService.convertFieldValue(configWrapper, fieldDescribe, ''));
             }
         }
-        CRMGlobalLogManager.addApexInfoLog('Completed applying field mappings for target object: ' + targetWrapper.targetObject);
         return targetRecord;
+    }
+
+    private static void deleteExistingData(List<SObject> relatedRecordsToDelete) {
+        if (!relatedRecordsToDelete.isEmpty()) {
+            Database.delete(relatedRecordsToDelete, AccessLevel.SYSTEM_MODE);
+            relatedRecordsToDelete.clear();
+        }
     }
 
     /**
@@ -267,10 +303,6 @@ public without sharing class CRMGlobalDataIntegrationService {
                 record.put('Id', existingRecordIdMap.get(externalId));
                 relatedRecordsToUpdate.add(record);
             } else {
-
-                if(targetWrapper.targetRecordTypeId != null) {
-                    record.put('RecordTypeId', targetWrapper.targetRecordTypeId);
-                }
                 relatedRecordsToInsert.add(record);
             }
         }
@@ -296,15 +328,7 @@ public without sharing class CRMGlobalDataIntegrationService {
         for (Map<String, Object> record : recordsToProcess) {
             Boolean match = true;
             for (String key : filterMap.keySet()) {
-                if (!record.containsKey(key) || record.get(key) == null) {
-                    match = false;
-                    break;
-                }
-
-                String recordVal = String.valueOf(record.get(key));
-                String filterVal = String.valueOf(filterMap.get(key));
-
-                if (recordVal != filterVal) {
+                if(!isMatch(key, record, filterMap)) {
                     match = false;
                     break;
                 }
@@ -314,5 +338,25 @@ public without sharing class CRMGlobalDataIntegrationService {
             }
         }
         return result;
+    }
+
+    private static Boolean isMatch(String key, Map<String, Object> record, Map<String, Object> filterMap) {
+        Boolean match = true;
+        if(!record.containsKey(key) || record.get(key) == null) {
+            return false;
+        }
+        String recordVal = String.valueOf(record.get(key));
+        String filterVal = String.valueOf(filterMap.get(key));
+        Boolean isOROperation = filterVal.contains('|');
+        List<String> filterValList = filterVal.split('\\|');
+
+        if(isOROperation) {
+            if(!filterValList.contains(recordVal)) {
+                match = false;
+            }
+        } else if(!recordVal.equals(filterVal)) {
+            match = false;
+        }
+        return match;
     }
 }

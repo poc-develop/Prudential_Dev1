@@ -161,8 +161,8 @@ public without sharing class CRMGlobalLogManager {
             HTTP_Method__c = req?.getMethod(),
             Message_Id__c = messageId,
             Processing_Time_ms__c = durationInMS,
-            Request_Body__c = req?.getBody(),
-            Response_Body__c = res?.getBody(),
+            Request_Body__c = req?.getBody().abbreviate(requestBodyLength),
+            Response_Body__c = res?.getBody().abbreviate(responseBodyLength),
             Response_Status_Code__c = res?.getStatusCode(),
             Transaction_ID__c = System.Request.getCurrent().getRequestId(),
             Type__c = 'Outbound'

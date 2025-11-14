@@ -2,7 +2,7 @@
  * @description       : 
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-09-18
+ * @last modified on  : 2025-11-14
  * @last modified by  : Franco
 **/
 public with sharing class CRMGlobalCaseTATService {
@@ -18,7 +18,7 @@ public with sharing class CRMGlobalCaseTATService {
         }
     }
 
-    public static DateTime getTATDueDate(String requestType, String caseStatus, Datetime startDatetime) {
+    public static Datetime getTATDueDate(String requestType, String caseStatus, Datetime startDatetime) {
         CRM_Global_CaseTATSetting__mdt tatSetting = requestTypeToTATSettingMap.get(requestType);
         if (tatSetting == null) {
             return null;

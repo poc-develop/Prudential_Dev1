@@ -723,4 +723,3 @@ private class CRMGlobalEmailTemplateControllerTest {
         }
     }
 }
-

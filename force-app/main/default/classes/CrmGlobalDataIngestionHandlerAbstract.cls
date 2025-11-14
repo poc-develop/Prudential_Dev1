@@ -27,6 +27,11 @@ public without sharing abstract class CrmGlobalDataIngestionHandlerAbstract {
     protected Map<String, List<String>> errorMap;
 
     /**
+     * @description Raw Data String Record Id List.
+     */
+    public List<String> rawDataIdList;
+
+    /**
      * @description Common Data.
      */
     protected Map<String, Object> commonData = new Map<String, Object>();
@@ -73,6 +78,21 @@ public without sharing abstract class CrmGlobalDataIngestionHandlerAbstract {
      * @return CrmGlobalDataIngestionHandlerAbstract
      */
     public virtual CrmGlobalDataIngestionHandlerAbstract init(
+        CRM_Global_Data_Ingestion_Job__c job
+    ) {
+        this.job = job;
+        return this;
+    }
+
+    /**
+     * @method init
+     * @description init method for pass parameters instead of constructor.
+     * @param job
+     * @param rawDataList
+     * @param errorMap
+     * @return CrmGlobalDataIngestionHandlerAbstract
+     */
+    public virtual CrmGlobalDataIngestionHandlerAbstract init(
         CRM_Global_Data_Ingestion_Job__c job,
         List<CRM_Global_Raw_Data_Staging__c> rawDataList,
         Map<String, List<String>> errorMap
@@ -87,14 +107,16 @@ public without sharing abstract class CrmGlobalDataIngestionHandlerAbstract {
     /**
      * @method processJob
      * @description Main Method of Entry for Processing.
+     * @return Database.UpsertResult[]
      */
-    public void processJob() {
+    public Database.UpsertResult[] processJob() {
         if (rawDataList.isEmpty()) {
             System.debug(LoggingLevel.INFO, 'No raw data for job ' + job.Id);
-            return;
+            return (new List<Database.UpsertResult>());
         }
         validateRawData();
         handleRawData();
+        return processTargetResult();
     }
 
     /**
@@ -108,6 +130,13 @@ public without sharing abstract class CrmGlobalDataIngestionHandlerAbstract {
      * @description handle Raw Data.
      */
     protected abstract void handleRawData();
+
+    /**
+     * @method processTargetResult
+     * @description Process Target Result.
+     * @return Database.UpsertResult[]
+     */
+    protected abstract Database.UpsertResult[] processTargetResult();
 
     /**
      * checkRawDataItem
@@ -142,6 +171,9 @@ public without sharing abstract class CrmGlobalDataIngestionHandlerAbstract {
      */
     public virtual Object getAttribute(String attributeName){
         System.debug(LoggingLevel.INFO, 'Get Attribute: ' + attributeName);
+        if (attributeName == 'rawDataIdList') {
+            return (Object)rawDataIdList;
+        }
         Object myVar;
         return myVar;
     }

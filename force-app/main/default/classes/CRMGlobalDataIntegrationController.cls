@@ -2,7 +2,7 @@
  * @description       : Controller for CRM Global Data Integration LWC
  * @author            : Franco
  * @group             : 
- * @last modified on  : 2025-10-26
+ * @last modified on  : 2025-11-10
  * @last modified by  : Franco
 **/
 public with sharing class CRMGlobalDataIntegrationController {
@@ -22,7 +22,8 @@ public with sharing class CRMGlobalDataIntegrationController {
                 Date_Format__c, Datetime_Format__c, 
                     (SELECT Id, Target_Object__c, Target_ExId_Field__c, Target_Parent_Field__c, Field_Mappings__c,
                             Response_Path__c, Target_Record_Type__c, Response_Composite_Keys__c, Result_Filter__c, 
-                            Include_Parent_Id_To_ExId_Field__c, Include_Parent_ExtId_To_ExId_Field__c 
+                            Include_Parent_Id_To_ExId_Field__c, Include_Parent_ExtId_To_ExId_Field__c, 
+                            Delete_Existing_Data__c
                     FROM DataIntegration_Target__r
                     WHERE Is_Active__c = true)
             FROM CRM_Global_DataIntegration_Config__mdt

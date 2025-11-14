@@ -6,7 +6,7 @@
 		<name>Flow</name>
 	</types>
 	<types>
-		<members>crmPHKLCreateCaseReply</members>
+		<members>crmPHKLCreteCaseReply</members>
 		<name>LightningComponentBundle</name>
 	</types>
 	<types>
@@ -32,7 +32,7 @@
 	</types>
 	<types>
 		<name>ApexClass</name>
-		<members>CRMPHKLCreateCaseReplyController</members>
+		<members>*</members>
 	</types>
 	<version>65.0</version>
 </Package>

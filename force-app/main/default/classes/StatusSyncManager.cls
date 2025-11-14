@@ -95,18 +95,21 @@ global with sharing class StatusSyncManager implements genesyscloud.GenesysSCVEx
 
 	switch on genesysTargetSystemPresence {
 	  when 'AVAILABLE' {
-		salesforceResponseTargetStatusId = 'CHANGE ME';
+		salesforceResponseTargetStatusId = '0N5D3000000KylqKAC';
 	  }
 	  when 'ON_QUEUE' {
-		salesforceResponseTargetStatusId = 'CHANGE ME';
+		salesforceResponseTargetStatusId = '0N5D3000000KylvKAC';
 	  }
 	  when 'AWAY' {
 		salesforceResponseTargetStatusId = 'CHANGE ME';
 	  }
 	  when 'BUSY' {
-		// Sets agent to Offline in Omni-Channel
-		salesforceResponseTargetStatusId = '0';
+		salesforceResponseTargetStatusId = '0N5D3000000Kym0KAC';
 	  }
+      when 'OFFLINE' {
+        // Sets agent to Offline in Omni-Channel 
+        salesforceResponseTargetStatusId = '0';
+      }
 	  when else {
 		System.debug(logginglevel.WARN, 'Genesys Cloud status NOT HANDLED: ' + genesysTargetSystemPresence);
 	  }

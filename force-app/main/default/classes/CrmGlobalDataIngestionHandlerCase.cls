@@ -27,9 +27,25 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
     public List<Case> outboundCaseList;
 
     /**
-     * @description Raw Data String Record Id List.
+     * @description All Policy Set.
      */
-    public List<String> rawDataIdList;
+    public Set<String> allPolicySet;
+
+    /**
+     * @method init
+     * @description init method for pass parameters instead of constructor.
+     * @param job
+     * @return CrmGlobalDataIngestionHandlerAbstract
+     */
+    public override CrmGlobalDataIngestionHandlerAbstract init(
+        CRM_Global_Data_Ingestion_Job__c job
+    ) {
+        super.init(job);
+
+        allPolicySet = new Set<String>();
+
+        return this;
+    }
 
     /**
      * @method init
@@ -47,10 +63,10 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
         super.init(job, rawDataList, errorMap);
         outboundCaseList = new List<Case>();
         rawDataIdList = new List<String>();
-        caseOwnerInfoToUser = new Map<String, User>();
 
-        outboundCaseList = new List<Case>();
-        rawDataIdList = new List<String>();
+        policyNoToPolicy = new Map<String, InsurancePolicy>();
+        accountIdToMasterCase = new Map<String, Case>();
+        caseOwnerInfoToUser = new Map<String, User>();
 
         checkListRaws = new List<String>{'Case Received Date', 'Policy No.', 'Case Owner', 'Priority'};
 
@@ -86,7 +102,27 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
             commonData.put('TAT_due_date', dueDateMap);
         }
 
+        prepareRawDataAndUpsertMasterCase();
+
         return this;
+    }
+
+
+    /**
+     * @method processTargetResult
+     * @description Process Target Result.
+     * @return Database.UpsertResult[]
+     */
+    protected override Database.UpsertResult[] processTargetResult() {
+        // Deduplicate
+        deduplicateOutboundCase();
+
+        // Upsert Child Outbound Case
+        Database.UpsertResult[] resultUpserts = new List<Database.UpsertResult>();
+        if (!outboundCaseList.isEmpty() && !rawDataIdList.isEmpty()) {
+            resultUpserts = upsertRelatedCase();
+        }
+        return resultUpserts;
     }
 
     /**
@@ -234,15 +270,6 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
      * @return CrmGlobalDataIngestionHandlerAbstract
      */
     public override CrmGlobalDataIngestionHandlerAbstract setAttribute(String attributeName, Object attributeValue) {
-        if (attributeName == 'policyNoToPolicy') {
-            policyNoToPolicy = (Map<String, InsurancePolicy>) attributeValue;
-        }
-        if (attributeName == 'accountIdToMasterCase') {
-            accountIdToMasterCase = (Map<String, Case>) attributeValue;
-        }
-        if (attributeName == 'caseOwnerInfoToUser') {
-            caseOwnerInfoToUser = (Map<String, User>) attributeValue;
-        }
         return this;
     }
 
@@ -253,14 +280,7 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
      * @return Object
      */
     public override Object getAttribute(String attributeName){
-        if (attributeName == 'outboundCaseList') {
-            return (Object)outboundCaseList;
-        }
-        if (attributeName == 'rawDataIdList') {
-            return (Object)rawDataIdList;
-        }
-        Object myVar;
-        return myVar;
+        return super.getAttribute(attributeName);
     }
 
     /**
@@ -303,6 +323,135 @@ public with sharing class CrmGlobalDataIngestionHandlerCase extends CrmGlobalDat
 
         return dueDate;
     }
+
+    /**
+     * @method deduplicateOutboundCase
+     * @description Deduplicate Outbound Case.
+     * @param errorMap
+     */
+    private void deduplicateOutboundCase() {
+        try {
+            List<Case> outboundCaseListNew = new List<Case>();
+            List<String> rawDataIdListNew = new List<String>();
+            if (outboundCaseList.isEmpty() || rawDataIdList.isEmpty()) {
+                return;
+            }
+
+            for (Integer i = 0; i < outboundCaseList.size(); i++) {
+                Id rawId = rawDataIdList.get(i);
+                Case outbound = outboundCaseList.get(i);
+                if (!allPolicySet.contains(outbound.CRM_Global_Policy__c)) {
+                    outboundCaseListNew.add(outbound);
+                    rawDataIdListNew.add(rawId);
+                    allPolicySet.add(outbound.CRM_Global_Policy__c);
+                } else {
+                    errorMap.put(rawId, new List<String>{'There is already a job with the current policy in the  of the currently executing task'});
+                }
+            }
+            if (outboundCaseList.size() != outboundCaseListNew.size()) {
+                outboundCaseList.clear();
+                rawDataIdList.clear();
+                outboundCaseList.addAll(outboundCaseListNew);
+                rawDataIdList.addAll(rawDataIdListNew);
+            }
+
+        } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler Deduplicate Outbound Case: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
+            System.debug(LoggingLevel.ERROR, 'Scheduler Deduplicate Outbound Case: ' + e.getMessage() + '#line:' + e.getLineNumber());
+        }
+    }
+
+    /**
+     * @method prepareRawDataAndUpsertMasterCase
+     * @description Prepare Raw Data And Upsert Master Case.
+     */
+    private void prepareRawDataAndUpsertMasterCase() {
+        try {
+            Set<String> policyNoSet = new Set<String>();
+            Set<String> caseOwnerSet = new Set<String>();
+            
+            for (CRM_Global_Raw_Data_Staging__c rawRecord : rawDataList) {
+                Map<String, Object> rawMap = (Map<String, Object>) JSON.deserializeUntyped(rawRecord.CRM_Global_RawJSONData__c);
+                if (String.isNotBlank(String.valueOf(rawMap.get('Policy No.')))) {
+                    policyNoSet.add(String.valueOf((Object)rawMap.get('Policy No.')));
+                }
+                if (String.isNotBlank((String)rawMap.get('Case Owner'))) {
+                    caseOwnerSet.add((String)rawMap.get('Case Owner'));
+                }
+            }
+    
+            // Prepare Case Owner List
+            if (!caseOwnerSet.isEmpty()) {
+                for (User caseOwnerUser : [SELECT Id, Name, Email FROM User WHERE Email IN :caseOwnerSet]) {
+                    caseOwnerInfoToUser.put(caseOwnerUser.Email, caseOwnerUser);
+                }
+            }
+    
+            // Prepare Master case
+            if (!policyNoSet.isEmpty()) {
+                for (InsurancePolicy policy : [SELECT Id, Name, NameInsuredId FROM InsurancePolicy WHERE Name IN :policyNoSet]) {
+                    policyNoToPolicy.put(policy.Name, policy);
+                    accountIdToMasterCase.put(policy.NameInsuredId, new Case(
+                        RecordTypeId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Master_Outbound').getRecordTypeId(),
+                        AccountId = policy.NameInsuredId
+                    ));
+                }
+            }
+            for (Case oldMasterCase : [SELECT Id, AccountId FROM Case 
+                                        WHERE AccountId IN :accountIdToMasterCase.keySet() 
+                                        AND RecordTypeId = :Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Master_Outbound').getRecordTypeId()]) {
+                accountIdToMasterCase.get(oldMasterCase.AccountId).Id = oldMasterCase.Id;
+            }
+    
+            // Upsert Master
+            Database.upsert(accountIdToMasterCase.values(), false);
+        } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler Prepare And Upsert Master Case failed: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
+            System.debug(LoggingLevel.ERROR, 'Scheduler Prepare And Upsert Master Case failed: ' + e.getMessage() + '#line:' + e.getLineNumber());
+        }
+    }
+
+
+    /**
+     * @method upsertRelatedCase
+     * @description Upsert Related Case.
+     * @return Database.UpsertResult[]
+     */
+    private Database.UpsertResult[] upsertRelatedCase() {
+        Database.UpsertResult[] resultUpserts = new List<Database.UpsertResult>();
+        try {
+            if (!outboundCaseList.isEmpty()) {
+                String enquiryOutboundId = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName().get('Enquiry_Outbound').getRecordTypeId();
+
+                Map<String, Case> policyNameToCase = new Map<String, Case>();
+                for (Case outboundCase : outboundCaseList) {
+                    if (outboundCase.RecordTypeId == enquiryOutboundId && outboundCase.Id == null) {
+                        policyNameToCase.put(outboundCase.CRM_Global_Policy__c, new Case());
+                    }
+                }
+
+                if (policyNameToCase.keySet().size() > 0) {
+                    for (Case outbound : [SELECT Id, CRM_Global_Policy__c  FROM Case WHERE CRM_Global_Policy__c IN :policyNameToCase.keySet() AND RecordTypeId = :enquiryOutboundId]) {
+                        policyNameToCase.put(outbound.CRM_Global_Policy__c, outbound);
+                    }
+                }
+
+                for (Case outboundCase : outboundCaseList) {
+                    if (outboundCase.RecordTypeId == enquiryOutboundId && outboundCase.Id == null && String.isNotBlank(policyNameToCase.get(outboundCase.CRM_Global_Policy__c).Id)) {
+                        outboundCase.Id = policyNameToCase.get(outboundCase.CRM_Global_Policy__c).Id;
+                    }
+                }
+
+                resultUpserts = Database.upsert(outboundCaseList, false);
+                System.debug(LoggingLevel.INFO, 'Upsert ' + outboundCaseList.size() + ' Outbound Case.');
+            }
+        } catch (Exception e) {
+            CRMGlobalLogManager.addApexErrorLog('Scheduler Upsert Related Case: ' + e.getMessage() + ' Stack: ' + e.getStackTraceString(), e);
+            System.debug(LoggingLevel.ERROR, 'Scheduler Upsert Related Case: ' + e.getMessage() + '#line:' + e.getLineNumber());
+        }
+        return resultUpserts;
+    }
+
 
     /**
      * getDateFromString

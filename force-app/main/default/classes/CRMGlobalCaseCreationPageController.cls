@@ -54,12 +54,17 @@ public with sharing class CRMGlobalCaseCreationPageController {
 
     @AuraEnabled(cacheable=true)
     public static List<Case> getMasterCaseEnquiries(String masterCaseId){
-        return [select Id,CRM_Global_EnquiryCaseNumber__c,Origin,Status,Owner.Name,CreatedDate from Case where ParentId =: masterCaseId and Status = 'Active'];
+        return [select Id,CRM_Global_EnquiryCaseNumber__c,Origin,Status,Owner.Name,ParentId,CreatedDate from Case where ParentId =: masterCaseId and Status = 'Active'];
     }
 
     @AuraEnabled(cacheable=true)
     public static List<Case> getAllEnquiries(String masterCaseId,String accountId){
-        return [select Id,CRM_Global_EnquiryCaseNumber__c,Origin,Status,Owner.Name,CreatedDate from Case where AccountId =: accountId and ParentId !=: masterCaseId and Status = 'Active'];
+        return [select Id,CRM_Global_EnquiryCaseNumber__c,Origin,Status,Owner.Name,ParentId,CreatedDate from Case where AccountId =: accountId and ParentId !=: masterCaseId and Status = 'Active'];
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<ServicePresenceStatus> getPresenceStatus(){
+        return [SELECT DeveloperName,Id,IsDeleted,MasterLabel FROM ServicePresenceStatus];
     }
     
     @AuraEnabled
@@ -164,9 +169,13 @@ public with sharing class CRMGlobalCaseCreationPageController {
                 );
                 wrapUpMap.put(index,wrapUp);
 
+                List<policyEntity> policyList = new List<policyEntity>();
+                if(child.nonPolicy == false) policyList.addAll(child.policyList);
+                else policyList.add(new policyEntity());
+
                 // 同一Case下的 Wrap up details
                 List<CRM_Global_CaseAssociatedItem__c> wrapUpItems2Case = new List<CRM_Global_CaseAssociatedItem__c>();
-                for(policyEntity policy : child.policyList){
+                for(policyEntity policy : policyList){
                     for(String items : child.wrapUpItems){
 
                         String category;
@@ -249,6 +258,8 @@ public with sharing class CRMGlobalCaseCreationPageController {
             List<CRM_Global_CaseAssociatedItem__c> wrapUpItems = new List<CRM_Global_CaseAssociatedItem__c>();
             Map<Integer,List<CRM_Global_CaseAssociatedItem__c>> wrapUpItemsMap = new Map<Integer,List<CRM_Global_CaseAssociatedItem__c>>();
             List<Case> equiryCaseList = new List<Case>();
+            Set<String> masterCaseIds = new Set<String>();
+            List<Case> updateMasterCaseList = new List<Case>();
             Integer index = 1;
 
             // get Interaction Id
@@ -267,9 +278,30 @@ public with sharing class CRMGlobalCaseCreationPageController {
                 );
                 wrapUpMap.put(index,wrapUp);
 
+                // update master case status
+                if(!masterCaseIds.contains(enquiryCase.id)){
+                    masterCaseIds.add(enquiryCase.id);
+                    Case updateMasterCase = new Case(
+                        Id = enquiryCase.masterCaseId,
+                        Status = wrapUpEntity.masterCaseStatus
+                    );
+                    if(wrapUpEntity.masterCaseStatus == 'Completed') {
+                        updateMasterCase.CRM_Global_CompletionDate__c = System.now();
+                    }
+                    updateMasterCaseList.add(updateMasterCase);
+                }
+
+                List<policyEntity> policyList = new List<policyEntity>();
+                if(wrapUpDetails.nonPolicy == false) {
+                    policyList.addAll(wrapUpDetails.policyList);
+                }
+                else {
+                    policyList.add(new policyEntity());
+                }
+                
                 // 同一Case下的 Wrap up details
                 List<CRM_Global_CaseAssociatedItem__c> wrapUpItems2Case = new List<CRM_Global_CaseAssociatedItem__c>();
-                for(policyEntity policy : wrapUpDetails.policyList){
+                for(policyEntity policy : policyList){
                     for(String items : wrapUpDetails.wrapUpItems){
 
                         String category;
@@ -321,12 +353,20 @@ public with sharing class CRMGlobalCaseCreationPageController {
             // Update equiry cases
             update equiryCaseList;
 
+            // Update master cases
+            update updateMasterCaseList;
+
 
             // Update enquirySummary to Voice Call
             // updateVoiceCall(masterCase.Id,wrapUpEntity.enquirySummary);
 
             // New activity
             // createActivity(masterCase);
+
+            // defer chat send SMS
+            if(wrapUpEntity.caseOrigin == 'Defer Chat'){
+                sendDeferChatSMS(wrapUpEntity.contactNumber, wrapUpEntity.accountId);
+            }
 
             Map<String,String> dataMap = new Map<String,String>();
             // dataMap.put('caseId',masterCase.Id);
@@ -386,6 +426,62 @@ public with sharing class CRMGlobalCaseCreationPageController {
             }
         }
         return interactionId;
+    }
+
+    @future(callout=true)
+    public static void sendDeferChatSMS(String recipientNumber,String accountId){
+        String preferLanguage = getPreferLanguage(accountId);
+
+        List<EmailTemplate> templates = new List<EmailTemplate>();
+
+        switch on preferLanguage {
+            when 'Chinese' {
+                templates = [SELECT Id, Name, Subject, HtmlValue, Body, DeveloperName FROM EmailTemplate WHERE DeveloperName = 'Defer_Chat_Enquiry_Case_Outbound_Wrap_Up_TC_1762515613556' and IsActive = true];
+            }
+            when 'English' {
+                templates = [SELECT Id, Name, Subject, HtmlValue, Body, DeveloperName FROM EmailTemplate WHERE DeveloperName = 'Defer_Chat_Enquiry_Case_Outbound_Wrap_Up_EN_1762515555411' and IsActive = true];
+            }
+            when else {
+                templates = [SELECT Id, Name, Subject, HtmlValue, Body, DeveloperName FROM EmailTemplate WHERE DeveloperName = 'Defer_Chat_Enquiry_Case_Outbound_Wrap_Up_TC_1762515613556' and IsActive = true];
+            }
+        }
+
+        if(templates.size() > 0 && templates[0].HtmlValue != null){
+            CRMGlobalSendSmsService.sendSms(recipientNumber, templates[0].HtmlValue, accountId);
+        }   
+    }
+
+    public static String getPreferLanguage(String accountId){
+        String result = null;
+        CRM_Global_DataIntegration_Config__mdt config = CRMGlobalDataIntegrationController.getIntegrationConfig('Prulife_getCustomerInfo_Account');
+        CRMGlobalDataIntegrationConfigWrapper configWrapper = new CRMGlobalDataIntegrationConfigWrapper(config, accountId);
+
+        if(config.Integration_Type__c == 'External_API') {
+            HttpResponse response = CRMGlobalDataIntegrationAPIService.callExternalApi(configWrapper);
+            Object responseData = CRMGlobalDataIntegrationAPIService.parseApiResponse(configWrapper, response);
+
+            if (responseData != null && responseData instanceOf Map<String, Object>){
+                Map<String, Object> dataMap = (Map<String, Object>)responseData;
+                if (dataMap.containsKey('Results') && dataMap.get('Results') instanceOf List<Object> && ((List<Object>)dataMap.get('Results')).size() > 0) {
+                    Map<String, Object> customerInfoMap = (Map<String, Object>)((List<Object>)dataMap.get('Results'))[0];
+
+                    String preferLanguage = customerInfoMap.containsKey('fo_lang_pfr_ind')? (String)customerInfoMap.get('fo_lang_pfr_ind') : null;
+                    switch on preferLanguage {
+                        when 'C' {
+                            result = 'Chinese';
+                        }
+                        when 'E' {
+                            result = 'English';
+                        }
+                        when else  {
+                            result = null;
+                        }
+                    }
+                }
+            }
+        }
+        System.debug(LoggingLevel.INFO, '#getPreferLanguage -> ' + result);
+        return result;
     }
 
     public class CaseEntity{
@@ -456,12 +552,16 @@ public with sharing class CRMGlobalCaseCreationPageController {
     public class selectedCaseEntity{
 		@AuraEnabled public String id{set;get;}
 		@AuraEnabled public String name{set;get;}
+		@AuraEnabled public String masterCaseId{set;get;}
 	}
 
     public class CaseWrapUpEntity{
         @AuraEnabled public String id{set;get;}
+        @AuraEnabled public String caseOrigin{set;get;}
+        @AuraEnabled public String contactNumber{set;get;}
         @AuraEnabled public String enquirySummary{set;get;}
         @AuraEnabled public String channel{set;get;}
+        @AuraEnabled public String accountId{set;get;}
         @AuraEnabled public String masterCaseStatus{set;get;}
         @AuraEnabled public List<selectedCaseEntity> selectedCases{set;get;}
         @AuraEnabled public List<childCaseEntity> childCases{set;get;}
