@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRM_Global_CallAttemptResult__c</fullName>
+    <label>Call/Attempt Result</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>No Answer</fullName>
+                <default>false</default>
+                <label>No Answer</label>
+            </value>
+            <value>
+                <fullName>Voicemail</fullName>
+                <default>false</default>
+                <label>Voicemail</label>
+            </value>
+            <value>
+                <fullName>Reached</fullName>
+                <default>false</default>
+                <label>Reached</label>
+            </value>
+            <value>
+                <fullName>Pending - UR</fullName>
+                <default>false</default>
+                <label>Pending - UR</label>
+            </value>
+            <value>
+                <fullName>Busy Tone</fullName>
+                <default>false</default>
+                <label>Busy Tone</label>
+            </value>
+            <value>
+                <fullName>Reschedule</fullName>
+                <default>false</default>
+                <label>Reschedule</label>
+            </value>
+            <value>
+                <fullName>Reject</fullName>
+                <default>false</default>
+                <label>Reject</label>
+            </value>
+            <value>
+                <fullName>Invalid No.</fullName>
+                <default>false</default>
+                <label>Invalid No.</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

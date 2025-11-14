@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRM_Global_WrapUpItem__c</fullName>
+    <label>Wrap Up Item</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>CRM_Global_WrapUpCategory__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>UI Procedure</fullName>
+                <default>false</default>
+                <label>UI Procedure</label>
+            </value>
+            <value>
+                <fullName>UI Status</fullName>
+                <default>false</default>
+                <label>UI Status</label>
+            </value>
+            <value>
+                <fullName>PA Procedure</fullName>
+                <default>false</default>
+                <label>PA Procedure</label>
+            </value>
+            <value>
+                <fullName>PA Status</fullName>
+                <default>false</default>
+                <label>PA Status</label>
+            </value>
+            <value>
+                <fullName>Termination</fullName>
+                <default>false</default>
+                <label>Termination</label>
+            </value>
+            <value>
+                <fullName>CL Procedure</fullName>
+                <default>false</default>
+                <label>CL Procedure</label>
+            </value>
+            <value>
+                <fullName>CL status</fullName>
+                <default>false</default>
+                <label>CL status</label>
+            </value>
+            <value>
+                <fullName>Policy Status, premium amount and PTD</fullName>
+                <default>false</default>
+                <label>Policy Status, premium amount and PTD</label>
+            </value>
+            <value>
+                <fullName>Plan Coverage &amp; Sum Assured</fullName>
+                <default>false</default>
+                <label>Plan Coverage &amp; Sum Assured</label>
+            </value>
+            <value>
+                <fullName>Policy Value &amp; Surrender Value</fullName>
+                <default>false</default>
+                <label>Policy Value &amp; Surrender Value</label>
+            </value>
+            <value>
+                <fullName>Lumpsum Top-up</fullName>
+                <default>false</default>
+                <label>Lumpsum Top-up</label>
+            </value>
+            <value>
+                <fullName>APL &amp; Loan</fullName>
+                <default>false</default>
+                <label>APL &amp; Loan</label>
+            </value>
+            <value>
+                <fullName>PDA/Suspense</fullName>
+                <default>false</default>
+                <label>PDA/Suspense</label>
+            </value>
+            <value>
+                <fullName>Bonus Enquiry</fullName>
+                <default>false</default>
+                <label>Bonus Enquiry</label>
+            </value>
+            <value>
+                <fullName>Fund Enquiry</fullName>
+                <default>false</default>
+                <label>Fund Enquiry</label>
+            </value>
+            <value>
+                <fullName>DDA set up &amp; status</fullName>
+                <default>false</default>
+                <label>DDA set up &amp; status</label>
+            </value>
+            <value>
+                <fullName>Payment method</fullName>
+                <default>false</default>
+                <label>Payment method</label>
+            </value>
+            <value>
+                <fullName>Payment status &amp; Receipt</fullName>
+                <default>false</default>
+                <label>Payment status &amp; Receipt</label>
+            </value>
+            <value>
+                <fullName>Overpayment &amp; Refund</fullName>
+                <default>false</default>
+                <label>Overpayment &amp; Refund</label>
+            </value>
+            <value>
+                <fullName>Floating Rate</fullName>
+                <default>false</default>
+                <label>Floating Rate</label>
+            </value>
+            <value>
+                <fullName>REQ AVY statement</fullName>
+                <default>false</default>
+                <label>REQ AVY statement</label>
+            </value>
+            <value>
+                <fullName>REQ Premium Notices &amp; Receipts</fullName>
+                <default>false</default>
+                <label>REQ Premium Notices &amp; Receipts</label>
+            </value>
+            <value>
+                <fullName>REQ Tax Letter</fullName>
+                <default>false</default>
+                <label>REQ Tax Letter</label>
+            </value>
+            <value>
+                <fullName>REQ Policy Change Confirmation</fullName>
+                <default>false</default>
+                <label>REQ Policy Change Confirmation</label>
+            </value>
+            <value>
+                <fullName>REQ Claims Confirmation</fullName>
+                <default>false</default>
+                <label>REQ Claims Confirmation</label>
+            </value>
+            <value>
+                <fullName>REQ Other documents</fullName>
+                <default>false</default>
+                <label>REQ Other documents</label>
+            </value>
+            <value>
+                <fullName>Registration &amp; login issue</fullName>
+                <default>false</default>
+                <label>Registration &amp; login issue</label>
+            </value>
+            <value>
+                <fullName>App Performance</fullName>
+                <default>false</default>
+                <label>App Performance</label>
+            </value>
+            <value>
+                <fullName>Change Of Contact Details</fullName>
+                <default>false</default>
+                <label>Change Of Contact Details</label>
+            </value>
+            <value>
+                <fullName>Fund Switching</fullName>
+                <default>false</default>
+                <label>Fund Switching</label>
+            </value>
+            <value>
+                <fullName>Change Payment Mode &amp; Frequency</fullName>
+                <default>false</default>
+                <label>Change Payment Mode &amp; Frequency</label>
+            </value>
+            <value>
+                <fullName>Beneficiary Appointment</fullName>
+                <default>false</default>
+                <label>Beneficiary Appointment</label>
+            </value>
+            <value>
+                <fullName>Autopay Setup</fullName>
+                <default>false</default>
+                <label>Autopay Setup</label>
+            </value>
+            <value>
+                <fullName>Loan</fullName>
+                <default>false</default>
+                <label>Loan</label>
+            </value>
+            <value>
+                <fullName>PDA withdrawal</fullName>
+                <default>false</default>
+                <label>PDA withdrawal</label>
+            </value>
+            <value>
+                <fullName>Change BPO</fullName>
+                <default>false</default>
+                <label>Change BPO</label>
+            </value>
+            <value>
+                <fullName>Change of Dividend Payout Option</fullName>
+                <default>false</default>
+                <label>Change of Dividend Payout Option</label>
+            </value>
+            <value>
+                <fullName>Dividend Withdrawal</fullName>
+                <default>false</default>
+                <label>Dividend Withdrawal</label>
+            </value>
+            <value>
+                <fullName>Change of Fund Allocation</fullName>
+                <default>false</default>
+                <label>Change of Fund Allocation</label>
+            </value>
+            <value>
+                <fullName>Yearly cash back</fullName>
+                <default>false</default>
+                <label>Yearly cash back</label>
+            </value>
+            <value>
+                <fullName>Change of Dividend Allocation</fullName>
+                <default>false</default>
+                <label>Change of Dividend Allocation</label>
+            </value>
+            <value>
+                <fullName>Update Simplified Chinese Name</fullName>
+                <default>false</default>
+                <label>Update Simplified Chinese Name</label>
+            </value>
+            <value>
+                <fullName>Look for CS Staff</fullName>
+                <default>false</default>
+                <label>Look for CS Staff</label>
+            </value>
+            <value>
+                <fullName>Pru mailing address &amp; email address</fullName>
+                <default>false</default>
+                <label>Pru mailing address &amp; email address</label>
+            </value>
+            <value>
+                <fullName>CSC Info</fullName>
+                <default>false</default>
+                <label>CSC Info</label>
+            </value>
+            <value>
+                <fullName>GI, EB and MPF</fullName>
+                <default>false</default>
+                <label>GI, EB and MPF</label>
+            </value>
+            <value>
+                <fullName>Document Exp</fullName>
+                <default>false</default>
+                <label>Document Exp</label>
+            </value>
+            <value>
+                <fullName>Confirm Receipt of Document</fullName>
+                <default>false</default>
+                <label>Confirm Receipt of Document</label>
+            </value>
+            <value>
+                <fullName>Opt In</fullName>
+                <default>false</default>
+                <label>Opt In</label>
+            </value>
+            <value>
+                <fullName>Opt Out</fullName>
+                <default>false</default>
+                <label>Opt Out</label>
+            </value>
+            <value>
+                <fullName>autopay collection</fullName>
+                <default>false</default>
+                <label>autopay collection</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Opt in</controllingFieldValue>
+            <valueName>Opt In</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Opt in</controllingFieldValue>
+            <valueName>Opt Out</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>UI Enquiry</controllingFieldValue>
+            <valueName>UI Procedure</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>UI Enquiry</controllingFieldValue>
+            <valueName>UI Status</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Incident</controllingFieldValue>
+            <valueName>autopay collection</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PA Enquiry</controllingFieldValue>
+            <valueName>PA Procedure</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PA Enquiry</controllingFieldValue>
+            <valueName>PA Status</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PA Enquiry</controllingFieldValue>
+            <valueName>Termination</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Claims Enquiry</controllingFieldValue>
+            <valueName>CL Procedure</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Claims Enquiry</controllingFieldValue>
+            <valueName>CL status</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Policy Enquiry</controllingFieldValue>
+            <valueName>Policy Status, premium amount and PTD</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Policy Enquiry</controllingFieldValue>
+            <valueName>Plan Coverage &amp; Sum Assured</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Policy Enquiry</controllingFieldValue>
+            <valueName>Policy Value &amp; Surrender Value</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Policy Enquiry</controllingFieldValue>
+            <valueName>Lumpsum Top-up</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Policy Enquiry</controllingFieldValue>
+            <valueName>APL &amp; Loan</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Policy Enquiry</controllingFieldValue>
+            <valueName>PDA/Suspense</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Policy Enquiry</controllingFieldValue>
+            <valueName>Bonus Enquiry</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Policy Enquiry</controllingFieldValue>
+            <valueName>Fund Enquiry</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PX &amp; Cashiering</controllingFieldValue>
+            <valueName>DDA set up &amp; status</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PX &amp; Cashiering</controllingFieldValue>
+            <valueName>Payment method</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PX &amp; Cashiering</controllingFieldValue>
+            <valueName>Payment status &amp; Receipt</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PX &amp; Cashiering</controllingFieldValue>
+            <valueName>Overpayment &amp; Refund</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>PX &amp; Cashiering</controllingFieldValue>
+            <valueName>Floating Rate</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>REQ Documents</controllingFieldValue>
+            <valueName>REQ AVY statement</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>REQ Documents</controllingFieldValue>
+            <valueName>REQ Premium Notices &amp; Receipts</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>REQ Documents</controllingFieldValue>
+            <valueName>REQ Tax Letter</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>REQ Documents</controllingFieldValue>
+            <valueName>REQ Policy Change Confirmation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>REQ Documents</controllingFieldValue>
+            <valueName>REQ Claims Confirmation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>REQ Documents</controllingFieldValue>
+            <valueName>REQ Other documents</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential</controllingFieldValue>
+            <valueName>Registration &amp; login issue</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential</controllingFieldValue>
+            <valueName>App Performance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Change Of Contact Details</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Fund Switching</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Change Payment Mode &amp; Frequency</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Beneficiary Appointment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Autopay Setup</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Loan</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>PDA withdrawal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Change BPO</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Change of Dividend Payout Option</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Dividend Withdrawal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Change of Fund Allocation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Yearly cash back</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Change of Dividend Allocation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>myPrudential - DIY</controllingFieldValue>
+            <valueName>Update Simplified Chinese Name</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>Look for CS Staff</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>Pru mailing address &amp; email address</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>CSC Info</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Others</controllingFieldValue>
+            <valueName>GI, EB and MPF</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Administrative</controllingFieldValue>
+            <valueName>Document Exp</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Administrative</controllingFieldValue>
+            <valueName>Confirm Receipt of Document</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

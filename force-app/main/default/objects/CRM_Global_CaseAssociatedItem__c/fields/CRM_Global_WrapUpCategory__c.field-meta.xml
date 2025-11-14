@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRM_Global_WrapUpCategory__c</fullName>
+    <label>Wrap Up Category</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>UI Enquiry</fullName>
+                <default>false</default>
+                <label>UI Enquiry</label>
+            </value>
+            <value>
+                <fullName>PA Enquiry</fullName>
+                <default>false</default>
+                <label>PA Enquiry</label>
+            </value>
+            <value>
+                <fullName>Claims Enquiry</fullName>
+                <default>false</default>
+                <label>Claims Enquiry</label>
+            </value>
+            <value>
+                <fullName>Policy Enquiry</fullName>
+                <default>false</default>
+                <label>Policy Enquiry</label>
+            </value>
+            <value>
+                <fullName>PX &amp; Cashiering</fullName>
+                <default>false</default>
+                <label>PX &amp; Cashiering</label>
+            </value>
+            <value>
+                <fullName>REQ Documents</fullName>
+                <default>false</default>
+                <label>REQ Documents</label>
+            </value>
+            <value>
+                <fullName>myPrudential</fullName>
+                <default>false</default>
+                <label>myPrudential</label>
+            </value>
+            <value>
+                <fullName>myPrudential - DIY</fullName>
+                <default>false</default>
+                <label>myPrudential - DIY</label>
+            </value>
+            <value>
+                <fullName>Others</fullName>
+                <default>false</default>
+                <label>Others</label>
+            </value>
+            <value>
+                <fullName>Administrative</fullName>
+                <default>false</default>
+                <label>Administrative</label>
+            </value>
+            <value>
+                <fullName>Opt in</fullName>
+                <default>false</default>
+                <label>Opt in</label>
+            </value>
+            <value>
+                <fullName>Incident</fullName>
+                <default>false</default>
+                <label>Incident</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

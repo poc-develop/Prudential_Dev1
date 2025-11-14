@@ -106,68 +106,50 @@ public with sharing class CRMPHKLEnquirySyncService {
             if (response != null && String.isNotBlank(responseBody)) {
                 System.debug(LoggingLevel.DEBUG, 'Parsing response body...');
                 System.debug(LoggingLevel.DEBUG, 'Response body length: ' + responseBody.length());
+                // Parse the response using untyped deserialization first to handle Results format
+                Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
                 
-                // Check if response is JSON format
-                if (!responseBody.trim().startsWith('{') && !responseBody.trim().startsWith('[')) {
-                    String errorDetail = 'API response is not in JSON format';
-                    errorDetail += '\nResponse starts with: ' + responseBody.substring(0, Math.min(100, responseBody.length()));
-                    errorDetail += '\nFull Response: ' + responseBody;
-                    System.debug(LoggingLevel.ERROR, errorDetail);
-                    throw new CalloutException(errorDetail);
-                }
+                // Extract Results field
+                Object resultsObj = responseMap.get('Results');
+                List<CRMPHKLEnquiryData> resultsList = new List<CRMPHKLEnquiryData>();
                 
-                try {
-                    // Parse the response using untyped deserialization first to handle Results format
-                    Map<String, Object> responseMap = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
-                    
-                    // Extract Results field
-                    Object resultsObj = responseMap.get('Results');
-                    List<CRMPHKLEnquiryData> resultsList = new List<CRMPHKLEnquiryData>();
-                    
-                    // Handle Results: can be array or single object
-                    if (resultsObj != null) {
-                        if (resultsObj instanceof List<Object>) {
-                            // Results is an array
-                            System.debug(LoggingLevel.INFO, 'Results is an array, parsing...');
-                            resultsList = (List<CRMPHKLEnquiryData>) JSON.deserialize(
-                                JSON.serialize(resultsObj),
-                                List<CRMPHKLEnquiryData>.class
-                            );
-                        } else if (resultsObj instanceof Map<String, Object>) {
-                            // Results is a single object, convert to array
-                            System.debug(LoggingLevel.INFO, 'Results is a single object, converting to array...');
-                            CRMPHKLEnquiryData singleResult = (CRMPHKLEnquiryData) JSON.deserialize(
-                                JSON.serialize(resultsObj),
-                                CRMPHKLEnquiryData.class
-                            );
-                            resultsList.add(singleResult);
-                        }
+                // Handle Results: can be array or single object
+                if (resultsObj != null) {
+                    if (resultsObj instanceof List<Object>) {
+                        // Results is an array
+                        System.debug(LoggingLevel.INFO, 'Results is an array, parsing...');
+                        resultsList = (List<CRMPHKLEnquiryData>) JSON.deserialize(
+                            JSON.serialize(resultsObj),
+                            List<CRMPHKLEnquiryData>.class
+                        );
+                    } else if (resultsObj instanceof Map<String, Object>) {
+                        // Results is a single object, convert to array
+                        System.debug(LoggingLevel.INFO, 'Results is a single object, converting to array...');
+                        CRMPHKLEnquiryData singleResult = (CRMPHKLEnquiryData) JSON.deserialize(
+                            JSON.serialize(resultsObj),
+                            CRMPHKLEnquiryData.class
+                        );
+                        resultsList.add(singleResult);
                     }
-                    
-                    System.debug(LoggingLevel.INFO, 'Results count: ' + resultsList.size());
-                    
-                    // Build the response object
-                    CRMPHKLEnquiryAPIResponse apiResponse = new CRMPHKLEnquiryAPIResponse();
-                    apiResponse.type = (String) responseMap.get('Type');
-                    apiResponse.returnCode = (String) responseMap.get('ReturnCode');
-                    apiResponse.lastAccessedUrl = (String) responseMap.get('LastAccessedUrl');
-                    apiResponse.caller = (String) responseMap.get('Caller');
-                    apiResponse.apiName = (String) responseMap.get('ApiName');
-                    apiResponse.results = resultsList;
-                    apiResponse.httpResponseCode = response.getStatusCode();
-                    apiResponse.messageID = (String) responseMap.get('MessageID');
-                    
-                    System.debug(LoggingLevel.INFO, 'Response parsed successfully');
-                    System.debug(LoggingLevel.INFO, 'ReturnCode: ' + apiResponse.returnCode);
-                    
-                    return apiResponse;
-                    
-                } catch (Exception je) {
-                    System.debug(LoggingLevel.ERROR, 'JSON parsing error: ' + je.getMessage());
-                    System.debug(LoggingLevel.ERROR, 'Stack trace: ' + je.getStackTraceString());
-                    System.debug(LoggingLevel.ERROR, 'Response body: ' + responseBody);
-                    throw new CalloutException('Failed to parse API response: ' + je.getMessage());
                 }
+                
+                System.debug(LoggingLevel.INFO, 'Results count: ' + resultsList.size());
+                
+                // Build the response object
+                CRMPHKLEnquiryAPIResponse apiResponse = new CRMPHKLEnquiryAPIResponse();
+                apiResponse.type = (String) responseMap.get('Type');
+                apiResponse.returnCode = (String) responseMap.get('ReturnCode');
+                apiResponse.lastAccessedUrl = (String) responseMap.get('LastAccessedUrl');
+                apiResponse.caller = (String) responseMap.get('Caller');
+                apiResponse.apiName = (String) responseMap.get('ApiName');
+                apiResponse.results = resultsList;
+                apiResponse.httpResponseCode = response.getStatusCode();
+                apiResponse.messageID = (String) responseMap.get('MessageID');
+                
+                System.debug(LoggingLevel.INFO, 'Response parsed successfully');
+                System.debug(LoggingLevel.INFO, 'ReturnCode: ' + apiResponse.returnCode);
+                
+                return apiResponse;
             }
             
             System.debug(LoggingLevel.WARN, 'Response is null or empty');
@@ -412,6 +394,7 @@ public with sharing class CRMPHKLEnquirySyncService {
                 masterCase.CRM_Global_PolicyNumber__c = enquiry.polNo;
                 masterCase.CRM_Global_SLAType__c = enquiry.slaType;
                 masterCase.CRM_Global_EnquiryID__c = enquiry.enquiryId;
+                masterCase.CRM_Global_EmailAddress__c = enquiry.agentEmail;
                 
                 // Set AccountId based on clientCd
                 if (String.isNotBlank(enquiry.clientCd) && clientCodeToAccountIdMap.containsKey(enquiry.clientCd)) {
@@ -656,6 +639,7 @@ public with sharing class CRMPHKLEnquirySyncService {
         enquiryCase.CRM_Global_CutOffDate__c = parseDatetime(enquiry.cutoffDate);
         enquiryCase.CRM_Global_EnquiryType__c = enquiry.enquiryType;
         enquiryCase.CRM_Global_PolicyNumber__c = enquiry.polNo;
+        enquiryCase.CRM_Global_EmailAddress__c = enquiry.agentEmail;
         
         // Map enquiry status to Case Status
         if (String.isNotBlank(enquiry.enquiryStatus)) {

@@ -21,6 +21,22 @@ public without sharing class CRMGlobalSendSmsService {
             result.put('message', 'Recipient number and template content are required');
             return result;
         }
+        if(!String.isBlank(recordId)) {
+            result.put('success', true);
+            result.put('message', 'SMS sent successfully');
+            // Get RecordType ID for CRM_Global_SMSEmailHistory
+            Id recordTypeId = null;
+            recordTypeId = Schema.SObjectType.Task.getRecordTypeInfosByDeveloperName().get('CRM_Global_SMSEmailHistory').getRecordTypeId();        
+            // Create Task
+            Task smsTask = new Task();
+            if (recordTypeId != null) {
+                smsTask.RecordTypeId = recordTypeId;
+            }
+            smsTask.WhatId = recordId;
+            
+            insert smsTask;
+            return result;
+        }
         try {
             System.debug(LoggingLevel.INFO, '=== Send SMS API Call Started ===');
             

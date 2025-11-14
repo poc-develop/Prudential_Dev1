@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CRM_Global_InteractionId__c</fullName>
+    <description>Used to store the following object SF Id:
+
+Voice Call: When the origin is an inbound call
+Experience: When the origin is the defer chat
+Email Experience: When the origin is the Email
+Activity: When the origin are walk-in, letter, virtual meeting</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <label>Interaction Id</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
