@@ -5,7 +5,7 @@
  * @last modified on  : 2025-10-28
  * @last modified by  : hank
 **/
-public without sharing class CRMPHKLEnquirySyncBatch implements Database.Batchable<SObject>, Database.AllowsCallouts, Database.Stateful {
+public without sharing class CRMGlobalEnquirySyncBatch implements Database.Batchable<SObject>, Database.AllowsCallouts, Database.Stateful {
     
     // Statistics
     public Integer processedCount = 0;
@@ -15,7 +15,7 @@ public without sharing class CRMPHKLEnquirySyncBatch implements Database.Batchab
     public static List<RecordType> caseRecordTypes = [SELECT Id,DeveloperName FROM RecordType WHERE SObjectType = 'Case' AND isActive = true];
     
     // Configuration key for storing last sync time
-    private static final String LAST_SYNC_TIME_KEY = 'CRMPHKLEnquiryLastSyncTime';
+    private static final String LAST_SYNC_TIME_KEY = 'CRMGlobalEnquiryLastSyncTime';
     
     // Store current sync time (to be saved in finish method)
     private DateTime currentSyncTime;
@@ -42,11 +42,11 @@ public without sharing class CRMPHKLEnquirySyncBatch implements Database.Batchab
             currentSyncTime = DateTime.now();
             
             // 1. Call API to get data using service class
-            CRMPHKLEnquirySyncService.CRMPHKLEnquiryAPIResponse apiResponse = CRMPHKLEnquirySyncService.callEnquiryAPI(null);
+            CRMGlobalEnquirySyncService.CRMGlobalEnquiryAPIResponse apiResponse = CRMGlobalEnquirySyncService.callEnquiryAPI(null);
             
             // 2. Process returned data using service class
             if (apiResponse != null && apiResponse.results != null && !apiResponse.results.isEmpty()) {
-                CRMPHKLEnquirySyncService.CRMPHKLEnquiryProcessResult processResult = CRMPHKLEnquirySyncService.processEnquiryData(apiResponse.results);
+                CRMGlobalEnquirySyncService.CRMGlobalEnquiryProcessResult processResult = CRMGlobalEnquirySyncService.processEnquiryData(apiResponse.results);
                 
                 // Update statistics
                 processedCount += processResult.processedCount;
@@ -88,8 +88,8 @@ public without sharing class CRMPHKLEnquirySyncBatch implements Database.Batchab
         
         // Save current sync time only if batch was successful (no errors or errors are acceptable)
         // if (currentSyncTime != null) {
-            // CRMPHKLEnquirySyncService.saveLastSyncTime(currentSyncTime);
-            // System.debug(LoggingLevel.INFO, 'Last sync time saved: ' + CRMPHKLEnquirySyncService.formatDateTimeForAPI(currentSyncTime));
+            // CRMGlobalEnquirySyncService.saveLastSyncTime(currentSyncTime);
+            // System.debug(LoggingLevel.INFO, 'Last sync time saved: ' + CRMGlobalEnquirySyncService.formatDateTimeForAPI(currentSyncTime));
         // }
         
         CRMGlobalLogManager.saveAndFlushLogs();

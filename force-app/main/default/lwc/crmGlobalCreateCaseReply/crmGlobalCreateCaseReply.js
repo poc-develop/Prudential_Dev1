@@ -1,9 +1,9 @@
 import { LightningElement,wire,api,track } from 'lwc';
 import { CloseActionScreenEvent } from 'lightning/actions';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import createCaseReply from '@salesforce/apex/CRMPHKLCreateCaseReplyController.createCaseReply';
+import createCaseReply from '@salesforce/apex/CRMGlobalCreateCaseReplyController.createCaseReply';
 
-export default class CrmPHKLCreateCaseReply extends LightningElement {
+export default class CrmGlobalCreateCaseReply extends LightningElement {
     @api recordId;
     @track isLoading = false;
     @track replyText = '';

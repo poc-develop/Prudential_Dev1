@@ -5,7 +5,7 @@
  * @last modified on  : 2025-10-24
  * @last modified by  : hank
 **/
-public without sharing class CRMPHKLCreateCaseReplyController {
+public without sharing class CRMGlobalCreateCaseReplyController {
     @AuraEnabled
     public static Boolean createCaseReply(String caseId, String replyText) {
         List<RecordType> replyRecordTypes = [SELECT Id FROM RecordType WHERE SObjectType = 'CRM_Global_CaseAssociatedItem__c' AND DeveloperName = 'Reply'];

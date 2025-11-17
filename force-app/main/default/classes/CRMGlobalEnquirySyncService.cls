@@ -5,10 +5,10 @@
  * @last modified on  : 2025-10-28
  * @last modified by  : hank
 **/
-public with sharing class CRMPHKLEnquirySyncService {
+public with sharing class CRMGlobalEnquirySyncService {
     
     // Configuration key for storing last sync time
-    private static final String LAST_SYNC_TIME_KEY = 'CRMPHKLEnquiryLastSyncTime';
+    private static final String LAST_SYNC_TIME_KEY = 'CRMGlobalEnquiryLastSyncTime';
     
     // Static RecordType cache
     public static List<RecordType> caseRecordTypes = [
@@ -21,9 +21,9 @@ public with sharing class CRMPHKLEnquirySyncService {
     /**
      * Call external API to get Enquiry data
      * @param lastSyncTime Last sync time (null for default)
-     * @return CRMPHKLEnquiryAPIResponse API response object
+     * @return CRMGlobalEnquiryAPIResponse API response object
      */
-    public static CRMPHKLEnquiryAPIResponse callEnquiryAPI(DateTime lastSyncTime) {
+    public static CRMGlobalEnquiryAPIResponse callEnquiryAPI(DateTime lastSyncTime) {
         try {
             System.debug(LoggingLevel.INFO, '=== API Call Started ===');
             
@@ -111,23 +111,23 @@ public with sharing class CRMPHKLEnquirySyncService {
                 
                 // Extract Results field
                 Object resultsObj = responseMap.get('Results');
-                List<CRMPHKLEnquiryData> resultsList = new List<CRMPHKLEnquiryData>();
+                List<CRMGlobalEnquiryData> resultsList = new List<CRMGlobalEnquiryData>();
                 
                 // Handle Results: can be array or single object
                 if (resultsObj != null) {
                     if (resultsObj instanceof List<Object>) {
                         // Results is an array
                         System.debug(LoggingLevel.INFO, 'Results is an array, parsing...');
-                        resultsList = (List<CRMPHKLEnquiryData>) JSON.deserialize(
+                        resultsList = (List<CRMGlobalEnquiryData>) JSON.deserialize(
                             JSON.serialize(resultsObj),
-                            List<CRMPHKLEnquiryData>.class
+                            List<CRMGlobalEnquiryData>.class
                         );
                     } else if (resultsObj instanceof Map<String, Object>) {
                         // Results is a single object, convert to array
                         System.debug(LoggingLevel.INFO, 'Results is a single object, converting to array...');
-                        CRMPHKLEnquiryData singleResult = (CRMPHKLEnquiryData) JSON.deserialize(
+                        CRMGlobalEnquiryData singleResult = (CRMGlobalEnquiryData) JSON.deserialize(
                             JSON.serialize(resultsObj),
-                            CRMPHKLEnquiryData.class
+                            CRMGlobalEnquiryData.class
                         );
                         resultsList.add(singleResult);
                     }
@@ -136,7 +136,7 @@ public with sharing class CRMPHKLEnquirySyncService {
                 System.debug(LoggingLevel.INFO, 'Results count: ' + resultsList.size());
                 
                 // Build the response object
-                CRMPHKLEnquiryAPIResponse apiResponse = new CRMPHKLEnquiryAPIResponse();
+                CRMGlobalEnquiryAPIResponse apiResponse = new CRMGlobalEnquiryAPIResponse();
                 apiResponse.type = (String) responseMap.get('Type');
                 apiResponse.returnCode = (String) responseMap.get('ReturnCode');
                 apiResponse.lastAccessedUrl = (String) responseMap.get('LastAccessedUrl');
@@ -216,10 +216,10 @@ public with sharing class CRMPHKLEnquirySyncService {
     /**
      * Process Enquiry data - create or update records
      * @param enquiryList List of enquiry data from API
-     * @return CRMPHKLEnquiryProcessResult Processing result with statistics
+     * @return CRMGlobalEnquiryProcessResult Processing result with statistics
      */
-    public static CRMPHKLEnquiryProcessResult processEnquiryData(List<CRMPHKLEnquiryData> enquiryList) {
-        CRMPHKLEnquiryProcessResult result = new CRMPHKLEnquiryProcessResult();
+    public static CRMGlobalEnquiryProcessResult processEnquiryData(List<CRMGlobalEnquiryData> enquiryList) {
+        CRMGlobalEnquiryProcessResult result = new CRMGlobalEnquiryProcessResult();
         result.processedCount = 0;
         result.successCount = 0;
         result.failureCount = 0;
@@ -234,7 +234,7 @@ public with sharing class CRMPHKLEnquirySyncService {
         // Map to store agentCd for each clientCd (use first encountered agentCd)
         Map<String, String> clientCodeToAgentCdMap = new Map<String, String>();
         
-        for (CRMPHKLEnquiryData enquiry : enquiryList) {
+        for (CRMGlobalEnquiryData enquiry : enquiryList) {
             if (String.isNotBlank(enquiry.enquiryId)) {
                 enquiryIds.add(enquiry.enquiryId);
             }
@@ -361,11 +361,11 @@ public with sharing class CRMPHKLEnquirySyncService {
         // Prepare Master Cases for insertion
         List<Case> masterCasesToInsert = new List<Case>();
         // Map to track enquiry data for each master case
-        Map<Integer, CRMPHKLEnquiryData> enquiryDataMap = new Map<Integer, CRMPHKLEnquiryData>();
+        Map<Integer, CRMGlobalEnquiryData> enquiryDataMap = new Map<Integer, CRMGlobalEnquiryData>();
         
         // Step 1: Create Master Cases
         Integer index = 0;
-        for (CRMPHKLEnquiryData enquiry : enquiryList) {
+        for (CRMGlobalEnquiryData enquiry : enquiryList) {
             try {
                 result.processedCount++;
                 
@@ -495,7 +495,7 @@ public with sharing class CRMPHKLEnquirySyncService {
         for (Integer i = 0; i < masterCasesToInsert.size(); i++) {
             // Only create Enquiry Case if Master Case was successfully inserted
             if (masterCaseIdMap.containsKey(i)) {
-                CRMPHKLEnquiryData enquiry = enquiryDataMap.get(i);
+                CRMGlobalEnquiryData enquiry = enquiryDataMap.get(i);
                 Case enquiryCase = new Case();
                 
                 // Set parent relationship
@@ -609,7 +609,7 @@ public with sharing class CRMPHKLEnquirySyncService {
      * @param enquiry The enquiry data from API
      * @param enquiryCaseRecordTypeId The RecordType ID for Enquiry Case
      */
-    public static void mapEnquiryFieldsToCase(Case enquiryCase, CRMPHKLEnquiryData enquiry, String enquiryCaseRecordTypeId) {
+    public static void mapEnquiryFieldsToCase(Case enquiryCase, CRMGlobalEnquiryData enquiry, String enquiryCaseRecordTypeId) {
         // Set RecordType
         enquiryCase.RecordTypeId = enquiryCaseRecordTypeId;
         
@@ -766,18 +766,18 @@ public with sharing class CRMPHKLEnquirySyncService {
     
     // ============ Inner Classes: API Response Structure ============
     
-    public class CRMPHKLEnquiryAPIResponse {
+    public class CRMGlobalEnquiryAPIResponse {
         public String type;
         public String returnCode;
         public String lastAccessedUrl;
         public String caller;
         public String apiName;
-        public List<CRMPHKLEnquiryData> results;
+        public List<CRMGlobalEnquiryData> results;
         public Integer httpResponseCode;
         public String messageID;
     }
     
-    public class CRMPHKLEnquiryData {
+    public class CRMGlobalEnquiryData {
         public String enquiryId;
         public String enquiryStatus;
         public String enquiryType;
@@ -814,7 +814,7 @@ public with sharing class CRMPHKLEnquirySyncService {
     /**
      * Result class for processEnquiryData method
      */
-    public class CRMPHKLEnquiryProcessResult {
+    public class CRMGlobalEnquiryProcessResult {
         public Integer processedCount;
         public Integer successCount;
         public Integer failureCount;

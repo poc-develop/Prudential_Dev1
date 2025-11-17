@@ -5,7 +5,7 @@
  * @last modified on  : 2025-10-27
  * @last modified by  : hank
 **/
-public without sharing class CRMPHKLBusinessHoursFlowService {
+public without sharing class CRMGlobalBusinessHoursFlowService {
     
     // Test visible variable to allow test classes to override BusinessHours lookup
     // Set to true in tests to simulate no BusinessHours scenario

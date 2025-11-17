@@ -5,14 +5,14 @@
  * @last modified on  : 2025-10-28
  * @last modified by  : hank
 **/
-public without sharing class CRMPHKLEnquiryScheduler implements Schedulable {
+public without sharing class CRMGlobalEnquiryScheduler implements Schedulable {
     
     /**
      * Scheduler entry point
      */
     public void execute(SchedulableContext sc) {
         // Start batch job
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Database.executeBatch(batch, 200);
     }
 }

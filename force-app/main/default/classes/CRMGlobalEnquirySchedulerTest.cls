@@ -1,15 +1,15 @@
 /**
- * @description       : Test class for CRMPHKLEnquiryScheduler
+ * @description       : Test class for CRMGlobalEnquiryScheduler
  * @author            : hank
  * @group             : 
  * @last modified on  : 2025-10-28
  * @last modified by  : hank
 **/
 @IsTest
-private class CRMPHKLEnquirySchedulerTest {
+private class CRMGlobalEnquirySchedulerTest {
     
     /**
-     * Test the execute method of CRMPHKLEnquiryScheduler
+     * Test the execute method of CRMGlobalEnquiryScheduler
      * Verifies that the scheduler correctly starts the batch job
      */
     @IsTest
@@ -18,7 +18,7 @@ private class CRMPHKLEnquirySchedulerTest {
         Test.setMock(HttpCalloutMock.class, new MockEnquiryAPIResponse());
         
         // Create scheduler instance
-        CRMPHKLEnquiryScheduler scheduler = new CRMPHKLEnquiryScheduler();
+        CRMGlobalEnquiryScheduler scheduler = new CRMGlobalEnquiryScheduler();
         
         // Create a mock SchedulableContext
         TestSchedulableContext mockContext = new TestSchedulableContext();
@@ -33,13 +33,13 @@ private class CRMPHKLEnquirySchedulerTest {
             SELECT Id, Status, JobType, ApexClass.Name
             FROM AsyncApexJob
             WHERE JobType = 'BatchApex'
-            AND ApexClass.Name = 'CRMPHKLEnquirySyncBatch'
+            AND ApexClass.Name = 'CRMGlobalEnquirySyncBatch'
             ORDER BY CreatedDate DESC
             LIMIT 1
         ];
         
         System.assertNotEquals(0, batchJobs.size(), 'Batch job should be queued');
-        System.assertEquals('CRMPHKLEnquirySyncBatch', batchJobs[0].ApexClass.Name, 'Batch class name should match');
+        System.assertEquals('CRMGlobalEnquirySyncBatch', batchJobs[0].ApexClass.Name, 'Batch class name should match');
     }
     
     /**
@@ -56,7 +56,7 @@ private class CRMPHKLEnquirySchedulerTest {
         
         Test.startTest();
         // Schedule the job
-        String jobId = System.schedule(jobName, cronExpression, new CRMPHKLEnquiryScheduler());
+        String jobId = System.schedule(jobName, cronExpression, new CRMGlobalEnquiryScheduler());
         Test.stopTest();
         
         // Verify the scheduled job was created
@@ -80,7 +80,7 @@ private class CRMPHKLEnquirySchedulerTest {
         // Mock HTTP response for API callout
         Test.setMock(HttpCalloutMock.class, new MockEnquiryAPIResponse());
         
-        CRMPHKLEnquiryScheduler scheduler = new CRMPHKLEnquiryScheduler();
+        CRMGlobalEnquiryScheduler scheduler = new CRMGlobalEnquiryScheduler();
         TestSchedulableContext mockContext = new TestSchedulableContext();
         
         Test.startTest();
@@ -94,7 +94,7 @@ private class CRMPHKLEnquirySchedulerTest {
             SELECT Id, Status, JobType
             FROM AsyncApexJob
             WHERE JobType = 'BatchApex'
-            AND ApexClass.Name = 'CRMPHKLEnquirySyncBatch'
+            AND ApexClass.Name = 'CRMGlobalEnquirySyncBatch'
             ORDER BY CreatedDate DESC
         ];
         

@@ -1,12 +1,12 @@
 /**
- * @description       : Test class for CRMPHKLEnquirySyncService
+ * @description       : Test class for CRMGlobalEnquirySyncService
  * @author            : hank
  * @group             : 
  * @last modified on  : 2025-10-28
  * @last modified by  : hank
 **/
 @IsTest
-private class CRMPHKLEnquirySyncServiceTest {
+private class CRMGlobalEnquirySyncServiceTest {
     
     @TestSetup
     static void setupTestData() {
@@ -34,8 +34,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         Test.setMock(HttpCalloutMock.class, new MockSuccessAPIResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryAPIResponse response = 
-            CRMPHKLEnquirySyncService.callEnquiryAPI(null);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryAPIResponse response = 
+            CRMGlobalEnquirySyncService.callEnquiryAPI(null);
         Test.stopTest();
         
         System.assertNotEquals(null, response, 'Response should not be null');
@@ -49,8 +49,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         DateTime lastSyncTime = DateTime.now().addDays(-1);
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryAPIResponse response = 
-            CRMPHKLEnquirySyncService.callEnquiryAPI(lastSyncTime);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryAPIResponse response = 
+            CRMGlobalEnquirySyncService.callEnquiryAPI(lastSyncTime);
         Test.stopTest();
         
         System.assertNotEquals(null, response, 'Response should not be null');
@@ -62,8 +62,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         
         Test.startTest();
         try {
-            CRMPHKLEnquirySyncService.CRMPHKLEnquiryAPIResponse response = 
-                CRMPHKLEnquirySyncService.callEnquiryAPI(null);
+            CRMGlobalEnquirySyncService.CRMGlobalEnquiryAPIResponse response = 
+                CRMGlobalEnquirySyncService.callEnquiryAPI(null);
             System.assert(false, 'Should have thrown an exception');
         } catch (CalloutException e) {
             System.assert(e.getMessage().contains('API call failed'), 'Error message should contain API call failed');
@@ -77,8 +77,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         
         Test.startTest();
         try {
-            CRMPHKLEnquirySyncService.CRMPHKLEnquiryAPIResponse response = 
-                CRMPHKLEnquirySyncService.callEnquiryAPI(null);
+            CRMGlobalEnquirySyncService.CRMGlobalEnquiryAPIResponse response = 
+                CRMGlobalEnquirySyncService.callEnquiryAPI(null);
             System.assert(false, 'Should have thrown an exception');
         } catch (CalloutException e) {
             System.assert(true, 'Exception should be thrown for invalid JSON');
@@ -91,8 +91,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         Test.setMock(HttpCalloutMock.class, new MockEmptyResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryAPIResponse response = 
-            CRMPHKLEnquirySyncService.callEnquiryAPI(null);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryAPIResponse response = 
+            CRMGlobalEnquirySyncService.callEnquiryAPI(null);
         Test.stopTest();
         
         System.assertEquals(null, response, 'Response should be null for empty response');
@@ -103,8 +103,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         Test.setMock(HttpCalloutMock.class, new MockResultsAsArrayResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryAPIResponse response = 
-            CRMPHKLEnquirySyncService.callEnquiryAPI(null);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryAPIResponse response = 
+            CRMGlobalEnquirySyncService.callEnquiryAPI(null);
         Test.stopTest();
         
         System.assertNotEquals(null, response, 'Response should not be null');
@@ -117,8 +117,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         Test.setMock(HttpCalloutMock.class, new MockResultsAsSingleObjectResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryAPIResponse response = 
-            CRMPHKLEnquirySyncService.callEnquiryAPI(null);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryAPIResponse response = 
+            CRMGlobalEnquirySyncService.callEnquiryAPI(null);
         Test.stopTest();
         
         System.assertNotEquals(null, response, 'Response should not be null');
@@ -134,8 +134,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         // Note: We can't easily control the current time in tests,
         // but we can verify the method works with null lastSyncTime
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryAPIResponse response = 
-            CRMPHKLEnquirySyncService.callEnquiryAPI(null);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryAPIResponse response = 
+            CRMGlobalEnquirySyncService.callEnquiryAPI(null);
         Test.stopTest();
         
         System.assertNotEquals(null, response, 'Response should not be null');
@@ -148,7 +148,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         String soapResponse = '<?xml version="1.0"?><soap:Fault><faultcode>SOAP-ENV:Server</faultcode><faultstring>Internal Server Error</faultstring><detail>Error details here</detail></soap:Fault>';
         
         Test.startTest();
-        String result = CRMPHKLEnquirySyncService.extractSOAPFault(soapResponse);
+        String result = CRMGlobalEnquirySyncService.extractSOAPFault(soapResponse);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'Result should not be null');
@@ -160,7 +160,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testExtractSOAPFault_BlankResponse() {
         Test.startTest();
-        String result = CRMPHKLEnquirySyncService.extractSOAPFault('');
+        String result = CRMGlobalEnquirySyncService.extractSOAPFault('');
         Test.stopTest();
         
         System.assertEquals('No response body', result, 'Should return No response body for blank');
@@ -169,7 +169,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testExtractSOAPFault_NullResponse() {
         Test.startTest();
-        String result = CRMPHKLEnquirySyncService.extractSOAPFault(null);
+        String result = CRMGlobalEnquirySyncService.extractSOAPFault(null);
         Test.stopTest();
         
         System.assertEquals('No response body', result, 'Should return No response body for null');
@@ -180,7 +180,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         String soapResponse = '<?xml version="1.0"?><soap:Envelope></soap:Envelope>';
         
         Test.startTest();
-        String result = CRMPHKLEnquirySyncService.extractSOAPFault(soapResponse);
+        String result = CRMGlobalEnquirySyncService.extractSOAPFault(soapResponse);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'Result should not be null');
@@ -192,11 +192,11 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testProcessEnquiryData_Success() {
         // Create test enquiry data
-        List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData> enquiryList = createTestEnquiryData();
+        List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData> enquiryList = createTestEnquiryData();
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryProcessResult result = 
-            CRMPHKLEnquirySyncService.processEnquiryData(enquiryList);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryProcessResult result = 
+            CRMGlobalEnquirySyncService.processEnquiryData(enquiryList);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'Result should not be null');
@@ -213,8 +213,8 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testProcessEnquiryData_WithExistingAccount() {
         // Use existing account from setup
-        List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData> enquiryList = new List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData>();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryData enquiry = new CRMPHKLEnquirySyncService.CRMPHKLEnquiryData();
+        List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData> enquiryList = new List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData>();
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryData enquiry = new CRMGlobalEnquirySyncService.CRMGlobalEnquiryData();
         enquiry.enquiryId = 'ENQ001';
         enquiry.enquiryStatus = 'A';
         enquiry.clientCd = 'CLIENT001'; // Matches setup account
@@ -223,8 +223,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         enquiryList.add(enquiry);
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryProcessResult result = 
-            CRMPHKLEnquirySyncService.processEnquiryData(enquiryList);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryProcessResult result = 
+            CRMGlobalEnquirySyncService.processEnquiryData(enquiryList);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'Result should not be null');
@@ -240,8 +240,8 @@ private class CRMPHKLEnquirySyncServiceTest {
     
     @IsTest
     static void testProcessEnquiryData_CreateNewAccount() {
-        List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData> enquiryList = new List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData>();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryData enquiry = new CRMPHKLEnquirySyncService.CRMPHKLEnquiryData();
+        List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData> enquiryList = new List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData>();
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryData enquiry = new CRMGlobalEnquirySyncService.CRMGlobalEnquiryData();
         enquiry.enquiryId = 'ENQ002';
         enquiry.enquiryStatus = 'P';
         enquiry.clientCd = 'CLIENT002'; // New client code
@@ -250,8 +250,8 @@ private class CRMPHKLEnquirySyncServiceTest {
         enquiryList.add(enquiry);
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryProcessResult result = 
-            CRMPHKLEnquirySyncService.processEnquiryData(enquiryList);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryProcessResult result = 
+            CRMGlobalEnquirySyncService.processEnquiryData(enquiryList);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'Result should not be null');
@@ -262,11 +262,11 @@ private class CRMPHKLEnquirySyncServiceTest {
     
     @IsTest
     static void testProcessEnquiryData_EmptyList() {
-        List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData> enquiryList = new List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData>();
+        List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData> enquiryList = new List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData>();
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryProcessResult result = 
-            CRMPHKLEnquirySyncService.processEnquiryData(enquiryList);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryProcessResult result = 
+            CRMGlobalEnquirySyncService.processEnquiryData(enquiryList);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'Result should not be null');
@@ -275,11 +275,11 @@ private class CRMPHKLEnquirySyncServiceTest {
     
     @IsTest
     static void testProcessEnquiryData_WithTaskCreation() {
-        List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData> enquiryList = createTestEnquiryData();
+        List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData> enquiryList = createTestEnquiryData();
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryProcessResult result = 
-            CRMPHKLEnquirySyncService.processEnquiryData(enquiryList);
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryProcessResult result = 
+            CRMGlobalEnquirySyncService.processEnquiryData(enquiryList);
         Test.stopTest();
         
         // Verify Tasks were created for Master Cases
@@ -305,7 +305,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         // Note: DeveloperName is set automatically, we can't set it directly
         // This test verifies the method works if queue exists
         Test.startTest();
-        Id queueId = CRMPHKLEnquirySyncService.getQueueId('CRM_Global_Eenquiry');
+        Id queueId = CRMGlobalEnquirySyncService.getQueueId('CRM_Global_Eenquiry');
         Test.stopTest();
         
         // Queue might not exist, so result could be null
@@ -316,7 +316,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testGetQueueId_NotFound() {
         Test.startTest();
-        Id queueId = CRMPHKLEnquirySyncService.getQueueId('NonExistentQueue');
+        Id queueId = CRMGlobalEnquirySyncService.getQueueId('NonExistentQueue');
         Test.stopTest();
         
         System.assertEquals(null, queueId, 'Should return null for non-existent queue');
@@ -340,11 +340,11 @@ private class CRMPHKLEnquirySyncServiceTest {
         
         Test.startTest();
         for (String status : expectedMappings.keySet()) {
-            String result = CRMPHKLEnquirySyncService.mapEnquiryStatusToCaseStatus(status);
+            String result = CRMGlobalEnquirySyncService.mapEnquiryStatusToCaseStatus(status);
             System.assertEquals(expectedMappings.get(status), result, 'Status mapping should match for ' + status);
             
             // Test lowercase
-            String resultLower = CRMPHKLEnquirySyncService.mapEnquiryStatusToCaseStatus(status.toLowerCase());
+            String resultLower = CRMGlobalEnquirySyncService.mapEnquiryStatusToCaseStatus(status.toLowerCase());
             System.assertEquals(expectedMappings.get(status), resultLower, 'Status mapping should match for lowercase ' + status);
         }
         Test.stopTest();
@@ -353,7 +353,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testMapEnquiryStatusToCaseStatus_Blank() {
         Test.startTest();
-        String result = CRMPHKLEnquirySyncService.mapEnquiryStatusToCaseStatus('');
+        String result = CRMGlobalEnquirySyncService.mapEnquiryStatusToCaseStatus('');
         Test.stopTest();
         
         System.assertEquals('New', result, 'Should return New for blank status');
@@ -362,7 +362,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testMapEnquiryStatusToCaseStatus_Null() {
         Test.startTest();
-        String result = CRMPHKLEnquirySyncService.mapEnquiryStatusToCaseStatus(null);
+        String result = CRMGlobalEnquirySyncService.mapEnquiryStatusToCaseStatus(null);
         Test.stopTest();
         
         System.assertEquals('New', result, 'Should return New for null status');
@@ -371,7 +371,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testMapEnquiryStatusToCaseStatus_Unknown() {
         Test.startTest();
-        String result = CRMPHKLEnquirySyncService.mapEnquiryStatusToCaseStatus('Z');
+        String result = CRMGlobalEnquirySyncService.mapEnquiryStatusToCaseStatus('Z');
         Test.stopTest();
         
         System.assertEquals('New', result, 'Should return New for unknown status');
@@ -382,7 +382,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testMapEnquiryFieldsToCase_Success() {
         Case enquiryCase = new Case();
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryData enquiry = new CRMPHKLEnquirySyncService.CRMPHKLEnquiryData();
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryData enquiry = new CRMGlobalEnquirySyncService.CRMGlobalEnquiryData();
         enquiry.enquiryId = 'ENQ001';
         enquiry.enquiryStatus = 'A';
         enquiry.agentName = 'Test Agent';
@@ -393,7 +393,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         String enquiryCaseRecordTypeId = getEnquiryRecordTypeId();
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.mapEnquiryFieldsToCase(enquiryCase, enquiry, enquiryCaseRecordTypeId);
+        CRMGlobalEnquirySyncService.mapEnquiryFieldsToCase(enquiryCase, enquiry, enquiryCaseRecordTypeId);
         Test.stopTest();
         
         System.assertEquals('E-enquiry', enquiryCase.Origin, 'Origin should be E-enquiry');
@@ -408,7 +408,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         String dateTimeStr = '2025-06-10T09:37:14+08:00';
         
         Test.startTest();
-        DateTime result = CRMPHKLEnquirySyncService.parseDatetime(dateTimeStr);
+        DateTime result = CRMGlobalEnquirySyncService.parseDatetime(dateTimeStr);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'DateTime should not be null');
@@ -419,7 +419,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         String dateTimeStr = '2025-06-10T09:37:14-08:00';
         
         Test.startTest();
-        DateTime result = CRMPHKLEnquirySyncService.parseDatetime(dateTimeStr);
+        DateTime result = CRMGlobalEnquirySyncService.parseDatetime(dateTimeStr);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'DateTime should not be null');
@@ -430,7 +430,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         String dateTimeStr = '2025-06-10T09:37:14Z';
         
         Test.startTest();
-        DateTime result = CRMPHKLEnquirySyncService.parseDatetime(dateTimeStr);
+        DateTime result = CRMGlobalEnquirySyncService.parseDatetime(dateTimeStr);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'DateTime should not be null');
@@ -439,7 +439,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testParseDatetime_Blank() {
         Test.startTest();
-        DateTime result = CRMPHKLEnquirySyncService.parseDatetime('');
+        DateTime result = CRMGlobalEnquirySyncService.parseDatetime('');
         Test.stopTest();
         
         System.assertEquals(null, result, 'Should return null for blank string');
@@ -448,7 +448,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testParseDatetime_Null() {
         Test.startTest();
-        DateTime result = CRMPHKLEnquirySyncService.parseDatetime(null);
+        DateTime result = CRMGlobalEnquirySyncService.parseDatetime(null);
         Test.stopTest();
         
         System.assertEquals(null, result, 'Should return null for null');
@@ -459,7 +459,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         String dateTimeStr = 'Invalid Date';
         
         Test.startTest();
-        DateTime result = CRMPHKLEnquirySyncService.parseDatetime(dateTimeStr);
+        DateTime result = CRMGlobalEnquirySyncService.parseDatetime(dateTimeStr);
         Test.stopTest();
         
         // Should return null on parsing error
@@ -471,7 +471,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testGetLastSyncTime_NoCache() {
         Test.startTest();
-        DateTime result = CRMPHKLEnquirySyncService.getLastSyncTime();
+        DateTime result = CRMGlobalEnquirySyncService.getLastSyncTime();
         Test.stopTest();
         
         // May return null if cache partition doesn't exist
@@ -485,7 +485,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         DateTime syncTime = DateTime.now();
         
         Test.startTest();
-        CRMPHKLEnquirySyncService.saveLastSyncTime(syncTime);
+        CRMGlobalEnquirySyncService.saveLastSyncTime(syncTime);
         Test.stopTest();
         
         // Verify it doesn't throw exception
@@ -499,7 +499,7 @@ private class CRMPHKLEnquirySyncServiceTest {
         DateTime dt = DateTime.newInstance(2025, 1, 15, 10, 30, 45);
         
         Test.startTest();
-        String result = CRMPHKLEnquirySyncService.formatDateTimeForAPI(dt);
+        String result = CRMGlobalEnquirySyncService.formatDateTimeForAPI(dt);
         Test.stopTest();
         
         System.assertNotEquals(null, result, 'Result should not be null');
@@ -511,7 +511,7 @@ private class CRMPHKLEnquirySyncServiceTest {
     @IsTest
     static void testFormatDateTimeForAPI_Null() {
         Test.startTest();
-        String result = CRMPHKLEnquirySyncService.formatDateTimeForAPI(null);
+        String result = CRMGlobalEnquirySyncService.formatDateTimeForAPI(null);
         Test.stopTest();
         
         System.assertEquals('', result, 'Should return empty string for null');
@@ -519,10 +519,10 @@ private class CRMPHKLEnquirySyncServiceTest {
     
     // ============ Helper Methods ============
     
-    private static List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData> createTestEnquiryData() {
-        List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData> enquiryList = new List<CRMPHKLEnquirySyncService.CRMPHKLEnquiryData>();
+    private static List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData> createTestEnquiryData() {
+        List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData> enquiryList = new List<CRMGlobalEnquirySyncService.CRMGlobalEnquiryData>();
         
-        CRMPHKLEnquirySyncService.CRMPHKLEnquiryData enquiry = new CRMPHKLEnquirySyncService.CRMPHKLEnquiryData();
+        CRMGlobalEnquirySyncService.CRMGlobalEnquiryData enquiry = new CRMGlobalEnquirySyncService.CRMGlobalEnquiryData();
         enquiry.enquiryId = 'ENQ001';
         enquiry.enquiryStatus = 'A';
         enquiry.enquiryType = 'UW';

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <actionCalls>
-        <name>CRMPHKLBusinessHoursFlowService</name>
-        <label>CRMPHKLBusinessHoursFlowService</label>
+        <name>CRMGlobalBusinessHoursFlowService</name>
+        <label>CRMGlobalBusinessHoursFlowService</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <actionName>CRMPHKLBusinessHoursFlowService</actionName>
+        <actionName>CRMGlobalBusinessHoursFlowService</actionName>
         <actionType>apex</actionType>
         <connector>
             <targetReference>Update_Next_Check_Up</targetReference>
@@ -17,7 +17,7 @@
                 <numberValue>5.0</numberValue>
             </value>
         </inputParameters>
-        <nameSegment>CRMPHKLBusinessHoursFlowService</nameSegment>
+        <nameSegment>CRMGlobalBusinessHoursFlowService</nameSegment>
         <offset>0</offset>
         <outputParameters>
             <assignToReference>message</assignToReference>
@@ -76,7 +76,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>CRMPHKLBusinessHoursFlowService</targetReference>
+                <targetReference>CRMGlobalBusinessHoursFlowService</targetReference>
             </connector>
             <label>New Follow-up</label>
         </rules>

@@ -5,7 +5,7 @@
         <label>Calculate Business Days</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <actionName>CRMPHKLBusinessHoursFlowService</actionName>
+        <actionName>CRMGlobalBusinessHoursFlowService</actionName>
         <actionType>apex</actionType>
         <connector>
             <targetReference>Set_Check_Date</targetReference>
@@ -17,7 +17,7 @@
                 <numberValue>5.0</numberValue>
             </value>
         </inputParameters>
-        <nameSegment>CRMPHKLBusinessHoursFlowService</nameSegment>
+        <nameSegment>CRMGlobalBusinessHoursFlowService</nameSegment>
         <offset>0</offset>
         <outputParameters>
             <assignToReference>Error_Message</assignToReference>

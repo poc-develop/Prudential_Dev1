@@ -1,20 +1,20 @@
-# CRMPHKLEnquirySyncBatch 调试指南
+# CRMGlobalEnquirySyncBatch 调试指南
 
 ## 1. 代码调试增强
 
 ### 1.1 添加详细日志
 
-在关键位置添加 `System.debug` 语句，建议在以下位置添加：
+在关键位置添�?`System.debug` 语句，建议在以下位置添加�?
 
 ```apex
-// 在 start 方法中
+// �?start 方法�?
 public Database.QueryLocator start(Database.BatchableContext bc) {
     System.debug(LoggingLevel.INFO, '=== Batch Started ===');
     System.debug(LoggingLevel.INFO, 'Batch Job Id: ' + bc.getJobId());
     return Database.getQueryLocator([SELECT Id FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1]);
 }
 
-// 在 execute 方法开始
+// �?execute 方法开�?
 public void execute(Database.BatchableContext bc, List<SObject> scope) {
     System.debug(LoggingLevel.INFO, '=== Execute Started ===');
     System.debug(LoggingLevel.INFO, 'Scope size: ' + scope.size());
@@ -22,7 +22,7 @@ public void execute(Database.BatchableContext bc, List<SObject> scope) {
     
     try {
         System.debug(LoggingLevel.INFO, 'Calling API...');
-        CRMPHKLEnquiryAPIResponse apiResponse = callEnquiryAPI();
+        CRMGlobalEnquiryAPIResponse apiResponse = callEnquiryAPI();
         
         System.debug(LoggingLevel.INFO, 'API Response received');
         System.debug(LoggingLevel.INFO, 'ReturnCode: ' + (apiResponse != null ? apiResponse.ReturnCode : 'null'));
@@ -39,7 +39,7 @@ public void execute(Database.BatchableContext bc, List<SObject> scope) {
     }
 }
 
-// 在 finish 方法中
+// �?finish 方法�?
 public void finish(Database.BatchableContext bc) {
     System.debug(LoggingLevel.INFO, '=== Batch Finished ===');
     System.debug(LoggingLevel.INFO, 'Job Id: ' + bc.getJobId());
@@ -52,9 +52,9 @@ public void finish(Database.BatchableContext bc) {
 
 ### 1.2 在关键方法中添加日志
 
-在 `callEnquiryAPI()` 方法中：
+�?`callEnquiryAPI()` 方法中：
 ```apex
-private CRMPHKLEnquiryAPIResponse callEnquiryAPI() {
+private CRMGlobalEnquiryAPIResponse callEnquiryAPI() {
     try {
         System.debug(LoggingLevel.INFO, '=== API Call Started ===');
         DateTime lastSyncTime = getLastSyncTime();
@@ -72,9 +72,9 @@ private CRMPHKLEnquiryAPIResponse callEnquiryAPI() {
 }
 ```
 
-在 `processEnquiryData()` 方法中：
+�?`processEnquiryData()` 方法中：
 ```apex
-private void processEnquiryData(List<CRMPHKLEnquiryData> enquiryList) {
+private void processEnquiryData(List<CRMGlobalEnquiryData> enquiryList) {
     System.debug(LoggingLevel.INFO, '=== Processing Enquiry Data ===');
     System.debug(LoggingLevel.INFO, 'Enquiry List Size: ' + enquiryList.size());
     
@@ -85,26 +85,26 @@ private void processEnquiryData(List<CRMPHKLEnquiryData> enquiryList) {
 }
 ```
 
-## 2. 使用匿名 Apex 手动触发和调试
+## 2. 使用匿名 Apex 手动触发和调�?
 
-### 2.1 手动触发批处理
+### 2.1 手动触发批处�?
 
-在 Developer Console 或 VS Code 的 Anonymous Apex 中执行：
+�?Developer Console �?VS Code �?Anonymous Apex 中执行：
 
 ```apex
-// 创建批处理实例
-CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+// 创建批处理实�?
+CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
 
-// 执行批处理（批次大小为1，便于调试）
+// 执行批处理（批次大小�?，便于调试）
 Id jobId = Database.executeBatch(batch, 1);
 
 System.debug('Batch Job ID: ' + jobId);
 ```
 
-### 2.2 检查批处理状态
+### 2.2 检查批处理状�?
 
 ```apex
-// 查询批处理作业状态
+// 查询批处理作业状�?
 AsyncApexJob job = [
     SELECT Id, Status, NumberOfErrors, JobItemsProcessed, 
            TotalJobItems, CreatedBy.Email, CreatedDate,
@@ -122,16 +122,16 @@ System.debug('Extended Status: ' + job.ExtendedStatus);
 System.debug('Completed Date: ' + job.CompletedDate);
 ```
 
-### 2.3 查看最近的批处理作业
+### 2.3 查看最近的批处理作�?
 
 ```apex
-// 查看最近的批处理作业
+// 查看最近的批处理作�?
 List<AsyncApexJob> jobs = [
     SELECT Id, Status, NumberOfErrors, JobItemsProcessed, 
            TotalJobItems, CreatedDate, CompletedDate, 
            ExtendedStatus, ApexClass.Name
     FROM AsyncApexJob 
-    WHERE ApexClass.Name = 'CRMPHKLEnquirySyncBatch'
+    WHERE ApexClass.Name = 'CRMGlobalEnquirySyncBatch'
     ORDER BY CreatedDate DESC
     LIMIT 10
 ];
@@ -148,8 +148,8 @@ for (AsyncApexJob job : jobs) {
 
 ### 3.1 设置 Trace Flag
 
-1. 进入 **Setup → Debug Logs**
-2. 创建新的 Trace Flag：
+1. 进入 **Setup �?Debug Logs**
+2. 创建新的 Trace Flag�?
    - **Traced Entity Type**: User
    - **Traced Entity**: 选择你的用户
    - **Apex Code**: DEBUG
@@ -159,13 +159,13 @@ for (AsyncApexJob job : jobs) {
 
 ### 3.2 查看日志
 
-1. 在 Developer Console 中打开 **Logs** 标签
-2. 触发批处理
-3. 等待批处理执行完成
+1. �?Developer Console 中打开 **Logs** 标签
+2. 触发批处�?
+3. 等待批处理执行完�?
 4. 双击日志条目查看详细信息
-5. 使用搜索功能查找特定的调试信息
+5. 使用搜索功能查找特定的调试信�?
 
-### 3.3 日志查看技巧
+### 3.3 日志查看技�?
 
 - 使用 `Ctrl+F` 搜索关键字，如：
   - `=== Batch Started ===`
@@ -173,12 +173,12 @@ for (AsyncApexJob job : jobs) {
   - `ERROR`
   - `Exception`
 
-## 4. 检查 Platform Cache
+## 4. 检�?Platform Cache
 
 ### 4.1 查看缓存中的同步时间
 
 ```apex
-// 检查 Platform Cache 中的上次同步时间
+// 检�?Platform Cache 中的上次同步时间
 Cache.OrgPartition orgPartition = Cache.Org.getPartition('local.BatchSyncCache');
 if (orgPartition != null) {
     Object cachedTime = orgPartition.get('CRM_PHKL_Enquiry_Last_Sync_Time');
@@ -195,7 +195,7 @@ if (orgPartition != null) {
 }
 ```
 
-### 4.2 手动设置缓存值（用于测试）
+### 4.2 手动设置缓存值（用于测试�?
 
 ```apex
 // 设置测试用的同步时间
@@ -222,7 +222,7 @@ if (orgPartition != null) {
 
 ### 5.1 独立测试 API 调用
 
-创建一个测试方法或匿名 Apex 来测试 API 调用：
+创建一个测试方法或匿名 Apex 来测�?API 调用�?
 
 ```apex
 // 测试 API 调用（不通过批处理）
@@ -249,7 +249,7 @@ public static void testAPICall() {
 }
 ```
 
-## 6. 检查 CRMGlobalLogManager 日志
+## 6. 检�?CRMGlobalLogManager 日志
 
 ### 6.1 查询日志记录
 
@@ -291,18 +291,18 @@ for (CRM_Global_Webservice_Call_Log__c log : wsLogs) {
 }
 ```
 
-## 7. 创建测试类进行单元测试
+## 7. 创建测试类进行单元测�?
 
-### 7.1 基本测试类结构
+### 7.1 基本测试类结�?
 
 ```apex
 @isTest
-private class CRMPHKLEnquirySyncBatchTest {
+private class CRMGlobalEnquirySyncBatchTest {
     
     @testSetup
     static void setupTestData() {
         // 设置测试数据
-        // 例如：创建测试用的 RecordType、测试用户等
+        // 例如：创建测试用�?RecordType、测试用户等
     }
     
     @isTest
@@ -312,8 +312,8 @@ private class CRMPHKLEnquirySyncBatchTest {
         // 设置 Mock HTTP 响应（如果需要）
         // Test.setMock(HttpCalloutMock.class, new YourMockHttpResponse());
         
-        // 执行批处理
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        // 执行批处�?
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Id jobId = Database.executeBatch(batch, 1);
         
         Test.stopTest();
@@ -328,14 +328,14 @@ private class CRMPHKLEnquirySyncBatchTest {
         System.assertEquals('Completed', job.Status);
         System.assertEquals(0, job.NumberOfErrors);
         
-        // 验证创建的记录
+        // 验证创建的记�?
         // List<Case> cases = [SELECT Id FROM Case WHERE ...];
         // System.assert(cases.size() > 0);
     }
     
     @isTest
     static void testAPICallFailure() {
-        // 测试 API 调用失败的情况
+        // 测试 API 调用失败的情�?
     }
     
     @isTest
@@ -345,34 +345,34 @@ private class CRMPHKLEnquirySyncBatchTest {
 }
 ```
 
-## 8. 监控和检查清单
+## 8. 监控和检查清�?
 
-### 8.1 执行前检查
+### 8.1 执行前检�?
 
 - [ ] Platform Cache Partition 已创建并配置
-- [ ] Named Credential `CRM_PHKL_APIM_AES` 已配置
-- [ ] Custom Metadata `CRM_PHKL_AES_Enquiry` 已配置
-- [ ] Case RecordType `Master_Inbound` 和 `Enquiry` 存在且激活
-- [ ] 所有必需的字段在 Case 对象上存在
+- [ ] Named Credential `CRM_PHKL_APIM_AES` 已配�?
+- [ ] Custom Metadata `CRM_PHKL_AES_Enquiry` 已配�?
+- [ ] Case RecordType `Master_Inbound` �?`Enquiry` 存在且激�?
+- [ ] 所有必需的字段在 Case 对象上存�?
 
-### 8.2 执行后检查
+### 8.2 执行后检�?
 
-- [ ] 批处理状态为 `Completed` 或 `Failed`
-- [ ] 检查错误日志（`AsyncApexJob.ExtendedStatus`）
+- [ ] 批处理状态为 `Completed` �?`Failed`
+- [ ] 检查错误日志（`AsyncApexJob.ExtendedStatus`�?
 - [ ] 检查创建的 Case 记录数量
-- [ ] 验证 Master Case 和 Enquiry Case 的父子关系
-- [ ] 检查 Platform Cache 中保存的同步时间
-- [ ] 查看 `CRMGlobalLogManager` 的日志
+- [ ] 验证 Master Case �?Enquiry Case 的父子关�?
+- [ ] 检�?Platform Cache 中保存的同步时间
+- [ ] 查看 `CRMGlobalLogManager` 的日�?
 
 ### 8.3 常见问题排查
 
 #### 问题 1: Debug 日志没有打印出来
 
-**症状**: `=== Execute Started ===` 或其他 DEBUG 日志没有出现在日志中
+**症状**: `=== Execute Started ===` 或其�?DEBUG 日志没有出现在日志中
 
 **解决方法**:
 1. **设置 Trace Flag**（必须）:
-   - 进入 **Setup → Debug Logs**
+   - 进入 **Setup �?Debug Logs**
    - 点击 **New** 创建新的 Trace Flag
    - **Traced Entity Type**: User
    - **Traced Entity**: 选择当前用户
@@ -382,41 +382,41 @@ private class CRMPHKLEnquirySyncBatchTest {
    - **Database**: INFO
    - 保存
 
-2. **检查日志级别**:
-   - 确保代码中使用 `System.debug(LoggingLevel.INFO, ...)` 或更高级别
-   - `System.debug()`（无级别）默认为 DEBUG 级别，需要 Trace Flag 支持
+2. **检查日志级�?*:
+   - 确保代码中使�?`System.debug(LoggingLevel.INFO, ...)` 或更高级�?
+   - `System.debug()`（无级别）默认为 DEBUG 级别，需�?Trace Flag 支持
 
-3. **等待批处理完成**:
+3. **等待批处理完�?*:
    - 批处理是异步执行的，需要等待完成后才能查看日志
-   - 在 Developer Console 中，等待批处理完成后刷新日志列表
+   - �?Developer Console 中，等待批处理完成后刷新日志列表
 
-4. **查看正确的日志**:
-   - Developer Console → **Logs** 标签
-   - 找到对应的批处理作业时间的日志
-   - 双击打开日志，使用 `Ctrl+F` 搜索关键字
+4. **查看正确的日�?*:
+   - Developer Console �?**Logs** 标签
+   - 找到对应的批处理作业时间的日�?
+   - 双击打开日志，使�?`Ctrl+F` 搜索关键�?
 
 #### 问题 2: API 调用返回 404 错误
 
 **症状**: `API call failed with status code: 404`
 
-**可能原因和解决方法**:
+**可能原因和解决方�?*:
 
-1. **Named Credential 不存在或未配置**:
+1. **Named Credential 不存在或未配�?*:
    ```apex
-   // 检查 Named Credential 是否存在
-   // Setup → Named Credentials → 查找 "CRM_PHKL_APIM_AES"
+   // 检�?Named Credential 是否存在
+   // Setup �?Named Credentials �?查找 "CRM_PHKL_APIM_AES"
    ```
-   - 进入 **Setup → Named Credentials**
-   - 确认 `CRM_PHKL_APIM_AES` 存在且已激活
-   - 检查 URL 是否正确（不应该包含路径，只包含 base URL）
+   - 进入 **Setup �?Named Credentials**
+   - 确认 `CRM_PHKL_APIM_AES` 存在且已激�?
+   - 检�?URL 是否正确（不应该包含路径，只包含 base URL�?
 
 2. **Endpoint 路径错误**:
-   - 代码中使用: `'callout:CRM_PHKL_APIM_AES' + '/getAESeEnquiry'`
+   - 代码中使�? `'callout:CRM_PHKL_APIM_AES' + '/getAESeEnquiry'`
    - 验证路径 `/getAESeEnquiry` 是否正确
-   - 检查是否需要添加前缀（如 `/api/v1`）
+   - 检查是否需要添加前缀（如 `/api/v1`�?
 
 3. **Named Credential URL 配置错误**:
-   - Named Credential 的 URL 应该是基础 URL（如: `https://api.example.com`）
+   - Named Credential �?URL 应该是基础 URL（如: `https://api.example.com`�?
    - 不应包含路径部分
    - 如果 API 需要路径，应该在代码中添加
 
@@ -427,35 +427,35 @@ private class CRMPHKLEnquirySyncBatchTest {
    req.setEndpoint('callout:CRM_PHKL_APIM_AES');
    req.setMethod('GET');
    
-   // 这会显示完整的 resolved URL（在日志中查看）
-   // 注意：实际调用需要在允许 Callout 的上下文中
+   // 这会显示完整�?resolved URL（在日志中查看）
+   // 注意：实际调用需要在允许 Callout 的上下文�?
    ```
 
-5. **检查 HTTP 方法**:
-   - 确认 API 是否需要 POST（当前使用）
-   - 某些 API 可能需要 GET 或其他方法
+5. **检�?HTTP 方法**:
+   - 确认 API 是否需�?POST（当前使用）
+   - 某些 API 可能需�?GET 或其他方�?
 
-#### 问题 3: 批处理一直处于 Queued 状态
-   - 检查是否有其他批处理正在运行
-   - 查看系统限制（最多 5 个批处理并发）
-   - 等待其他批处理完成
+#### 问题 3: 批处理一直处�?Queued 状�?
+   - 检查是否有其他批处理正在运�?
+   - 查看系统限制（最�?5 个批处理并发�?
+   - 等待其他批处理完�?
 
-#### 问题 4: 数据未创建
-   - 检查 API 响应是否有数据
+#### 问题 4: 数据未创�?
+   - 检�?API 响应是否有数�?
    - 验证字段映射是否正确
    - 检查验证规则和必填字段
    - 查看错误日志中的具体错误信息
 
-#### 问题 5: Platform Cache 未保存
-   - 确认 Platform Cache Partition 已创建
+#### 问题 5: Platform Cache 未保�?
+   - 确认 Platform Cache Partition 已创�?
    - 检查分配的缓存大小是否足够
-   - 验证分区名称是否正确（`local.BatchSyncCache`）
+   - 验证分区名称是否正确（`local.BatchSyncCache`�?
 
-## 9. 快速调试脚本
+## 9. 快速调试脚�?
 
 ### 9.1 完整调试脚本
 
-在 Developer Console 的 Anonymous Apex 中执行：
+�?Developer Console �?Anonymous Apex 中执行：
 
 ```apex
 // ===== 完整调试脚本 =====
@@ -467,18 +467,18 @@ if (orgPartition != null) {
     System.debug('Cache cleared');
 }
 
-// 2. 设置 Trace Flag（如果还没有设置）
-// 进入 Setup → Debug Logs 手动设置
+// 2. 设置 Trace Flag（如果还没有设置�?
+// 进入 Setup �?Debug Logs 手动设置
 
-// 3. 执行批处理
-CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+// 3. 执行批处�?
+CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
 Id jobId = Database.executeBatch(batch, 1);
 System.debug('Batch Job ID: ' + jobId);
 
-// 4. 等待几秒后检查状态
+// 4. 等待几秒后检查状�?
 // （在 Developer Console 中等待，然后执行下面的代码）
 
-// 5. 检查批处理状态
+// 5. 检查批处理状�?
 AsyncApexJob job = [
     SELECT Id, Status, NumberOfErrors, JobItemsProcessed, 
            TotalJobItems, ExtendedStatus, ApexClass.Name
@@ -514,7 +514,7 @@ List<Case> enquiryCases = [
 ];
 System.debug('Enquiry Cases created: ' + enquiryCases.size());
 
-// 7. 检查日志
+// 7. 检查日�?
 List<CRM_Global_ApexLog__c> logs = [
     SELECT Id, Name, Log_Level__c, Error_Message__c, CreatedDate
     FROM CRM_Global_ApexLog__c
@@ -524,7 +524,7 @@ List<CRM_Global_ApexLog__c> logs = [
 ];
 System.debug('Recent Logs: ' + logs.size());
 
-// 8. 检查 Platform Cache
+// 8. 检�?Platform Cache
 if (orgPartition != null) {
     Object cachedTime = orgPartition.get('CRM_PHKL_Enquiry_Last_Sync_Time');
     if (cachedTime != null) {
@@ -533,11 +533,11 @@ if (orgPartition != null) {
 }
 ```
 
-## 10. 最佳实践
+## 10. 最佳实�?
 
 1. **逐步调试**：先测试 API 调用，再测试数据处理
-2. **使用小批次**：调试时使用 `Database.executeBatch(batch, 1)` 便于追踪
-3. **检查日志**：同时查看 System.debug 和 CRMGlobalLogManager 的日志
+2. **使用小批�?*：调试时使用 `Database.executeBatch(batch, 1)` 便于追踪
+3. **检查日�?*：同时查�?System.debug �?CRMGlobalLogManager 的日�?
 4. **验证数据**：检查每个步骤创建的数据是否符合预期
 5. **模拟错误**：测试异常情况，确保错误处理正确
 

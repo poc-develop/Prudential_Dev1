@@ -1,12 +1,12 @@
 /**
- * @description       : Test class for CRMPHKLCreateCaseReplyController
+ * @description       : Test class for CRMGlobalCreateCaseReplyController
  * @author            : hank
  * @group             : 
  * @last modified on  : 2025-10-27
  * @last modified by  : hank
 **/
 @IsTest
-private class CRMPHKLCreateCaseReplyControllerTest {
+private class CRMGlobalCreateCaseReplyControllerTest {
     
     @TestSetup
     static void setupTestData() {
@@ -57,7 +57,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         String replyText = 'Test reply text';
         
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.createCaseReply(testCase.Id, replyText);
+        Boolean result = CRMGlobalCreateCaseReplyController.createCaseReply(testCase.Id, replyText);
         Test.stopTest();
         
         // Assertions
@@ -79,7 +79,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
     @IsTest
     static void testCreateCaseReply_WithNullCaseId() {
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.createCaseReply(null, 'Test reply');
+        Boolean result = CRMGlobalCreateCaseReplyController.createCaseReply(null, 'Test reply');
         Test.stopTest();
         
         // Should return false when caseId is null
@@ -91,7 +91,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         Case testCase = [SELECT Id FROM Case LIMIT 1];
         
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.createCaseReply(testCase.Id, null);
+        Boolean result = CRMGlobalCreateCaseReplyController.createCaseReply(testCase.Id, null);
         Test.stopTest();
         
         // Should still create the reply item even if replyText is null
@@ -112,7 +112,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         Case testCase = [SELECT Id FROM Case LIMIT 1];
         
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.createCaseReply(testCase.Id, '');
+        Boolean result = CRMGlobalCreateCaseReplyController.createCaseReply(testCase.Id, '');
         Test.stopTest();
         
         // Should still create the reply item even if replyText is empty
@@ -122,7 +122,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
     @IsTest
     static void testCreateCaseReply_WithInvalidCaseId() {
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.createCaseReply('001000000000000AAA', 'Test reply');
+        Boolean result = CRMGlobalCreateCaseReplyController.createCaseReply('001000000000000AAA', 'Test reply');
         Test.stopTest();
         
         // Should return false when caseId is invalid
@@ -137,7 +137,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         Test.setMock(HttpCalloutMock.class, new MockHttpResponse());
         
         Test.startTest();
-        CRMPHKLCreateCaseReplyController.updateAESEquiryReply(testCase.Id);
+        CRMGlobalCreateCaseReplyController.updateAESEquiryReply(testCase.Id);
         Test.stopTest();
         
         // If no exception is thrown, the test passes
@@ -151,7 +151,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         
         Test.startTest();
         try {
-            CRMPHKLCreateCaseReplyController.updateAESEquiryReply(null);
+            CRMGlobalCreateCaseReplyController.updateAESEquiryReply(null);
             System.assert(true, 'Method should handle null caseId');
         } catch (Exception e) {
             // Exception is acceptable for null caseId
@@ -210,7 +210,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         };
         
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.sendEmailWithCustomMerge(
+        Boolean result = CRMGlobalCreateCaseReplyController.sendEmailWithCustomMerge(
             testTemplate.DeveloperName,
             toAddresses,
             customReplacements
@@ -227,7 +227,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         Map<String, String> customReplacements = new Map<String, String>();
         
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.sendEmailWithCustomMerge(
+        Boolean result = CRMGlobalCreateCaseReplyController.sendEmailWithCustomMerge(
             'NonExistentTemplate',
             toAddresses,
             customReplacements
@@ -251,7 +251,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         
         Test.startTest();
         try {
-            Boolean result = CRMPHKLCreateCaseReplyController.sendEmailWithCustomMerge(
+            Boolean result = CRMGlobalCreateCaseReplyController.sendEmailWithCustomMerge(
                 testTemplate.DeveloperName,
                 null,
                 customReplacements
@@ -279,7 +279,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         
         Test.startTest();
         try {
-            Boolean result = CRMPHKLCreateCaseReplyController.sendEmailWithCustomMerge(
+            Boolean result = CRMGlobalCreateCaseReplyController.sendEmailWithCustomMerge(
                 testTemplate.DeveloperName,
                 toAddresses,
                 customReplacements
@@ -309,7 +309,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         };
         
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.sendEmailWithCustomMerge(
+        Boolean result = CRMGlobalCreateCaseReplyController.sendEmailWithCustomMerge(
             testTemplate.DeveloperName,
             toAddresses,
             customReplacements
@@ -332,7 +332,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         List<String> toAddresses = new List<String>{ 'test@example.com' };
         
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.sendEmailWithCustomMerge(
+        Boolean result = CRMGlobalCreateCaseReplyController.sendEmailWithCustomMerge(
             testTemplate.DeveloperName,
             toAddresses,
             null
@@ -356,7 +356,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         Map<String, String> customReplacements = new Map<String, String>();
         
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.sendEmailWithCustomMerge(
+        Boolean result = CRMGlobalCreateCaseReplyController.sendEmailWithCustomMerge(
             testTemplate.DeveloperName,
             toAddresses,
             customReplacements
@@ -380,7 +380,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         Map<String, String> customReplacements = new Map<String, String>();
         
         Test.startTest();
-        Boolean result = CRMPHKLCreateCaseReplyController.sendEmailWithCustomMerge(
+        Boolean result = CRMGlobalCreateCaseReplyController.sendEmailWithCustomMerge(
             testTemplate.Name, // Use Name instead of DeveloperName
             toAddresses,
             customReplacements
@@ -396,7 +396,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
         Case testCase = [SELECT Id FROM Case LIMIT 1];
         
         Test.startTest();
-        SObject result = CRMPHKLCreateCaseReplyController.getRecordData(testCase.Id);
+        SObject result = CRMGlobalCreateCaseReplyController.getRecordData(testCase.Id);
         Test.stopTest();
         
         // Assertions
@@ -408,7 +408,7 @@ private class CRMPHKLCreateCaseReplyControllerTest {
     @IsTest
     static void testGetRecordData_WithNullRecordId() {
         Test.startTest();
-        SObject result = CRMPHKLCreateCaseReplyController.getRecordData(null);
+        SObject result = CRMGlobalCreateCaseReplyController.getRecordData(null);
         Test.stopTest();
         
         // Assertions

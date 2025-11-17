@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>CRMGlobalCreateCaseReplyController</members>
+        <members>CRMGlobalCreateCaseReplyControllerTest</members>
+        <members>CRMGlobalBusinessHoursFlowService</members>
+        <members>CRMGlobalBusinessHoursFlowServiceTest</members>
+        <members>CRMGlobalEnquiryScheduler</members>
+        <members>CRMGlobalEnquirySchedulerTest</members>
+        <members>CRMGlobalEnquirySyncBatch</members>
+        <members>CRMGlobalEnquirySyncBatchTest</members>
+        <members>CRMGlobalEnquirySyncService</members>
+        <members>CRMGlobalEnquirySyncServiceTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>CRM_PHKL_Case_Check_Followup_Enquiry</members>
+        <members>CRM_PHKL_Set_Initial_Check_Date</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>crmGlobalCreateCaseReply</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>Case.CaseReply</members>
+        <name>QuickAction</name>
+    </types>
+    <version>65.0</version>
+</Package>
+

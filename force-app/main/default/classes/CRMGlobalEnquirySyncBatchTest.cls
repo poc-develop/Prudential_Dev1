@@ -1,12 +1,12 @@
 /**
- * @description       : Test class for CRMPHKLEnquirySyncBatch
+ * @description       : Test class for CRMGlobalEnquirySyncBatch
  * @author            : hank
  * @group             : 
  * @last modified on  : 2025-10-28
  * @last modified by  : hank
 **/
 @IsTest
-private class CRMPHKLEnquirySyncBatchTest {
+private class CRMGlobalEnquirySyncBatchTest {
     
     @TestSetup
     static void setupTestData() {
@@ -23,7 +23,7 @@ private class CRMPHKLEnquirySyncBatchTest {
         Test.setMock(HttpCalloutMock.class, new MockSuccessAPIResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Id jobId = Database.executeBatch(batch, 1);
         Test.stopTest();
         
@@ -35,7 +35,7 @@ private class CRMPHKLEnquirySyncBatchTest {
         ];
         
         System.assertEquals('BatchApex', job.JobType, 'Job type should be BatchApex');
-        System.assertEquals('CRMPHKLEnquirySyncBatch', job.ApexClass.Name, 'Batch class name should match');
+        System.assertEquals('CRMGlobalEnquirySyncBatch', job.ApexClass.Name, 'Batch class name should match');
         // Status might be 'Completed' or 'Processing' depending on execution
         System.assert(job.Status == 'Completed' || job.Status == 'Processing', 'Job should be completed or processing');
     }
@@ -49,7 +49,7 @@ private class CRMPHKLEnquirySyncBatchTest {
         Test.setMock(HttpCalloutMock.class, new MockEmptyAPIResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Id jobId = Database.executeBatch(batch, 1);
         Test.stopTest();
         
@@ -73,7 +73,7 @@ private class CRMPHKLEnquirySyncBatchTest {
         Test.setMock(HttpCalloutMock.class, new MockErrorAPIResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Id jobId = Database.executeBatch(batch, 1);
         Test.stopTest();
         
@@ -98,7 +98,7 @@ private class CRMPHKLEnquirySyncBatchTest {
         Test.setMock(HttpCalloutMock.class, new MockInvalidJSONResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Id jobId = Database.executeBatch(batch, 1);
         Test.stopTest();
         
@@ -123,7 +123,7 @@ private class CRMPHKLEnquirySyncBatchTest {
         Test.setMock(HttpCalloutMock.class, new MockProcessingExceptionResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Id jobId = Database.executeBatch(batch, 1);
         Test.stopTest();
         
@@ -146,7 +146,7 @@ private class CRMPHKLEnquirySyncBatchTest {
         Test.setMock(HttpCalloutMock.class, new MockErrorAPIResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Id jobId = Database.executeBatch(batch, 1);
         Test.stopTest();
         
@@ -170,7 +170,7 @@ private class CRMPHKLEnquirySyncBatchTest {
         Test.setMock(HttpCalloutMock.class, new MockEmptyAPIResponse());
         
         Test.startTest();
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Id jobId = Database.executeBatch(batch, 1);
         Test.stopTest();
         
@@ -191,7 +191,7 @@ private class CRMPHKLEnquirySyncBatchTest {
     @IsTest
     static void testStart_ReturnsQueryLocator() {
         Test.startTest();
-        CRMPHKLEnquirySyncBatch batch = new CRMPHKLEnquirySyncBatch();
+        CRMGlobalEnquirySyncBatch batch = new CRMGlobalEnquirySyncBatch();
         Database.BatchableContext bc = new TestBatchableContext();
         Database.QueryLocator ql = batch.start(bc);
         Test.stopTest();
